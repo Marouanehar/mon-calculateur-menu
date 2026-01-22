@@ -13,17 +13,17 @@
         .input-premium { background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s; padding: 10px; border-radius: 12px; width: 100%; text-align: center; font-weight: 700; color: #1e293b; }
         .input-premium:focus { background: white; border-color: #3b82f6; outline: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
         .suggestion-box { max-height: 350px; overflow-y: auto; z-index: 100; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
-        .readonly-cell { font-weight: 800; color: #3b82f6; background: #eff6ff; padding: 10px; border-radius: 12px; display: block; text-align: center; font-size: 0.875rem; }
+        .readonly-cell { font-weight: 800; color: #3b82f6; background: #eff6ff; padding: 10px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
     </style>
 </head>
 <body class="min-h-screen text-slate-800">
 
     <div id="setupScreen" class="fixed inset-0 z-[100] gradient-blue flex items-center justify-center p-6 hidden">
         <div class="bg-white p-10 rounded-[40px] shadow-2xl max-w-md w-full text-center border border-blue-100">
-            <h2 class="text-3xl font-black text-slate-900 mb-2">Base CGI Pro</h2>
-            <p class="text-slate-500 mb-8 text-sm font-medium">Importez votre fichier Excel (Prix & Coût matière %).</p>
+            <h2 class="text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Base CGI</h2>
+            <p class="text-slate-500 mb-8 text-sm font-medium">Importez votre fichier Excel pour activer les calculs.</p>
             <input type="file" id="excelFile" accept=".xlsx" class="mb-8 block w-full text-sm text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-600 file:text-white cursor-pointer">
-            <button onclick="handleFileUpload()" class="w-full bg-slate-900 text-white font-black py-5 rounded-3xl active:scale-95 transition-all uppercase tracking-widest text-xs">Activer l'Application</button>
+            <button onclick="handleFileUpload()" class="w-full bg-slate-900 text-white font-black py-5 rounded-3xl active:scale-95 transition-all uppercase tracking-widest text-xs">Démarrer</button>
         </div>
     </div>
 
@@ -36,7 +36,7 @@
 
             <div class="space-y-8">
                 <div class="bg-slate-50 p-6 rounded-[32px] border border-slate-100 text-center">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Prix de Vente Cible</label>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Prix Vente Cible</label>
                     <div class="flex items-center justify-center">
                         <input type="text" id="targetPrice" value="70" oninput="calculate(false)" class="bg-transparent text-5xl font-black text-slate-900 outline-none w-32 text-center">
                         <span class="text-2xl font-bold text-slate-300">DH</span>
@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="gradient-blue p-8 rounded-[40px] text-white shadow-xl shadow-blue-100">
-                    <h3 class="text-[10px] font-black opacity-60 uppercase mb-6 tracking-widest text-center">Rentabilité Finale</h3>
+                    <h3 class="text-[10px] font-black opacity-60 uppercase mb-6 tracking-widest text-center">Analyse de Rentabilité</h3>
                     <div class="space-y-4">
                         <div class="flex justify-between items-center"><span class="text-xs opacity-80 font-bold uppercase">Total Prix Fort</span><span id="totalStrong" class="text-xl font-black">0,00 DH</span></div>
                         <div class="flex justify-between items-center border-b border-white/20 pb-4"><span class="text-xs opacity-80 text-yellow-300 font-black uppercase">Remise Totale</span><span id="totalDiscount" class="text-xl font-black text-yellow-300">0%</span></div>
@@ -72,18 +72,17 @@
             </div>
 
             <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden mb-12">
-                <div class="p-8 bg-slate-50/50 flex items-center border-b border-slate-100">
+                <div class="p-8 bg-slate-50/50 border-b border-slate-100">
                     <input type="text" id="menuName" value="Menu Signature" class="bg-transparent font-black text-2xl text-slate-900 outline-none w-full border-b border-transparent focus:border-blue-500 pb-1">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
-                                <th class="p-8">Produit / Cuisine</th>
+                                <th class="p-8">Article / Département</th>
                                 <th class="p-8 text-center w-40">Prix Fort (TTC)</th>
                                 <th class="p-8 text-center w-28 text-orange-500">CM % (Base)</th>
-                                <th class="p-8 text-center w-32">Venti %</th>
-                                <th class="p-8 text-center w-40 text-blue-600">Venti DH</th>
+                                <th class="p-8 text-center w-48 text-blue-600">Ventilation (DH & %)</th>
                                 <th class="p-8 w-16"></th>
                             </tr>
                         </thead>
@@ -97,20 +96,18 @@
     </div>
 
     <script>
-        let baseData = JSON.parse(localStorage.getItem('cgi_v7_base')) || [];
+        let baseData = JSON.parse(localStorage.getItem('cgi_v8_base')) || [];
         let currentMenu = [];
-        let history = JSON.parse(localStorage.getItem('cgi_v7_history')) || [];
+        let history = JSON.parse(localStorage.getItem('cgi_v8_history')) || [];
         let editingId = null;
 
         if(baseData.length === 0) document.getElementById('setupScreen').classList.remove('hidden');
 
-        // Formats (Virgule)
         const f = (n) => (n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const p = (v) => parseFloat((v || "0").toString().replace(',', '.')) || 0;
 
         function handleFileUpload() {
             const file = document.getElementById('excelFile').files[0];
-            if(!file) return alert("Fichier manquant.");
             const reader = new FileReader();
             reader.onload = (e) => {
                 const workbook = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
@@ -125,7 +122,7 @@
                         cmPct: p(r['Coût matière %'] || c['coût matière %'] || 0)
                     };
                 });
-                localStorage.setItem('cgi_v7_base', JSON.stringify(baseData));
+                localStorage.setItem('cgi_v8_base', JSON.stringify(baseData));
                 location.reload();
             };
             reader.readAsArrayBuffer(file);
@@ -168,10 +165,8 @@
                 cuis[i.cuisine] += i.ventilation;
                 
                 if (!fullRender) {
-                    const pctEl = document.getElementById(`pct-${i.uniqueId}`);
-                    const vdhEl = document.getElementById(`vdh-${i.uniqueId}`);
-                    if (pctEl) pctEl.innerText = f(i.ventiPercent) + "%";
-                    if (vdhEl) vdhEl.innerText = f(i.ventilation) + " DH";
+                    const vEl = document.getElementById(`venti-${i.uniqueId}`);
+                    if (vEl) vEl.innerHTML = `<span>${f(i.ventilation)} DH</span><span class="text-[10px] opacity-60 italic">(${f(i.ventiPercent)}%)</span>`;
                 }
             });
             if (fullRender) renderTable();
@@ -184,8 +179,12 @@
                     <td class="p-8"><div class="text-sm font-extrabold text-slate-900 leading-tight">${i.nom}</div><div class="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1">${i.cuisine}</div></td>
                     <td class="p-8"><input type="text" value="${i.prixTTC.toString().replace('.', ',')}" oninput="editPrice(${i.uniqueId}, this.value)" class="input-premium"></td>
                     <td class="p-8 text-center"><span class="text-[10px] font-bold text-orange-500 bg-orange-50 px-2 py-1 rounded-lg">${f(i.cmPct)}%</span></td>
-                    <td class="p-8 text-center text-[10px] font-black text-slate-300 uppercase"><span id="pct-${i.uniqueId}">${f(i.ventiPercent)}%</span></td>
-                    <td class="p-8"><span id="vdh-${i.uniqueId}" class="readonly-cell">${f(i.ventilation)} DH</span></td>
+                    <td class="p-8">
+                        <div id="venti-${i.uniqueId}" class="readonly-cell">
+                            <span>${f(i.ventilation)} DH</span>
+                            <span class="text-[10px] opacity-60 italic">(${f(i.ventiPercent)}%)</span>
+                        </div>
+                    </td>
                     <td class="p-8 text-right"><button onclick="removeIng(${i.uniqueId})" class="text-slate-200 hover:text-red-500 text-2xl transition-colors">✕</button></td>
                 </tr>`).join('');
         }
@@ -210,7 +209,7 @@
             const menu = { id: editingId || Date.now(), name: document.getElementById('menuName').value, date: new Date().toLocaleDateString(), target: p(document.getElementById('targetPrice').value), discount: document.getElementById('totalDiscount').innerText, items: JSON.parse(JSON.stringify(currentMenu)) };
             const idx = history.findIndex(m => m.id === menu.id);
             if(idx > -1) history[idx] = menu; else history.unshift(menu);
-            localStorage.setItem('cgi_v7_history', JSON.stringify(history));
+            localStorage.setItem('cgi_v8_history', JSON.stringify(history));
             editingId = null; currentMenu = []; document.getElementById('menuName').value = "Menu Signature";
             renderHistory(); calculate(true); alert("Menu enregistré.");
         }
@@ -225,7 +224,7 @@
 
         function renderHistory() {
             document.getElementById('savedMenus').innerHTML = history.map((m, i) => `
-                <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative group">
+                <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative group card-menu">
                     <div class="flex justify-between items-start mb-6">
                         <div><div class="text-[9px] font-black text-blue-500 uppercase tracking-widest">${m.date}</div><h4 class="font-bold text-slate-800 text-sm">${m.name}</h4></div>
                         <div class="flex gap-2">
@@ -237,14 +236,14 @@
                 </div>`).join('');
         }
 
-        function deleteHistory(i) { if(confirm("Supprimer ?")) { history.splice(i,1); localStorage.setItem('cgi_v7_history', JSON.stringify(history)); renderHistory(); } }
+        function deleteHistory(i) { if(confirm("Supprimer ?")) { history.splice(i,1); localStorage.setItem('cgi_v8_history', JSON.stringify(history)); renderHistory(); } }
         
         function exportToExcel() {
             if(history.length === 0) return alert("Rien à exporter.");
             const exportData = [];
             history.forEach(m => {
                 m.items.forEach(i => {
-                    exportData.push({ "Menu": m.name, "Date": m.date, "Prix Vente Cible": f(m.target), "Remise %": m.discount, "Produit": i.nom, "Cuisine": i.cuisine, "CM % (Base)": f(i.cmPct), "Prix Fort TTC": f(i.prixTTC), "Ventilation DH": f(i.ventilation) });
+                    exportData.push({ "Menu": m.name, "Date": m.date, "Prix Cible": f(m.target), "Remise %": m.discount, "Produit": i.nom, "Cuisine": i.cuisine, "CM % (Base)": f(i.cmPct), "Prix Fort TTC": f(i.prixTTC), "Ventilation DH": f(i.ventilation), "Ventilation %": f(i.ventiPercent) });
                 });
             });
             const ws = XLSX.utils.json_to_sheet(exportData);
@@ -252,7 +251,7 @@
             XLSX.writeFile(wb, "Rapport_Marwan_Final.xlsx");
         }
 
-        function resetApp() { if(confirm("Voulez-vous vraiment changer de fichier Excel ?")) { localStorage.clear(); location.reload(); } }
+        function resetApp() { if(confirm("Voulez-vous changer de fichier Excel ?")) { localStorage.clear(); location.reload(); } }
         renderHistory();
     </script>
 </body>
