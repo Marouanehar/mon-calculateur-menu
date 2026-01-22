@@ -3,282 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Analytics Pro - Marwan</title>
+    <title>Analyseur de Menu CGI - Marwan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        .suggestion-box { max-height: 250px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .suggestion-box { max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .tab-row:hover { background-color: #f8fafc; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-20 font-sans">
+<body class="bg-slate-50 min-h-screen pb-24 font-sans text-slate-900">
 
     <div id="setupScreen" class="fixed inset-0 z-[100] bg-white/95 backdrop-blur flex items-center justify-center p-4 hidden">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl border border-blue-100 max-w-md w-full">
-            <h2 class="text-2xl font-black text-blue-900 mb-2">Initialisation Bases</h2>
-            <p class="text-gray-500 text-sm mb-6">Importez vos fichiers pour activer l'outil.</p>
+        <div class="bg-white p-10 rounded-[32px] shadow-2xl border border-blue-100 max-w-md w-full text-center">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold">📊</div>
+            <h2 class="text-2xl font-black text-blue-900 mb-2">Importation Base CGI</h2>
+            <p class="text-slate-500 text-sm mb-8">Veuillez charger votre fichier Excel contenant les prix et les cuisines.</p>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase">1. Base Produits (Prix d'achat)</label>
-                    <input type="file" id="baseProd" accept=".xlsx" class="block w-full text-xs border rounded-lg p-2 mt-1">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase">2. Base Cuisines (Liaisons)</label>
-                    <input type="file" id="baseCuisine" accept=".xlsx" class="block w-full text-xs border rounded-lg p-2 mt-1">
-                </div>
-                <button onclick="importBases()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition mt-4">DÉMARRER L'ANALYSE</button>
-            </div>
+            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-6 cursor-pointer">
+            
+            <button onclick="handleFileUpload()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-200 active:scale-95 transition">ACTIVER L'OUTIL</button>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto p-4">
-        <header class="py-6 flex flex-wrap justify-between items-center gap-4">
+    <div class="max-w-7xl mx-auto p-4 lg:p-6">
+        <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-black text-blue-900">SIMULATEUR DE MENU V2</h1>
-                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Analyse par Cuisine & Ventilation</p>
+                <h1 class="text-2xl font-black text-blue-900 uppercase tracking-tighter">Simulateur de Menu 70DH</h1>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Analyse & Ventilation par Cuisine</p>
             </div>
-            <div class="flex gap-2">
-                <button onclick="exportToExcel()" class="bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg">💾 EXPORT COMPLET</button>
-                <button onclick="resetBases()" class="bg-slate-200 text-slate-500 px-3 py-2.5 rounded-xl font-bold text-xs">🔄 RESET BASES</button>
+            <div class="flex gap-3">
+                <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg transition-all">💾 Export Excel</button>
+                <button onclick="resetApp()" class="bg-white text-slate-400 hover:text-red-500 px-4 py-3 rounded-2xl font-bold text-xs border border-slate-200 transition-all">🔄 Reset</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <div class="lg:col-span-1 space-y-4">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase">Prix Vente Cible (DH)</label>
-                    <input type="number" id="targetPrice" value="70" oninput="calculate()" class="w-full text-4xl font-black text-blue-700 outline-none">
-                </div>
-
-                <div class="bg-blue-900 p-6 rounded-3xl text-white shadow-xl">
-                    <h3 class="text-xs font-bold opacity-60 uppercase mb-4">Analyse Financière</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end"><span class="text-xs">Total Prix Fort:</span><span id="totalStrong" class="font-bold">0.00 DH</span></div>
-                        <div class="flex justify-between items-end"><span class="text-xs text-yellow-400">Remise Offerte:</span><span id="totalDiscount" class="font-bold text-yellow-400">0%</span></div>
-                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-3 rounded-xl mt-4 active:scale-95 transition">VALIDER LE MENU</button>
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-200">
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Prix Vente Cible (TTC)</label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" id="targetPrice" value="70" oninput="calculate()" class="w-full text-5xl font-black text-blue-700 outline-none bg-transparent">
+                        <span class="text-2xl font-bold text-blue-200">DH</span>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4">Ventilation par Cuisine</h3>
-                    <div id="cuisineSummary" class="space-y-2">
+                <div class="bg-blue-900 p-8 rounded-[32px] text-white shadow-2xl shadow-blue-200">
+                    <h3 class="text-xs font-bold opacity-50 uppercase mb-6 tracking-widest">Analyse Rentabilité</h3>
+                    <div class="space-y-5">
+                        <div class="flex justify-between items-end border-b border-blue-800 pb-4">
+                            <span class="text-sm opacity-70">Total Prix Fort :</span>
+                            <span id="totalStrong" class="font-black text-2xl">0.00 DH</span>
+                        </div>
+                        <div class="flex justify-between items-end border-b border-blue-800 pb-4 text-yellow-400">
+                            <span class="text-sm opacity-70 font-bold">Remise Globale :</span>
+                            <span id="totalDiscount" class="font-black text-2xl">0%</span>
+                        </div>
+                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-4 rounded-2xl mt-4 hover:bg-blue-50 transition active:scale-95 shadow-lg">VALIDER LA COMBINAISON</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-200">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-widest">Ventilation / Département</h3>
+                    <div id="cuisineSummary" class="space-y-4">
                         </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-3 space-y-6">
-                <div class="relative">
-                    <input type="text" id="ingSearch" oninput="searchInBase()" placeholder="🔍 Taper Nom ou Code pour ajouter un ingrédient..." 
-                           class="w-full p-5 bg-white rounded-3xl shadow-sm border-2 border-blue-100 outline-none focus:border-blue-500 text-lg">
-                    <div id="suggestionBox" class="suggestion-box absolute top-full left-0 right-0 bg-white rounded-b-2xl hidden shadow-2xl border-x border-b border-blue-100"></div>
+            <div class="lg:col-span-8 space-y-8">
+                <div class="relative group">
+                    <input type="text" id="ingSearch" oninput="searchProduct()" placeholder="🔍 Chercher par Code ou Nom d'ingrédient..." 
+                           class="w-full p-6 bg-white rounded-[24px] shadow-sm border-2 border-transparent focus:border-blue-500 outline-none text-xl transition-all">
+                    <div id="suggestionBox" class="suggestion-box absolute top-full left-0 right-0 bg-white rounded-b-3xl hidden border-x border-b border-slate-100 shadow-2xl"></div>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b border-slate-100">
-                        <input type="text" id="menuName" value="Menu du jour" class="bg-transparent font-bold text-slate-700 outline-none">
+                <div class="bg-white rounded-[32px] shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 bg-slate-50/50 border-b border-slate-100">
+                        <input type="text" id="menuName" value="Menu Signature 70DH" class="bg-transparent font-black text-slate-800 outline-none text-lg border-b border-blue-100 focus:border-blue-500 pb-1">
                     </div>
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-slate-400 uppercase">
-                                <th class="p-4">Ingrédient / Cuisine</th>
-                                <th class="p-4 w-28 text-center">Prix Fort</th>
-                                <th class="p-4 w-24 text-center">Ratio</th>
-                                <th class="p-4 w-32 text-center text-blue-600">Part PV</th>
-                                <th class="p-4 w-10"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="ingTable"></tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-[10px] font-black text-slate-400 uppercase border-b border-slate-50">
+                                    <th class="p-6">Produit / Département</th>
+                                    <th class="p-6 text-center">Prix Fort (TTC)</th>
+                                    <th class="p-6 text-center">Ratio</th>
+                                    <th class="p-6 text-center text-blue-600">Part PV (Cible)</th>
+                                    <th class="p-6"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="ingTable">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <div id="savedMenus" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <div id="savedMenus" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
             </div>
         </div>
     </div>
 
     <script>
-        let baseProducts = JSON.parse(localStorage.getItem('m_base_prod')) || [];
-        let baseCuisines = JSON.parse(localStorage.getItem('m_base_cuis')) || [];
-        let currentMenu = [];
-        let savedHistory = JSON.parse(localStorage.getItem('m_history')) || [];
+        let baseData = JSON.parse(localStorage.getItem('cgi_base')) || [];
+        let currentSelection = [];
+        let menuHistory = JSON.parse(localStorage.getItem('cgi_history')) || [];
 
-        if(baseProducts.length === 0) document.getElementById('setupScreen').classList.remove('hidden');
+        // Vérifier si la base existe
+        if(baseData.length === 0) document.getElementById('setupScreen').classList.remove('hidden');
 
-        // --- IMPORTATION ---
-        async function importBases() {
-            const f1 = document.getElementById('baseProd').files[0];
-            const f2 = document.getElementById('baseCuisine').files[0];
-            if(!f1 || !f2) return alert("Sélectionnez les deux fichiers.");
+        // --- GESTION EXCEL ---
+        async function handleFileUpload() {
+            const file = document.getElementById('excelFile').files[0];
+            if(!file) return alert("Veuillez sélectionner un fichier.");
 
-            baseProducts = await readExcel(f1, r => ({ c: r.code, n: r.Nom, p: parseFloat(r.Prix) || 0 }));
-            baseCuisines = await readExcel(f2, r => ({ n: r.Nom, cuis: r.Cuisine }));
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(firstSheet);
+                
+                // On mappe exactement tes noms de colonnes
+                baseData = json.map(r => ({
+                    code: r.Code || r.code,
+                    nom: r.Nom || r.nom,
+                    cuisine: r.Cuisine || r.cuisine,
+                    cout: r['Coût matière'] || 0,
+                    prixHT: r['Prix vente HT'] || 0,
+                    prixTTC: parseFloat(r['Prix vente TTC']) || 0
+                }));
 
-            localStorage.setItem('m_base_prod', JSON.stringify(baseProducts));
-            localStorage.setItem('m_base_cuis', JSON.stringify(baseCuisines));
-            location.reload();
+                localStorage.setItem('cgi_base', JSON.stringify(baseData));
+                document.getElementById('setupScreen').classList.add('hidden');
+                alert("Base de données synchronisée !");
+            };
+            reader.readAsArrayBuffer(file);
         }
 
-        function readExcel(file, transform) {
-            return new Promise(res => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const data = new Uint8Array(e.target.result);
-                    const wb = XLSX.read(data, {type:'array'});
-                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                    res(json.map(transform));
-                };
-                reader.readAsArrayBuffer(file);
-            });
-        }
-
-        // --- RECHERCHE ET AJOUT ---
-        function searchInBase() {
-            const val = document.getElementById('ingSearch').value.toLowerCase();
+        // --- RECHERCHE GOOGLE STYLE ---
+        function searchProduct() {
+            const term = document.getElementById('ingSearch').value.toLowerCase();
             const box = document.getElementById('suggestionBox');
-            if(val.length < 2) { box.classList.add('hidden'); return; }
+            if(term.length < 2) { box.classList.add('hidden'); return; }
 
-            const matches = baseProducts.filter(p => 
-                (p.n && p.n.toLowerCase().includes(val)) || (p.c && p.c.toString().includes(val))
-            ).slice(0, 15);
+            const matches = baseData.filter(p => 
+                (p.nom && p.nom.toLowerCase().includes(term)) || 
+                (p.code && p.code.toString().includes(term))
+            ).slice(0, 12);
 
-            box.classList.remove('hidden');
-            box.innerHTML = matches.map(m => {
-                const cuisInfo = baseCuisines.find(c => c.n === m.n) || {cuis: 'Non défini'};
-                return `
-                <div onclick="addIngredient('${m.n}', ${m.p}, '${cuisInfo.cuis}')" class="p-4 border-b hover:bg-blue-50 cursor-pointer flex justify-between">
-                    <div>
-                        <div class="text-sm font-bold text-slate-700">${m.n}</div>
-                        <div class="text-[10px] text-slate-400 uppercase">${cuisInfo.cuis}</div>
+            if(matches.length > 0) {
+                box.classList.remove('hidden');
+                box.innerHTML = matches.map(m => `
+                    <div onclick="addToMenu(${m.code})" class="p-5 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
+                        <div>
+                            <div class="text-sm font-black text-slate-800">${m.nom} <span class="text-slate-300 font-normal text-xs ml-2">#${m.code}</span></div>
+                            <div class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-1">${m.cuisine}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-black text-blue-700">${m.prixTTC.toFixed(2)} DH</div>
+                            <div class="text-[9px] text-slate-400">Prix Fort TTC</div>
+                        </div>
                     </div>
-                    <div class="text-sm font-black text-blue-600">${m.p.toFixed(2)} DH</div>
-                </div>`;
-            }).join('');
+                `).join('');
+            } else {
+                box.innerHTML = '<div class="p-6 text-slate-400 italic text-center text-sm">Aucun produit trouvé...</div>';
+                box.classList.remove('hidden');
+            }
         }
 
-        function addIngredient(name, price, cuisine) {
-            currentMenu.push({ id: Date.now(), name, price, cuisine });
-            document.getElementById('ingSearch').value = "";
-            document.getElementById('suggestionBox').classList.add('hidden');
-            calculate();
+        function addToMenu(code) {
+            const product = baseData.find(p => p.code == code);
+            if(product) {
+                currentSelection.push({ ...product, uniqueId: Date.now() });
+                document.getElementById('ingSearch').value = "";
+                document.getElementById('suggestionBox').classList.add('hidden');
+                calculate();
+            }
         }
 
-        // --- CALCULS ---
+        // --- CALCULS ET RENDER ---
         function calculate() {
             const target = parseFloat(document.getElementById('targetPrice').value) || 0;
             let totalStrong = 0;
-            currentMenu.forEach(i => totalStrong += i.price);
+            currentSelection.forEach(item => totalStrong += item.prixTTC);
 
             const discount = totalStrong > 0 ? ((totalStrong - target) / totalStrong * 100) : 0;
-            
+
             document.getElementById('totalStrong').innerText = totalStrong.toFixed(2) + " DH";
             document.getElementById('totalDiscount').innerText = discount.toFixed(1) + "%";
 
-            // Calculs par cuisine
-            const cuisSummary = {};
-            currentMenu.forEach(i => {
-                const ratio = totalStrong > 0 ? (i.price / totalStrong) : 0;
-                i.ventilation = target * ratio;
-                if(!cuisSummary[i.cuisine]) cuisSummary[i.cuisine] = 0;
-                cuisSummary[i.cuisine] += i.ventilation;
+            // Calcul Ventilation
+            const cuisRecap = {};
+            currentSelection.forEach(item => {
+                const ratio = totalStrong > 0 ? (item.prixTTC / totalStrong) : 0;
+                item.ventilation = target * ratio;
+                item.currentRatio = ratio;
+                
+                if(!cuisRecap[item.cuisine]) cuisRecap[item.cuisine] = 0;
+                cuisRecap[item.cuisine] += item.ventilation;
             });
 
             renderTable();
-            renderCuisineSummary(cuisSummary);
+            renderCuisineRecap(cuisRecap);
         }
 
         function renderTable() {
-            const container = document.getElementById('ingTable');
-            container.innerHTML = currentMenu.map(i => `
-                <tr class="border-b border-slate-50">
-                    <td class="p-4">
-                        <div class="text-sm font-bold text-slate-700">${i.name}</div>
-                        <div class="text-[9px] text-slate-400 font-bold uppercase">${i.cuisine}</div>
+            const table = document.getElementById('ingTable');
+            table.innerHTML = currentSelection.map(item => `
+                <tr class="tab-row border-b border-slate-50 transition-colors">
+                    <td class="p-6">
+                        <div class="text-sm font-black text-slate-800">${item.nom}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">${item.cuisine}</div>
                     </td>
-                    <td class="p-4 text-center font-bold text-slate-600 text-sm">${i.price.toFixed(2)}</td>
-                    <td class="p-4 text-center text-xs text-slate-400">${((i.price/(parseFloat(document.getElementById('totalStrong').innerText)||1))*100).toFixed(1)}%</td>
-                    <td class="p-4 text-center font-black text-blue-600 text-sm">${(i.ventilation || 0).toFixed(2)} DH</td>
-                    <td class="p-4 text-right">
-                        <button onclick="removeIng(${i.id})" class="text-slate-200 hover:text-red-500 text-xl">&times;</button>
+                    <td class="p-6 text-center font-bold text-slate-600 text-sm">${item.prixTTC.toFixed(2)}</td>
+                    <td class="p-6 text-center">
+                        <span class="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-md uppercase">${((item.currentRatio || 0)*100).toFixed(1)}%</span>
+                    </td>
+                    <td class="p-6 text-center font-black text-blue-600 text-base">${(item.ventilation || 0).toFixed(2)} DH</td>
+                    <td class="p-6 text-right">
+                        <button onclick="removeFromMenu(${item.uniqueId})" class="text-slate-300 hover:text-red-500 text-xl transition-colors">&times;</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function renderCuisineSummary(data) {
+        function renderCuisineRecap(data) {
             const container = document.getElementById('cuisineSummary');
             container.innerHTML = Object.entries(data).map(([name, val]) => `
-                <div class="flex justify-between items-center text-sm border-b border-slate-50 pb-2">
-                    <span class="text-slate-500 font-medium">${name}</span>
-                    <span class="font-black text-blue-800">${val.toFixed(2)} DH</span>
+                <div class="flex justify-between items-center border-b border-slate-50 pb-3">
+                    <span class="text-sm font-bold text-slate-500 uppercase text-[10px]">${name}</span>
+                    <span class="font-black text-blue-900 text-sm">${val.toFixed(2)} DH</span>
                 </div>
             `).join('');
         }
 
-        function removeIng(id) {
-            currentMenu = currentMenu.filter(i => i.id !== id);
+        function removeFromMenu(uid) {
+            currentSelection = currentSelection.filter(i => i.uniqueId !== uid);
             calculate();
         }
 
+        // --- SAUVEGARDE ET EXPORT ---
         function saveMenu() {
-            const name = document.getElementById('menuName').value;
-            const target = parseFloat(document.getElementById('targetPrice').value);
-            const totalS = parseFloat(document.getElementById('totalStrong').innerText);
-            
-            savedHistory.unshift({
-                name, target, totalS, 
-                discount: ((totalS - target)/totalS*100).toFixed(1),
-                details: [...currentMenu],
-                date: new Date().toLocaleString()
-            });
-            localStorage.setItem('m_history', JSON.stringify(savedHistory));
+            if(currentSelection.length === 0) return;
+            const menu = {
+                id: Date.now(),
+                name: document.getElementById('menuName').value,
+                date: new Date().toLocaleString(),
+                target: parseFloat(document.getElementById('targetPrice').value),
+                totalStrong: parseFloat(document.getElementById('totalStrong').innerText),
+                discount: document.getElementById('totalDiscount').innerText,
+                items: [...currentSelection]
+            };
+            menuHistory.unshift(menu);
+            localStorage.setItem('cgi_history', JSON.stringify(menuHistory));
             renderHistory();
-            currentMenu = [];
+            currentSelection = [];
             calculate();
-            alert("Menu validé !");
+            alert("Composition validée !");
         }
 
         function renderHistory() {
             const container = document.getElementById('savedMenus');
-            container.innerHTML = savedHistory.map((h, idx) => `
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative">
-                    <button onclick="deleteHistory(${idx})" class="absolute top-2 right-2 text-slate-300">&times;</button>
-                    <div class="text-[10px] text-blue-500 font-black mb-1 uppercase">${h.date}</div>
-                    <h4 class="font-bold text-slate-800 mb-2">${h.name}</h4>
-                    <div class="flex justify-between text-xs font-bold border-t pt-2">
-                        <span>PV: ${h.target}DH</span>
-                        <span class="text-red-400">Remise: ${h.discount}%</span>
+            container.innerHTML = menuHistory.map((m, idx) => `
+                <div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm relative group">
+                    <button onclick="deleteHistory(${idx})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500">&times;</button>
+                    <div class="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2">${m.date}</div>
+                    <h4 class="font-black text-slate-800 text-base mb-3 leading-tight">${m.name}</h4>
+                    <div class="flex justify-between text-xs font-bold bg-slate-50 p-3 rounded-xl">
+                        <span class="text-slate-400">Vendu: <b class="text-slate-800">${m.target} DH</b></span>
+                        <span class="text-red-400">Remise: ${m.discount}</span>
                     </div>
                 </div>
             `).join('');
         }
 
         function deleteHistory(idx) {
-            savedHistory.splice(idx, 1);
-            localStorage.setItem('m_history', JSON.stringify(savedHistory));
-            renderHistory();
+            if(confirm("Supprimer ?")) {
+                menuHistory.splice(idx, 1);
+                localStorage.setItem('cgi_history', JSON.stringify(menuHistory));
+                renderHistory();
+            }
         }
 
         function exportToExcel() {
-            if(savedHistory.length === 0) return alert("Aucun menu validé à exporter.");
+            if(menuHistory.length === 0) return alert("Rien à exporter.");
             const exportData = [];
-            savedHistory.forEach(h => {
-                h.details.forEach(d => {
+            menuHistory.forEach(m => {
+                m.items.forEach(i => {
                     exportData.push({
-                        "Menu": h.name, "Date": h.date, "PV Cible": h.target, "Remise %": h.discount,
-                        "Ingrédient": d.name, "Cuisine": d.cuisine, "Prix Fort": d.price, "Ventilation PV": d.ventilation.toFixed(2)
+                        "Menu": m.name, "Date": m.date, "Prix Vente Cible": m.target, "Remise %": m.discount,
+                        "Ingrédient": i.nom, "Département": i.cuisine, "Prix Fort TTC": i.prixTTC, "Part du PV (Ventilation)": i.ventilation.toFixed(2)
                     });
                 });
             });
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Détails Menus");
-            XLSX.writeFile(wb, "Rapport_Ventilation_Menus.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Rapport Ventilation");
+            XLSX.writeFile(wb, "Rapport_CGI_Menus.xlsx");
         }
 
-        function resetBases() {
-            if(confirm("Effacer les bases de données et les fichiers importés ?")) {
+        function resetApp() {
+            if(confirm("Effacer la base de données et l'historique ?")) {
                 localStorage.clear();
                 location.reload();
             }
