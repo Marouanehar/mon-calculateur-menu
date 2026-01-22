@@ -3,171 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculateur de Menu & Food Cost</title>
+    <title>Analyseur de Menus - Marwan</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .card { transition: all 0.3s ease; }
+        .tab-active { border-bottom: 4px solid #1e40af; color: #1e40af; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-900 pb-10">
+<body class="bg-slate-50 min-h-screen pb-10">
 
-    <div class="max-w-4xl mx-auto p-4">
-        <header class="text-center my-8">
-            <h1 class="text-3xl font-black text-blue-900 uppercase tracking-tight">Calculateur de Menu</h1>
-            <p class="text-slate-500 font-medium">Analyse des coûts et répartition du prix de vente</p>
+    <div class="max-w-5xl mx-auto p-4">
+        <header class="py-6 flex justify-between items-center">
+            <h1 class="text-2xl font-black text-blue-900 uppercase">Simulateur Menu 70 DH</h1>
+            <button onclick="exportSaved()" class="bg-green-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg">💾 Export Excel (.xlsx)</button>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div class="lg:col-span-1 space-y-4">
+            <div class="space-y-4">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-blue-800">
-                        <span>📋</span> Infos Plat
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-xs font-bold text-slate-400 uppercase">Nom du Plat / Menu</label>
-                            <input type="text" id="itemName" value="Menu Signature" oninput="updateCalculations()" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-slate-400 uppercase">Prix de Vente TTC (DH)</label>
-                            <input type="number" id="salesPrice" value="100" oninput="updateCalculations()" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-blue-700">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-slate-400 uppercase">Remise (%)</label>
-                            <input type="number" id="discount" value="0" oninput="updateCalculations()" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                    </div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Prix de Vente Cible (TTC)</label>
+                    <input type="number" id="targetPrice" value="70" oninput="calculate()" class="w-full text-3xl font-black text-blue-700 bg-transparent outline-none">
+                    <p class="text-xs text-slate-400 mt-1 italic">Le prix final imposé pour le menu.</p>
                 </div>
 
-                <div class="bg-blue-900 text-white p-6 rounded-3xl shadow-lg shadow-blue-200">
-                    <h2 class="text-xs font-bold opacity-70 uppercase mb-4">Récapitulatif Financier</h2>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-sm opacity-80">Prix TTC Net :</span>
-                            <span id="netPrice" class="font-bold">0.00 DH</span>
+                <div class="bg-blue-900 p-6 rounded-3xl text-white shadow-xl">
+                    <h3 class="text-xs font-bold opacity-60 uppercase mb-4">Analyse de la rentabilité</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm">Total Prix Fort :</span>
+                            <span id="sumStrongPrice" class="font-bold text-xl">0.00 DH</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-sm opacity-80">Coût Ingrédients :</span>
-                            <span id="totalCost" class="font-bold">0.00 DH</span>
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm">Remise Appliquée :</span>
+                            <span id="calculatedDiscount" class="font-bold text-xl text-yellow-400">0%</span>
                         </div>
-                        <div class="pt-3 border-t border-blue-800 flex justify-between items-end">
-                            <span class="text-sm opacity-80">Marge Brute :</span>
-                            <span id="margin" class="text-2xl font-black text-green-400">0.00 DH</span>
+                        <div class="pt-4 border-t border-blue-800">
+                            <button onclick="saveComposition()" class="w-full bg-white text-blue-900 font-black py-3 rounded-2xl active:scale-95 transition">VALIDER & ENREGISTRER</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold text-blue-800">🥑 Ingrédients de la recette</h2>
-                        <button onclick="addIngredient()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md shadow-blue-100">+ Ajouter</button>
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <input type="text" id="menuName" value="Nouveau Menu" class="text-xl font-bold text-slate-800 outline-none border-b border-transparent focus:border-blue-300">
+                        <button onclick="addIngredient()" class="bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded-xl text-sm">+ Ajouter Ingrédient</button>
                     </div>
-
+                    
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="text-[10px] uppercase text-slate-400 font-black border-b border-slate-100">
-                                    <th class="pb-3 px-2">Ingrédient</th>
-                                    <th class="pb-3 px-2 w-28">Prix Achat</th>
-                                    <th class="pb-3 px-2 w-20">Ratio</th>
-                                    <th class="pb-3 px-2 w-32">Ventilation PV</th>
-                                    <th class="pb-3"></th>
+                        <table class="w-full">
+                            <thead class="bg-slate-50">
+                                <tr class="text-[10px] font-black text-slate-400 uppercase text-left">
+                                    <th class="p-4">Désignation</th>
+                                    <th class="p-4 w-32">Prix Fort (DH)</th>
+                                    <th class="p-4 w-24">Ratio</th>
+                                    <th class="p-4 w-32">Ventilation (70DH)</th>
+                                    <th class="p-4"></th>
                                 </tr>
                             </thead>
-                            <tbody id="ingredientBody">
-                                </tbody>
+                            <tbody id="ingList"></tbody>
                         </table>
                     </div>
+                </div>
+
+                <div class="mt-8">
+                    <h2 class="text-lg font-black text-slate-800 mb-4 uppercase">Menus Validés</h2>
+                    <div id="savedList" class="space-y-3"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let ingredients = [
-            { id: Date.now(), name: "Viande", price: 30 },
-            { id: Date.now() + 1, name: "Légumes", price: 10 }
+        let currentIngredients = [
+            { id: 1, name: "Ingrédient 1", price: 40 },
+            { id: 2, name: "Ingrédient 2", price: 50 }
         ];
+        let savedCompositions = JSON.parse(localStorage.getItem('saved_menus')) || [];
 
         function addIngredient() {
-            ingredients.push({ id: Date.now(), name: "", price: 0 });
-            renderIngredients();
+            currentIngredients.push({ id: Date.now(), name: "", price: 0 });
+            render();
         }
 
-        function removeIngredient(id) {
-            ingredients = ingredients.filter(ing => ing.id !== id);
-            updateCalculations();
+        function removeIng(id) {
+            currentIngredients = currentIngredients.filter(i => i.id !== id);
+            render();
         }
 
-        function updateIngredient(id, field, value) {
-            const ing = ingredients.find(i => i.id === id);
-            if (ing) {
-                ing[field] = field === 'price' ? parseFloat(value) || 0 : value;
-                updateCalculations();
+        function updateData(id, field, value) {
+            const ing = currentIngredients.find(i => i.id === id);
+            if(ing) {
+                ing[field] = field === 'price' ? (parseFloat(value) || 0) : value;
+                calculate(); // On ne re-render pas ici pour garder le focus
             }
         }
 
-        function updateCalculations() {
-            const salesPrice = parseFloat(document.getElementById('salesPrice').value) || 0;
-            const discount = parseFloat(document.getElementById('discount').value) || 0;
-            
-            // 1. Calcul Prix Net
-            const netPrice = salesPrice * (1 - discount / 100);
-            
-            // 2. Coût total ingrédients
-            const totalCost = ingredients.reduce((sum, ing) => sum + ing.price, 0);
+        function calculate() {
+            const target = parseFloat(document.getElementById('targetPrice').value) || 0;
+            let total = 0;
+            currentIngredients.forEach(i => total += i.price);
 
-            // 3. Ratios et Ventilation du PV
-            ingredients.forEach(ing => {
-                ing.ratio = totalCost > 0 ? (ing.price / totalCost) : 0;
-                ing.allocatedPrice = netPrice * ing.ratio;
-            });
+            const discount = total > 0 ? ((total - target) / total * 100) : 0;
 
-            // Affichage Header
-            document.getElementById('netPrice').innerText = netPrice.toFixed(2) + " DH";
-            document.getElementById('totalCost').innerText = totalCost.toFixed(2) + " DH";
-            document.getElementById('margin').innerText = (netPrice - totalCost).toFixed(2) + " DH";
+            document.getElementById('sumStrongPrice').innerText = total.toFixed(2) + " DH";
+            document.getElementById('calculatedDiscount').innerText = discount.toFixed(1) + "%";
 
-            renderIngredients();
-        }
-
-        function renderIngredients() {
-            const body = document.getElementById('ingredientBody');
-            body.innerHTML = '';
-
-            ingredients.forEach(ing => {
-                const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-50 group hover:bg-slate-50 transition-colors";
-                tr.innerHTML = `
-                    <td class="py-4 px-2">
-                        <input type="text" value="${ing.name}" oninput="updateIngredient(${ing.id}, 'name', this.value)" 
-                               placeholder="Nom..." class="bg-transparent border-none focus:ring-0 w-full font-medium text-sm">
-                    </td>
-                    <td class="py-4 px-2">
-                        <input type="number" value="${ing.price}" oninput="updateIngredient(${ing.id}, 'price', this.value)" 
-                               class="bg-slate-100 border-none rounded-lg p-2 w-full text-sm font-bold text-slate-700">
-                    </td>
-                    <td class="py-4 px-2">
-                        <span class="text-xs font-bold text-slate-400">${((ing.ratio || 0) * 100).toFixed(1)}%</span>
-                    </td>
-                    <td class="py-4 px-2">
-                        <span class="text-sm font-black text-blue-600">${(ing.allocatedPrice || 0).toFixed(2)} DH</span>
-                    </td>
-                    <td class="py-4 px-2 text-right">
-                        <button onclick="removeIngredient(${ing.id})" class="text-slate-300 hover:text-red-500 transition-colors">✕</button>
-                    </td>
-                `;
-                body.appendChild(tr);
+            // Mise à jour visuelle des colonnes ratios sans toucher aux inputs
+            currentIngredients.forEach(i => {
+                const ratio = total > 0 ? (i.price / total) : 0;
+                const vent = target * ratio;
+                const ratioEl = document.getElementById(`ratio-${i.id}`);
+                const ventEl = document.getElementById(`vent-${i.id}`);
+                if(ratioEl) ratioEl.innerText = (ratio * 100).toFixed(1) + "%";
+                if(ventEl) ventEl.innerText = vent.toFixed(2) + " DH";
             });
         }
 
-        // Init
-        updateCalculations();
+        function render() {
+            const container = document.getElementById('ingList');
+            container.innerHTML = currentIngredients.map(i => `
+                <tr class="border-b border-slate-50 transition-colors hover:bg-slate-50">
+                    <td class="p-3">
+                        <input type="text" oninput="updateData(${i.id}, 'name', this.value)" value="${i.name}" 
+                               class="w-full bg-transparent p-2 rounded focus:bg-white outline-none text-sm font-medium border border-transparent focus:border-blue-200">
+                    </td>
+                    <td class="p-3">
+                        <input type="number" oninput="updateData(${i.id}, 'price', this.value)" value="${i.price}" 
+                               class="w-full bg-slate-100 p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-400 font-bold text-slate-700 text-sm">
+                    </td>
+                    <td class="p-3 text-xs font-bold text-slate-400" id="ratio-${i.id}">0%</td>
+                    <td class="p-3 text-sm font-black text-blue-600" id="vent-${i.id}">0.00 DH</td>
+                    <td class="p-3 text-right">
+                        <button onclick="removeIng(${i.id})" class="text-slate-300 hover:text-red-500">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+            calculate();
+        }
+
+        function saveComposition() {
+            const name = document.getElementById('menuName').value;
+            const target = parseFloat(document.getElementById('targetPrice').value);
+            let total = 0;
+            currentIngredients.forEach(i => total += i.price);
+            
+            const comp = {
+                date: new Date().toLocaleDateString(),
+                name: name,
+                targetPrice: target,
+                totalStrong: total,
+                discount: ((total - target) / total * 100).toFixed(1),
+                details: JSON.stringify(currentIngredients)
+            };
+
+            savedCompositions.unshift(comp);
+            localStorage.setItem('saved_menus', JSON.stringify(savedCompositions));
+            renderSaved();
+            alert("Menu enregistré avec succès !");
+        }
+
+        function renderSaved() {
+            const container = document.getElementById('savedList');
+            container.innerHTML = savedCompositions.map((c, index) => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 flex justify-between items-center shadow-sm">
+                    <div>
+                        <h4 class="font-black text-slate-800">${c.name}</h4>
+                        <p class="text-[10px] text-slate-400 uppercase font-bold">Vendu 70 DH — Remise: ${c.discount}% (Prix fort: ${c.totalStrong} DH)</p>
+                    </div>
+                    <button onclick="deleteSaved(${index})" class="text-red-400 p-2 hover:bg-red-50 rounded-full">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteSaved(index) {
+            if(confirm("Supprimer ce menu ?")) {
+                savedCompositions.splice(index, 1);
+                localStorage.setItem('saved_menus', JSON.stringify(savedCompositions));
+                renderSaved();
+            }
+        }
+
+        function exportSaved() {
+            if(savedCompositions.length === 0) return alert("Rien à exporter.");
+            
+            const dataToExport = [];
+            savedCompositions.forEach(menu => {
+                const items = JSON.parse(menu.details);
+                items.forEach(item => {
+                    dataToExport.push({
+                        "Menu": menu.name,
+                        "Date": menu.date,
+                        "Prix Vente Cible": menu.targetPrice,
+                        "Total Prix Fort": menu.totalStrong,
+                        "Remise Globale (%)": menu.discount,
+                        "Ingrédient": item.name,
+                        "Prix d'achat": item.price,
+                        "Part du PV (Ventilation)": (menu.targetPrice * (item.price / menu.totalStrong)).toFixed(2)
+                    });
+                });
+            });
+
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Menus Validés");
+            XLSX.writeFile(wb, "Calculs_Menus_Marwan.xlsx");
+        }
+
+        render();
+        renderSaved();
     </script>
 </body>
 </html>
