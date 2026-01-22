@@ -16,41 +16,34 @@
 
     <div id="setupScreen" class="fixed inset-0 z-[100] bg-white/95 backdrop-blur flex items-center justify-center p-4 hidden">
         <div class="bg-white p-10 rounded-[32px] shadow-2xl border border-blue-100 max-w-md w-full text-center">
-            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold">📊</div>
             <h2 class="text-2xl font-black text-blue-900 mb-2">Importation Base CGI</h2>
-            <p class="text-slate-500 text-sm mb-8">Veuillez charger votre fichier Excel contenant les prix et les cuisines.</p>
-            
-            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-6 cursor-pointer">
-            
-            <button onclick="handleFileUpload()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-200 active:scale-95 transition">ACTIVER L'OUTIL</button>
+            <p class="text-slate-500 text-sm mb-8">Charger le fichier Excel (Colonne 'Cuisine' incluse).</p>
+            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm mb-6 cursor-pointer">
+            <button onclick="handleFileUpload()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition">ACTIVER L'OUTIL</button>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto p-4 lg:p-6">
         <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-black text-blue-900 uppercase tracking-tighter">Simulateur de Menu 70DH</h1>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Analyse & Ventilation par Cuisine</p>
+                <h1 class="text-2xl font-black text-blue-900 uppercase">Simulateur de Menu 70DH</h1>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Analyse par Cuisine</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg transition-all">💾 Export Excel</button>
-                <button onclick="resetApp()" class="bg-white text-slate-400 hover:text-red-500 px-4 py-3 rounded-2xl font-bold text-xs border border-slate-200 transition-all">🔄 Reset</button>
+                <button onclick="exportToExcel()" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg">💾 Export Excel</button>
+                <button onclick="resetApp()" class="text-slate-400 font-bold text-xs">🔄 Reset</button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
             <div class="lg:col-span-4 space-y-6">
                 <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-200">
-                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Prix Vente Cible (TTC)</label>
-                    <div class="flex items-center gap-3">
-                        <input type="number" id="targetPrice" value="70" oninput="calculate()" class="w-full text-5xl font-black text-blue-700 outline-none bg-transparent">
-                        <span class="text-2xl font-bold text-blue-200">DH</span>
-                    </div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Prix Vente Cible (TTC)</label>
+                    <input type="number" id="targetPrice" value="70" oninput="calculate()" class="w-full text-5xl font-black text-blue-700 outline-none bg-transparent">
                 </div>
 
                 <div class="bg-blue-900 p-8 rounded-[32px] text-white shadow-2xl shadow-blue-200">
-                    <h3 class="text-xs font-bold opacity-50 uppercase mb-6 tracking-widest">Analyse Rentabilité</h3>
+                    <h3 class="text-xs font-bold opacity-50 uppercase mb-6">Analyse Rentabilité</h3>
                     <div class="space-y-5">
                         <div class="flex justify-between items-end border-b border-blue-800 pb-4">
                             <span class="text-sm opacity-70">Total Prix Fort :</span>
@@ -60,43 +53,36 @@
                             <span class="text-sm opacity-70 font-bold">Remise Globale :</span>
                             <span id="totalDiscount" class="font-black text-2xl">0%</span>
                         </div>
-                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-4 rounded-2xl mt-4 hover:bg-blue-50 transition active:scale-95 shadow-lg">VALIDER LA COMBINAISON</button>
+                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-4 rounded-2xl mt-4 active:scale-95 shadow-lg">VALIDER LA COMBINAISON</button>
                     </div>
                 </div>
 
                 <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-widest">Ventilation / Département</h3>
-                    <div id="cuisineSummary" class="space-y-4">
-                        </div>
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-widest text-center">Ventilation / Cuisine</h3>
+                    <div id="cuisineSummary" class="space-y-4"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-8 space-y-8">
                 <div class="relative group">
-                    <input type="text" id="ingSearch" oninput="searchProduct()" placeholder="🔍 Chercher par Code ou Nom d'ingrédient..." 
+                    <input type="text" id="ingSearch" oninput="searchProduct()" placeholder="🔍 Chercher par Code ou Nom..." 
                            class="w-full p-6 bg-white rounded-[24px] shadow-sm border-2 border-transparent focus:border-blue-500 outline-none text-xl transition-all">
                     <div id="suggestionBox" class="suggestion-box absolute top-full left-0 right-0 bg-white rounded-b-3xl hidden border-x border-b border-slate-100 shadow-2xl"></div>
                 </div>
 
                 <div class="bg-white rounded-[32px] shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-6 bg-slate-50/50 border-b border-slate-100">
-                        <input type="text" id="menuName" value="Menu Signature 70DH" class="bg-transparent font-black text-slate-800 outline-none text-lg border-b border-blue-100 focus:border-blue-500 pb-1">
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="text-[10px] font-black text-slate-400 uppercase border-b border-slate-50">
-                                    <th class="p-6">Produit / Département</th>
-                                    <th class="p-6 text-center">Prix Fort (TTC)</th>
-                                    <th class="p-6 text-center">Ratio</th>
-                                    <th class="p-6 text-center text-blue-600">Part PV (Cible)</th>
-                                    <th class="p-6"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="ingTable">
-                                </tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-[10px] font-black text-slate-400 uppercase bg-slate-50/50">
+                                <th class="p-6">Produit / Département</th>
+                                <th class="p-6 text-center">Prix Fort (TTC)</th>
+                                <th class="p-6 text-center">Ratio</th>
+                                <th class="p-6 text-center text-blue-600">Part PV (Cible)</th>
+                                <th class="p-6"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ingTable"></tbody>
+                    </table>
                 </div>
 
                 <div id="savedMenus" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
@@ -109,11 +95,9 @@
         let currentSelection = [];
         let menuHistory = JSON.parse(localStorage.getItem('cgi_history')) || [];
 
-        // Vérifier si la base existe
         if(baseData.length === 0) document.getElementById('setupScreen').classList.remove('hidden');
 
-        // --- GESTION EXCEL ---
-        async function handleFileUpload() {
+        function handleFileUpload() {
             const file = document.getElementById('excelFile').files[0];
             if(!file) return alert("Veuillez sélectionner un fichier.");
 
@@ -121,55 +105,51 @@
             reader.onload = (e) => {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(firstSheet);
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 
-                // On mappe exactement tes noms de colonnes
-                baseData = json.map(r => ({
-                    code: r.Code || r.code,
-                    nom: r.Nom || r.nom,
-                    cuisine: r.Cuisine || r.cuisine,
-                    cout: r['Coût matière'] || 0,
-                    prixHT: r['Prix vente HT'] || 0,
-                    prixTTC: parseFloat(r['Prix vente TTC']) || 0
-                }));
+                baseData = json.map(r => {
+                    // Nettoyage des clés pour éviter les erreurs de majuscules/espaces
+                    const cleanRow = {};
+                    Object.keys(r).forEach(key => cleanRow[key.trim().toLowerCase()] = r[key]);
+
+                    return {
+                        code: r['Code'] || cleanRow['code'] || '',
+                        nom: r['Nom'] || cleanRow['nom'] || '',
+                        cuisine: r['Cuisine'] || cleanRow['cuisine'] || 'Département inconnu',
+                        prixTTC: parseFloat(r['Prix vente TTC'] || cleanRow['prix vente ttc']) || 0
+                    };
+                });
 
                 localStorage.setItem('cgi_base', JSON.stringify(baseData));
                 document.getElementById('setupScreen').classList.add('hidden');
-                alert("Base de données synchronisée !");
+                location.reload();
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // --- RECHERCHE GOOGLE STYLE ---
         function searchProduct() {
             const term = document.getElementById('ingSearch').value.toLowerCase();
             const box = document.getElementById('suggestionBox');
-            if(term.length < 2) { box.classList.add('hidden'); return; }
+            if(term.length < 1) { box.classList.add('hidden'); return; }
 
             const matches = baseData.filter(p => 
-                (p.nom && p.nom.toLowerCase().includes(term)) || 
-                (p.code && p.code.toString().includes(term))
-            ).slice(0, 12);
+                (p.nom && p.nom.toLowerCase().includes(term)) || (p.code && p.code.toString().includes(term))
+            ).slice(0, 15);
 
             if(matches.length > 0) {
                 box.classList.remove('hidden');
                 box.innerHTML = matches.map(m => `
-                    <div onclick="addToMenu(${m.code})" class="p-5 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
+                    <div onclick="addToMenu('${m.code}')" class="p-5 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
                         <div>
-                            <div class="text-sm font-black text-slate-800">${m.nom} <span class="text-slate-300 font-normal text-xs ml-2">#${m.code}</span></div>
-                            <div class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-1">${m.cuisine}</div>
+                            <div class="text-sm font-black text-slate-800">${m.nom}</div>
+                            <div class="text-[10px] text-blue-500 font-bold uppercase mt-1">${m.cuisine}</div>
                         </div>
                         <div class="text-right">
                             <div class="text-sm font-black text-blue-700">${m.prixTTC.toFixed(2)} DH</div>
-                            <div class="text-[9px] text-slate-400">Prix Fort TTC</div>
                         </div>
                     </div>
                 `).join('');
-            } else {
-                box.innerHTML = '<div class="p-6 text-slate-400 italic text-center text-sm">Aucun produit trouvé...</div>';
-                box.classList.remove('hidden');
-            }
+            } else { box.classList.add('hidden'); }
         }
 
         function addToMenu(code) {
@@ -182,24 +162,19 @@
             }
         }
 
-        // --- CALCULS ET RENDER ---
         function calculate() {
             const target = parseFloat(document.getElementById('targetPrice').value) || 0;
             let totalStrong = 0;
             currentSelection.forEach(item => totalStrong += item.prixTTC);
 
-            const discount = totalStrong > 0 ? ((totalStrong - target) / totalStrong * 100) : 0;
-
             document.getElementById('totalStrong').innerText = totalStrong.toFixed(2) + " DH";
-            document.getElementById('totalDiscount').innerText = discount.toFixed(1) + "%";
+            document.getElementById('totalDiscount').innerText = (totalStrong > 0 ? ((totalStrong - target) / totalStrong * 100) : 0).toFixed(1) + "%";
 
-            // Calcul Ventilation
             const cuisRecap = {};
             currentSelection.forEach(item => {
                 const ratio = totalStrong > 0 ? (item.prixTTC / totalStrong) : 0;
                 item.ventilation = target * ratio;
                 item.currentRatio = ratio;
-                
                 if(!cuisRecap[item.cuisine]) cuisRecap[item.cuisine] = 0;
                 cuisRecap[item.cuisine] += item.ventilation;
             });
@@ -214,16 +189,12 @@
                 <tr class="tab-row border-b border-slate-50 transition-colors">
                     <td class="p-6">
                         <div class="text-sm font-black text-slate-800">${item.nom}</div>
-                        <div class="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">${item.cuisine}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">${item.cuisine}</div>
                     </td>
                     <td class="p-6 text-center font-bold text-slate-600 text-sm">${item.prixTTC.toFixed(2)}</td>
-                    <td class="p-6 text-center">
-                        <span class="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-md uppercase">${((item.currentRatio || 0)*100).toFixed(1)}%</span>
-                    </td>
+                    <td class="p-6 text-center text-[10px] font-black text-slate-400 uppercase">${((item.currentRatio || 0)*100).toFixed(1)}%</td>
                     <td class="p-6 text-center font-black text-blue-600 text-base">${(item.ventilation || 0).toFixed(2)} DH</td>
-                    <td class="p-6 text-right">
-                        <button onclick="removeFromMenu(${item.uniqueId})" class="text-slate-300 hover:text-red-500 text-xl transition-colors">&times;</button>
-                    </td>
+                    <td class="p-6 text-right"><button onclick="removeFromMenu(${item.uniqueId})" class="text-slate-300 hover:text-red-500 text-xl">&times;</button></td>
                 </tr>
             `).join('');
         }
@@ -232,7 +203,7 @@
             const container = document.getElementById('cuisineSummary');
             container.innerHTML = Object.entries(data).map(([name, val]) => `
                 <div class="flex justify-between items-center border-b border-slate-50 pb-3">
-                    <span class="text-sm font-bold text-slate-500 uppercase text-[10px]">${name}</span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">${name}</span>
                     <span class="font-black text-blue-900 text-sm">${val.toFixed(2)} DH</span>
                 </div>
             `).join('');
@@ -243,35 +214,28 @@
             calculate();
         }
 
-        // --- SAUVEGARDE ET EXPORT ---
         function saveMenu() {
             if(currentSelection.length === 0) return;
-            const menu = {
-                id: Date.now(),
-                name: document.getElementById('menuName').value,
+            menuHistory.unshift({
                 date: new Date().toLocaleString(),
                 target: parseFloat(document.getElementById('targetPrice').value),
-                totalStrong: parseFloat(document.getElementById('totalStrong').innerText),
                 discount: document.getElementById('totalDiscount').innerText,
                 items: [...currentSelection]
-            };
-            menuHistory.unshift(menu);
+            });
             localStorage.setItem('cgi_history', JSON.stringify(menuHistory));
             renderHistory();
             currentSelection = [];
             calculate();
-            alert("Composition validée !");
         }
 
         function renderHistory() {
             const container = document.getElementById('savedMenus');
             container.innerHTML = menuHistory.map((m, idx) => `
                 <div class="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm relative group">
-                    <button onclick="deleteHistory(${idx})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500">&times;</button>
-                    <div class="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2">${m.date}</div>
-                    <h4 class="font-black text-slate-800 text-base mb-3 leading-tight">${m.name}</h4>
+                    <button onclick="deleteHistory(${idx})" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 text-xl">&times;</button>
+                    <div class="text-[9px] font-black text-blue-500 uppercase mb-2">${m.date}</div>
                     <div class="flex justify-between text-xs font-bold bg-slate-50 p-3 rounded-xl">
-                        <span class="text-slate-400">Vendu: <b class="text-slate-800">${m.target} DH</b></span>
+                        <span>Cible: ${m.target} DH</span>
                         <span class="text-red-400">Remise: ${m.discount}</span>
                     </div>
                 </div>
@@ -279,11 +243,9 @@
         }
 
         function deleteHistory(idx) {
-            if(confirm("Supprimer ?")) {
-                menuHistory.splice(idx, 1);
-                localStorage.setItem('cgi_history', JSON.stringify(menuHistory));
-                renderHistory();
-            }
+            menuHistory.splice(idx, 1);
+            localStorage.setItem('cgi_history', JSON.stringify(menuHistory));
+            renderHistory();
         }
 
         function exportToExcel() {
@@ -292,22 +254,19 @@
             menuHistory.forEach(m => {
                 m.items.forEach(i => {
                     exportData.push({
-                        "Menu": m.name, "Date": m.date, "Prix Vente Cible": m.target, "Remise %": m.discount,
-                        "Ingrédient": i.nom, "Département": i.cuisine, "Prix Fort TTC": i.prixTTC, "Part du PV (Ventilation)": i.ventilation.toFixed(2)
+                        "Date": m.date, "Cible": m.target, "Remise": m.discount,
+                        "Produit": i.nom, "Cuisine": i.cuisine, "Prix Fort": i.prixTTC, "Ventilation": i.ventilation.toFixed(2)
                     });
                 });
             });
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Rapport Ventilation");
-            XLSX.writeFile(wb, "Rapport_CGI_Menus.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Rapport");
+            XLSX.writeFile(wb, "Rapport_CGI.xlsx");
         }
 
         function resetApp() {
-            if(confirm("Effacer la base de données et l'historique ?")) {
-                localStorage.clear();
-                location.reload();
-            }
+            if(confirm("Tout réinitialiser ?")) { localStorage.clear(); location.reload(); }
         }
 
         renderHistory();
