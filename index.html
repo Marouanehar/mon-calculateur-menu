@@ -3,91 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CGI Analytics Premium - Marwan</title>
+    <title>CGI Dashboard - Marwan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .gradient-blue { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-        .input-cell { background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s; padding: 8px; border-radius: 12px; width: 100%; text-align: center; font-weight: 700; }
-        .input-cell:focus { background: white; border-color: #3b82f6; outline: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
-        .suggestion-box { max-height: 350px; overflow-y: auto; z-index: 100; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .card-menu { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-menu:hover { transform: translateY(-5px); }
+        .input-premium { background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s; padding: 10px; border-radius: 12px; width: 100%; text-align: center; font-weight: 700; color: #1e293b; }
+        .input-premium:focus { background: white; border-color: #3b82f6; outline: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
+        .suggestion-box { max-height: 350px; overflow-y: auto; z-index: 100; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+        .card-menu { transition: all 0.3s ease; }
+        .card-menu:hover { transform: translateY(-4px); }
     </style>
 </head>
 <body class="min-h-screen text-slate-800">
 
     <div id="setupScreen" class="fixed inset-0 z-[100] gradient-blue flex items-center justify-center p-6 hidden">
         <div class="bg-white p-10 rounded-[40px] shadow-2xl max-w-md w-full text-center">
-            <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Base CGI</h2>
-            <p class="text-slate-500 mb-8 text-sm">Charger le fichier Excel pour activer les prix et les cuisines.</p>
-            <input type="file" id="excelFile" accept=".xlsx" class="mb-8 block w-full text-sm text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white cursor-pointer">
-            <button onclick="handleFileUpload()" class="w-full bg-slate-900 text-white font-bold py-5 rounded-3xl active:scale-95 transition-all">Démarrer l'Analyse</button>
+            <h2 class="text-3xl font-black text-slate-900 mb-2">Base CGI</h2>
+            <p class="text-slate-500 mb-8 text-sm font-medium">Importez votre fichier Excel pour activer les prix.</p>
+            <input type="file" id="excelFile" accept=".xlsx" class="mb-8 block w-full text-sm text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-600 file:text-white cursor-pointer">
+            <button onclick="handleFileUpload()" class="w-full bg-slate-900 text-white font-black py-5 rounded-3xl active:scale-95 transition-all uppercase tracking-widest text-xs">Initialiser</button>
         </div>
     </div>
 
     <div class="flex flex-col lg:flex-row min-h-screen">
         
-        <aside class="w-full lg:w-[380px] p-6 lg:p-8 bg-white border-r border-slate-200">
-            <div class="mb-10">
-                <h1 class="text-2xl font-black text-slate-900 leading-tight">CGI<br><span class="text-blue-600">Premium</span></h1>
+        <aside class="w-full lg:w-[380px] p-6 lg:p-10 bg-white border-r border-slate-200">
+            <div class="mb-12 text-center lg:text-left">
+                <h1 class="text-2xl font-black text-slate-900">CGI<br><span class="text-blue-600">Premium Dashboard</span></h1>
             </div>
 
-            <div class="space-y-6">
+            <div class="space-y-8">
                 <div class="bg-slate-50 p-6 rounded-[32px] border border-slate-100">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Prix Cible (70 DH)</label>
-                    <input type="number" id="targetPrice" value="70" oninput="calculate()" class="bg-transparent text-5xl font-black text-slate-900 outline-none w-full">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Prix de Vente Cible</label>
+                    <div class="flex items-center">
+                        <input type="number" id="targetPrice" value="70" oninput="calculate()" class="bg-transparent text-5xl font-black text-slate-900 outline-none w-full">
+                        <span class="text-2xl font-bold text-slate-300">DH</span>
+                    </div>
                 </div>
 
-                <div class="gradient-blue p-8 rounded-[40px] text-white shadow-xl">
-                    <h3 class="text-xs font-bold opacity-60 uppercase mb-6 tracking-widest text-center">Rentabilité</h3>
+                <div class="gradient-blue p-8 rounded-[40px] text-white shadow-xl shadow-blue-100">
+                    <h3 class="text-[10px] font-black opacity-60 uppercase mb-6 tracking-widest text-center">Rentabilité</h3>
                     <div class="space-y-4">
                         <div class="flex justify-between items-center"><span class="text-xs opacity-80">Total Prix Fort</span><span id="totalStrong" class="text-xl font-black">0.00 DH</span></div>
-                        <div class="flex justify-between items-center border-b border-blue-400/30 pb-4"><span class="text-xs opacity-80 text-yellow-300">Remise</span><span id="totalDiscount" class="text-xl font-black text-yellow-300">0%</span></div>
-                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-4 rounded-2xl active:scale-95 transition-all uppercase text-xs">Enregistrer le Menu</button>
+                        <div class="flex justify-between items-center border-b border-white/20 pb-4"><span class="text-xs opacity-80 text-yellow-300 font-bold">Remise Globale</span><span id="totalDiscount" class="text-xl font-black text-yellow-300">0%</span></div>
+                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-4 rounded-2xl active:scale-95 transition-all text-[10px] uppercase tracking-widest">Enregistrer</button>
                     </div>
                 </div>
 
                 <div>
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Ventilation Cuisine</h3>
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-widest">Ventilation par Cuisine</h3>
                     <div id="cuisineSummary" class="space-y-4"></div>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+        <main class="flex-1 p-6 lg:p-12 overflow-y-auto">
             
-            <div class="flex flex-wrap justify-between items-center gap-4 mb-10">
-                <div class="relative w-full lg:max-w-xl">
-                    <input type="text" id="ingSearch" oninput="searchProduct()" placeholder="Rechercher un produit (Code ou Nom)..." 
-                           class="w-full p-5 pl-14 bg-white rounded-3xl shadow-sm border-2 border-transparent focus:border-blue-500 outline-none text-lg transition-all">
-                    <span class="absolute left-6 top-5 text-xl">🔍</span>
-                    <div id="suggestionBox" class="suggestion-box absolute top-full left-0 right-0 bg-white mt-2 hidden border border-slate-100"></div>
+            <div class="flex flex-wrap justify-between items-center gap-6 mb-12">
+                <div class="relative w-full lg:max-w-2xl">
+                    <input type="text" id="ingSearch" oninput="searchProduct()" placeholder="Rechercher par Code ou Nom..." 
+                           class="w-full p-6 pl-16 bg-white rounded-3xl shadow-sm border border-slate-100 outline-none text-lg transition-all focus:ring-4 focus:ring-blue-50 focus:border-blue-400">
+                    <span class="absolute left-6 top-6 text-xl">🔍</span>
+                    <div id="suggestionBox" class="suggestion-box absolute top-full left-0 right-0 bg-white mt-2 hidden"></div>
                 </div>
                 
-                <div class="flex gap-3">
-                    <button onclick="shareAsImage()" class="flex items-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all">📸 <span class="hidden sm:inline">WhatsApp</span></button>
-                    <button onclick="exportToExcel()" class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm font-bold">💾</button>
+                <div class="flex gap-4">
+                    <button onclick="exportToExcel()" class="px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm font-bold text-sm hover:bg-slate-50">Export Excel</button>
                     <button onclick="resetApp()" class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm text-slate-300">🔄</button>
                 </div>
             </div>
 
-            <div id="captureArea" class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden mb-10">
-                <div class="p-6 bg-slate-50/50 flex items-center border-b border-slate-50">
-                    <input type="text" id="menuName" value="Menu du Jour" class="bg-transparent font-black text-2xl text-slate-900 outline-none w-full border-b-2 border-transparent focus:border-blue-500">
+            <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden mb-12">
+                <div class="p-8 bg-slate-50/50 flex items-center border-b border-slate-100">
+                    <input type="text" id="menuName" value="Menu du Jour" class="bg-transparent font-black text-2xl text-slate-900 outline-none w-full border-b border-transparent focus:border-blue-500">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
-                                <th class="p-6">Produit / Cuisine</th>
-                                <th class="p-6 text-center w-32">Prix Fort (DH)</th>
-                                <th class="p-6 text-center w-24">Part %</th>
-                                <th class="p-6 text-center w-40 text-blue-600">Ventilation (DH)</th>
-                                <th class="p-6 w-16"></th>
+                                <th class="p-8">Produit / Cuisine</th>
+                                <th class="p-8 text-center w-40">Prix Fort (TTC)</th>
+                                <th class="p-8 text-center w-28">Part %</th>
+                                <th class="p-8 text-center w-40 text-blue-600">Ventilation (DH)</th>
+                                <th class="p-8 w-16"></th>
                             </tr>
                         </thead>
                         <tbody id="ingTable"></tbody>
@@ -95,7 +96,7 @@
                 </div>
             </div>
 
-            <h3 class="text-sm font-black text-slate-900 mb-6 uppercase tracking-wider">Historique des menus</h3>
+            <h3 class="text-xs font-black text-slate-900 mb-6 uppercase tracking-widest">Bibliothèque des menus</h3>
             <div id="savedMenus" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </main>
     </div>
@@ -104,11 +105,10 @@
         let baseData = JSON.parse(localStorage.getItem('cgi_base')) || [];
         let currentMenu = [];
         let history = JSON.parse(localStorage.getItem('cgi_history')) || [];
-        let editingId = null; // Pour savoir si on modifie un menu existant
+        let editingId = null;
 
         if(baseData.length === 0) document.getElementById('setupScreen').classList.remove('hidden');
 
-        // --- EXCEL IMPORT ---
         function handleFileUpload() {
             const file = document.getElementById('excelFile').files[0];
             if(!file) return alert("Fichier manquant.");
@@ -131,7 +131,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // --- SEARCH ---
         function searchProduct() {
             const t = document.getElementById('ingSearch').value.toLowerCase();
             const box = document.getElementById('suggestionBox');
@@ -139,24 +138,25 @@
             const matches = baseData.filter(p => p.nom.toLowerCase().includes(t) || p.code.toString().includes(t)).slice(0, 10);
             box.classList.toggle('hidden', matches.length === 0);
             box.innerHTML = matches.map(m => `
-                <div onclick="addToMenu('${m.code}')" class="p-4 border-b hover:bg-slate-50 cursor-pointer flex justify-between items-center">
-                    <div><div class="text-sm font-bold text-slate-800">${m.nom}</div><div class="text-[10px] text-slate-400 font-bold uppercase">${m.cuisine}</div></div>
-                    <div class="font-black text-blue-600">${m.prixTTC.toFixed(2)} DH</div>
+                <div onclick="addToMenu('${m.code}')" class="p-5 border-b hover:bg-slate-50 cursor-pointer flex justify-between items-center group">
+                    <div>
+                        <div class="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">${m.nom}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">${m.cuisine}</div>
+                    </div>
+                    <div class="font-black text-slate-900">${m.prixTTC.toFixed(2)} DH</div>
                 </div>`).join('');
         }
 
         function addToMenu(code) {
             const p = baseData.find(x => x.code == code);
-            if(p) { currentMenu.push({ ...p, uniqueId: Date.now(), manualVenti: null }); calculate(); }
+            if(p) { currentMenu.push({ ...p, uniqueId: Date.now() }); calculate(); }
             document.getElementById('ingSearch').value = "";
             document.getElementById('suggestionBox').classList.add('hidden');
         }
 
-        // --- CALCULS ---
         function calculate() {
             const target = parseFloat(document.getElementById('targetPrice').value) || 0;
-            let totalS = 0;
-            currentMenu.forEach(i => totalS += i.prixTTC);
+            let totalS = 0; currentMenu.forEach(i => totalS += i.prixTTC);
 
             document.getElementById('totalStrong').innerText = totalS.toFixed(2) + " DH";
             document.getElementById('totalDiscount').innerText = (totalS > 0 ? ((totalS - target)/totalS*100) : 0).toFixed(1) + "%";
@@ -164,69 +164,49 @@
             const cuis = {};
             currentMenu.forEach(i => {
                 const ratio = totalS > 0 ? (i.prixTTC / totalS) : 0;
-                i.ventilation = i.manualVenti !== null ? i.manualVenti : (target * ratio);
+                i.ventilation = target * ratio;
                 i.ventiPercent = target > 0 ? (i.ventilation / target * 100) : 0;
                 if(!cuis[i.cuisine]) cuis[i.cuisine] = 0;
                 cuis[i.cuisine] += i.ventilation;
             });
             renderTable();
-            renderCuisineRecap(cuis, target);
+            renderCuisineSummary(cuis, target);
         }
 
-        // --- MODIFICATIONS MANUELLES ---
+        function renderTable() {
+            document.getElementById('ingTable').innerHTML = currentMenu.map(i => `
+                <tr class="border-b border-slate-50 hover:bg-slate-50/50">
+                    <td class="p-8"><div class="text-sm font-extrabold text-slate-900">${i.nom}</div><div class="text-[9px] text-slate-400 font-black uppercase">${i.cuisine}</div></td>
+                    <td class="p-8"><input type="number" step="0.01" value="${i.prixTTC.toFixed(2)}" oninput="editPrice(${i.uniqueId}, this.value)" class="input-premium"></td>
+                    <td class="p-8 text-center text-[10px] font-black text-slate-300 uppercase">${i.ventiPercent.toFixed(1)}%</td>
+                    <td class="p-8 text-center font-black text-blue-600 text-lg">${i.ventilation.toFixed(2)} DH</td>
+                    <td class="p-8 text-right"><button onclick="removeIng(${i.uniqueId})" class="text-slate-200 hover:text-red-500 text-2xl transition-colors">✕</button></td>
+                </tr>`).join('');
+        }
+
+        function renderCuisineSummary(data, target) {
+            document.getElementById('cuisineSummary').innerHTML = Object.entries(data).map(([n, v]) => `
+                <div>
+                    <div class="flex justify-between items-center mb-1.5"><span class="text-[9px] font-black text-slate-500 uppercase">${n}</span><span class="text-xs font-black">${v.toFixed(2)} DH</span></div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="bg-blue-600 h-full transition-all duration-500" style="width: ${(v/target*100).toFixed(0)}%"></div></div>
+                </div>`).join('');
+        }
+
         function editPrice(uid, val) {
             const i = currentMenu.find(x => x.uniqueId == uid);
             if(i) { i.prixTTC = parseFloat(val) || 0; calculate(); }
         }
 
-        function editVenti(uid, val) {
-            const i = currentMenu.find(x => x.uniqueId == uid);
-            if(i) { i.manualVenti = parseFloat(val) || 0; calculate(); }
-        }
-
-        // --- AFFICHAGE ---
-        function renderTable() {
-            document.getElementById('ingTable').innerHTML = currentMenu.map(i => `
-                <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-all">
-                    <td class="p-6"><div class="text-sm font-extrabold text-slate-900">${i.nom}</div><div class="text-[9px] text-slate-400 font-black uppercase">${i.cuisine}</div></td>
-                    <td class="p-6"><input type="number" step="0.01" value="${i.prixTTC.toFixed(2)}" oninput="editPrice(${i.uniqueId}, this.value)" class="input-cell text-slate-700"></td>
-                    <td class="p-6 text-center text-[10px] font-black text-slate-300 uppercase">${i.ventiPercent.toFixed(1)}%</td>
-                    <td class="p-6"><input type="number" step="0.01" value="${i.ventilation.toFixed(2)}" oninput="editVenti(${i.uniqueId}, this.value)" class="input-cell text-blue-600"></td>
-                    <td class="p-6 text-right"><button onclick="removeIng(${i.uniqueId})" class="text-slate-200 hover:text-red-500 text-xl">✕</button></td>
-                </tr>`).join('');
-        }
-
-        function renderCuisineRecap(data, target) {
-            document.getElementById('cuisineSummary').innerHTML = Object.entries(data).map(([n, v]) => `
-                <div>
-                    <div class="flex justify-between items-center mb-1"><span class="text-[9px] font-black text-slate-500 uppercase">${n}</span><span class="text-xs font-black">${v.toFixed(2)} DH</span></div>
-                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="bg-blue-600 h-full" style="width: ${(v/target*100).toFixed(0)}%"></div></div>
-                </div>`).join('');
-        }
-
-        // --- ACTIONS ---
         function removeIng(uid) { currentMenu = currentMenu.filter(i => i.uniqueId !== uid); calculate(); }
 
         function saveMenu() {
             if(currentMenu.length === 0) return;
-            const menu = {
-                id: editingId || Date.now(),
-                name: document.getElementById('menuName').value,
-                date: new Date().toLocaleDateString(),
-                target: parseFloat(document.getElementById('targetPrice').value),
-                discount: document.getElementById('totalDiscount').innerText,
-                items: JSON.parse(JSON.stringify(currentMenu))
-            };
+            const menu = { id: editingId || Date.now(), name: document.getElementById('menuName').value, date: new Date().toLocaleDateString(), target: parseFloat(document.getElementById('targetPrice').value), discount: document.getElementById('totalDiscount').innerText, items: JSON.parse(JSON.stringify(currentMenu)) };
             const idx = history.findIndex(m => m.id === menu.id);
             if(idx > -1) history[idx] = menu; else history.unshift(menu);
-            
             localStorage.setItem('cgi_history', JSON.stringify(history));
-            editingId = null;
-            currentMenu = [];
-            document.getElementById('menuName').value = "Menu du Jour";
-            renderHistory();
-            calculate();
-            alert("Menu enregistré !");
+            editingId = null; currentMenu = []; document.getElementById('menuName').value = "Menu du Jour";
+            renderHistory(); calculate(); alert("Menu enregistré.");
         }
 
         function loadForEdit(idx) {
@@ -242,11 +222,11 @@
         function renderHistory() {
             document.getElementById('savedMenus').innerHTML = history.map((m, i) => `
                 <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm card-menu relative group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div><div class="text-[9px] font-black text-blue-500 uppercase">${m.date}</div><h4 class="font-bold text-slate-800 text-sm">${m.name}</h4></div>
-                        <div class="flex gap-2">
-                            <button onclick="loadForEdit(${i})" class="p-2 bg-slate-50 rounded-lg text-blue-600">✏️</button>
-                            <button onclick="deleteHistory(${i})" class="p-2 bg-slate-50 rounded-lg text-red-400">✕</button>
+                    <div class="flex justify-between items-start mb-6">
+                        <div><div class="text-[9px] font-black text-blue-500 uppercase tracking-widest">${m.date}</div><h4 class="font-bold text-slate-800 text-sm">${m.name}</h4></div>
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <button onclick="loadForEdit(${i})" class="p-2.5 bg-slate-50 rounded-xl text-blue-600 hover:bg-blue-50">✏️</button>
+                            <button onclick="deleteHistory(${i})" class="p-2.5 bg-slate-50 rounded-xl text-red-400 hover:bg-red-50">✕</button>
                         </div>
                     </div>
                     <div class="flex justify-between text-xs font-bold pt-4 border-t border-slate-50"><span class="text-slate-400">${m.target} DH</span><span class="text-red-400">-${m.discount}</span></div>
@@ -254,19 +234,25 @@
         }
 
         function deleteHistory(i) { if(confirm("Supprimer ?")) { history.splice(i,1); localStorage.setItem('cgi_history', JSON.stringify(history)); renderHistory(); } }
-        function resetApp() { if(confirm("Reset ?")) { localStorage.clear(); location.reload(); } }
-
-        // --- SHARE ---
-        async function shareAsImage() {
-            const canvas = await html2canvas(document.querySelector("#captureArea"), { backgroundColor: "#ffffff", scale: 2 });
-            const blob = await (await fetch(canvas.toDataURL())).blob();
-            const file = new File([blob], 'Menu_CGI.png', { type: "image/png" });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], title: 'Menu CGI' });
-            } else {
-                const a = document.createElement('a'); a.download = 'Menu_CGI.png'; a.href = canvas.toDataURL(); a.click();
-            }
+        
+        function exportToExcel() {
+            if(history.length === 0) return alert("Rien à exporter.");
+            const exportData = [];
+            history.forEach(m => {
+                m.items.forEach(i => {
+                    exportData.push({
+                        "Menu": m.name, "Date": m.date, "Prix Cible": m.target, "Remise %": m.discount,
+                        "Produit": i.nom, "Cuisine": i.cuisine, "Prix Fort": i.prixTTC, "Venti DH": i.ventilation.toFixed(2)
+                    });
+                });
+            });
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Rapport CGI");
+            XLSX.writeFile(wb, "Rapport_Menus_Marwan.xlsx");
         }
+
+        function resetApp() { if(confirm("Reset total ?")) { localStorage.clear(); location.reload(); } }
 
         renderHistory();
     </script>
