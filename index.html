@@ -3,256 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CGI Analytics Premium - Marwan</title>
+    <title>Blueberry Evolution - Multi-Sites V3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .gradient-blue { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-        .input-premium { background: #f1f5f9; border: 2px solid transparent; transition: all 0.2s; padding: 10px; border-radius: 12px; width: 100%; text-align: center; font-weight: 700; color: #1e293b; }
-        .input-premium:focus { background: white; border-color: #3b82f6; outline: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
-        .suggestion-box { max-height: 350px; overflow-y: auto; z-index: 100; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
-        .readonly-cell { font-weight: 800; color: #3b82f6; background: #eff6ff; padding: 10px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
+        .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
+        .input-adjust { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; width: 90px; text-align: right; font-size: 0.8rem; font-weight: bold; }
+        .row-rabat { background-color: #ffffff; }
+        .row-site { background-color: #eff6ff; font-weight: bold; border-left: 4px solid #3b82f6; }
+        .row-total { background-color: #1e293b; color: white; }
     </style>
 </head>
 <body class="min-h-screen text-slate-800">
 
-    <div id="setupScreen" class="fixed inset-0 z-[100] gradient-blue flex items-center justify-center p-6 hidden">
-        <div class="bg-white p-10 rounded-[40px] shadow-2xl max-w-md w-full text-center border border-blue-100">
-            <h2 class="text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Base CGI</h2>
-            <p class="text-slate-500 mb-8 text-sm font-medium">Importez votre fichier Excel pour activer les calculs.</p>
-            <input type="file" id="excelFile" accept=".xlsx" class="mb-8 block w-full text-sm text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-blue-600 file:text-white cursor-pointer">
-            <button onclick="handleFileUpload()" class="w-full bg-slate-900 text-white font-black py-5 rounded-3xl active:scale-95 transition-all uppercase tracking-widest text-xs">Démarrer</button>
+    <header class="gradient-header text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🫐</span>
+                <div>
+                    <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.2</span></h1>
+                    <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Rabat (Familles) vs Sites (Global)</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="exportReport()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition flex items-center gap-2">
+                    <span>💾</span> EXPORT EXCEL
+                </button>
+                <button onclick="location.reload()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-xl transition">🔄</button>
+            </div>
+        </div>
+    </header>
+
+    <div id="setupPanel" class="max-w-3xl mx-auto mt-12 p-10 bg-white rounded-[30px] shadow-2xl border border-slate-100">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Chargement des Données</h2>
+            <p class="text-sm text-slate-400">Importez les fichiers. Les sites externes sont regroupés globalement (MM inclus).</p>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-6 mb-8">
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <label class="block text-xs font-black text-blue-900 uppercase mb-2">1. Base Familles (Codes Articles)</label>
+                <input type="file" id="fileFamily" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                    <label class="block text-xs font-black text-slate-500 uppercase mb-2">2. Ventes 2025</label>
+                    <input type="file" id="file2025" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
+                </div>
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                    <label class="block text-xs font-black text-slate-500 uppercase mb-2">3. Ventes 2026</label>
+                    <input type="file" id="file2026" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
+                </div>
+            </div>
+        </div>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition transform active:scale-95 text-sm tracking-widest">LANCER L'ANALYSE V3.2</button>
+    </div>
+
+    <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-[10px] font-black text-slate-400 uppercase">Reste Rabat (Familles)</p>
+                <p id="kpiRabat" class="text-3xl font-black text-blue-900">0 DH</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-[10px] font-black text-slate-400 uppercase">Sites Distincts (Global)</p>
+                <p id="kpiSites" class="text-3xl font-black text-indigo-600">0 DH</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-[10px] font-black text-slate-400 uppercase">Évolution Globale</p>
+                <p id="kpiGlobalEvo" class="text-3xl font-black text-slate-800">0%</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[30px] shadow-lg border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-lg font-black text-slate-800 uppercase">Matrice des Primes</h3>
+                    <p class="text-xs text-slate-400">Détail Famille (Rabat) + Global par Site (Casa, Chariot, MegaMall...)</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-[9px] font-black text-slate-500 uppercase bg-slate-100 border-b border-slate-200 tracking-widest">
+                            <th class="p-4 w-64">Désignation</th>
+                            <th class="p-4 text-right">CA 2025 Brut</th>
+                            <th class="p-4 text-right w-32">Ajust. 25</th>
+                            <th class="p-4 text-right font-bold text-slate-700 bg-slate-50">CA 2025 NET</th>
+                            <th class="p-4 text-right text-blue-600">CA 2026 Brut</th>
+                            <th class="p-4 text-right w-32">Ajust. 26</th>
+                            <th class="p-4 text-right font-bold text-blue-800 bg-blue-50/50">CA 2026 NET</th>
+                            <th class="p-4 text-center">Evo %</th>
+                            <th class="p-4 text-center">Prime</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dispatchTable" class="text-sm font-medium"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100">
+            <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 text-center">Performance des Sites</h3>
+            <div class="h-64">
+                <canvas id="evoChart"></canvas>
+            </div>
         </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row min-h-screen">
-        
-        <aside class="w-full lg:w-[380px] p-6 lg:p-10 bg-white border-r border-slate-200">
-            <div class="mb-12">
-                <h1 class="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tighter">CGI<br><span class="text-blue-600 text-3xl font-extrabold">Expert Pro</span></h1>
-            </div>
-
-            <div class="space-y-8">
-                <div class="bg-slate-50 p-6 rounded-[32px] border border-slate-100 text-center">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Prix Vente Cible</label>
-                    <div class="flex items-center justify-center">
-                        <input type="text" id="targetPrice" value="70" oninput="calculate(false)" class="bg-transparent text-5xl font-black text-slate-900 outline-none w-32 text-center">
-                        <span class="text-2xl font-bold text-slate-300">DH</span>
-                    </div>
-                </div>
-
-                <div class="gradient-blue p-8 rounded-[40px] text-white shadow-xl shadow-blue-100">
-                    <h3 class="text-[10px] font-black opacity-60 uppercase mb-6 tracking-widest text-center">Analyse de Rentabilité</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center"><span class="text-xs opacity-80 font-bold uppercase">Total Prix Fort</span><span id="totalStrong" class="text-xl font-black">0,00 DH</span></div>
-                        <div class="flex justify-between items-center border-b border-white/20 pb-4"><span class="text-xs opacity-80 text-yellow-300 font-black uppercase">Remise Totale</span><span id="totalDiscount" class="text-xl font-black text-yellow-300">0%</span></div>
-                        <button onclick="saveMenu()" class="w-full bg-white text-blue-900 font-black py-4 rounded-2xl active:scale-95 transition-all text-[10px] uppercase tracking-widest">Enregistrer Menu</button>
-                    </div>
-                </div>
-
-                <div id="cuisineSummary" class="space-y-4"></div>
-            </div>
-        </aside>
-
-        <main class="flex-1 p-6 lg:p-12 overflow-y-auto">
-            
-            <div class="flex flex-wrap justify-between items-center gap-6 mb-12">
-                <div class="relative w-full lg:max-w-2xl">
-                    <input type="text" id="ingSearch" oninput="searchProduct()" placeholder="🔍 Rechercher par Code ou Nom..." 
-                           class="w-full p-6 pl-16 bg-white rounded-3xl shadow-sm border border-slate-100 outline-none text-lg transition-all focus:ring-4 focus:ring-blue-50">
-                    <div id="suggestionBox" class="suggestion-box absolute top-full left-0 right-0 bg-white mt-2 hidden"></div>
-                </div>
-                
-                <div class="flex gap-4">
-                    <button onclick="exportToExcel()" class="px-8 py-4 bg-white rounded-2xl border border-slate-200 shadow-sm font-bold text-sm hover:bg-slate-50 transition-all uppercase tracking-widest">Export Excel</button>
-                    <button onclick="resetApp()" class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm text-slate-300 hover:text-red-500">🔄</button>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden mb-12">
-                <div class="p-8 bg-slate-50/50 border-b border-slate-100">
-                    <input type="text" id="menuName" value="Menu Signature" class="bg-transparent font-black text-2xl text-slate-900 outline-none w-full border-b border-transparent focus:border-blue-500 pb-1">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
-                                <th class="p-8">Article / Département</th>
-                                <th class="p-8 text-center w-40">Prix Fort (TTC)</th>
-                                <th class="p-8 text-center w-28 text-orange-500">CM % (Base)</th>
-                                <th class="p-8 text-center w-48 text-blue-600">Ventilation (DH & %)</th>
-                                <th class="p-8 w-16"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="ingTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="savedMenus" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </main>
-    </div>
-
     <script>
-        let baseData = JSON.parse(localStorage.getItem('cgi_v8_base')) || [];
-        let currentMenu = [];
-        let history = JSON.parse(localStorage.getItem('cgi_v8_history')) || [];
-        let editingId = null;
+        let raw2025 = [], raw2026 = [], families = {};
+        let finalData = [];
+        let chartInstance = null;
 
-        if(baseData.length === 0) document.getElementById('setupScreen').classList.remove('hidden');
+        // LISTE DES MOTS CLÉS POUR LE REGROUPEMENT GLOBAL
+        const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "CASA", "ARRIBAT", "MEGA MALL", "MEGAMALL", "CHARIOT"]; 
 
-        const f = (n) => (n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const p = (v) => parseFloat((v || "0").toString().replace(',', '.')) || 0;
+        async function processFiles() {
+            const f25 = document.getElementById('file2025').files[0];
+            const f26 = document.getElementById('file2026').files[0];
+            const fFam = document.getElementById('fileFamily').files[0];
 
-        function handleFileUpload() {
-            const file = document.getElementById('excelFile').files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const workbook = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                baseData = json.map(r => {
-                    const c = {}; Object.keys(r).forEach(k => c[k.trim().toLowerCase()] = r[k]);
-                    return {
-                        code: r['Code'] || c['code'] || '',
-                        nom: r['Nom'] || c['nom'] || '',
-                        cuisine: r['Cuisine'] || c['cuisine'] || 'Non défini',
-                        prixTTC: p(r['Prix vente TTC'] || c['prix vente ttc'] || 0),
-                        cmPct: p(r['Coût matière %'] || c['coût matière %'] || 0)
-                    };
+            if (!f25 || !f26 || !fFam) return alert("Sélectionnez les 3 fichiers svp.");
+
+            try {
+                const famRows = await readExcel(fFam);
+                families = {};
+                famRows.forEach(r => {
+                    const code = r['Code article'] || r['Code'] || r['CodeArt'];
+                    if(code) families[code] = r['Famille'] || 'AUTRES';
                 });
-                localStorage.setItem('cgi_v8_base', JSON.stringify(baseData));
-                location.reload();
-            };
-            reader.readAsArrayBuffer(file);
-        }
 
-        function searchProduct() {
-            const t = document.getElementById('ingSearch').value.toLowerCase();
-            const box = document.getElementById('suggestionBox');
-            if(t.length < 1) { box.classList.add('hidden'); return; }
-            const matches = baseData.filter(p => p.nom.toLowerCase().includes(t) || p.code.toString().includes(t)).slice(0, 10);
-            box.classList.toggle('hidden', matches.length === 0);
-            box.innerHTML = matches.map(m => `
-                <div onclick="addToMenu('${m.code}')" class="p-5 border-b hover:bg-slate-50 cursor-pointer flex justify-between items-center group">
-                    <div><div class="text-sm font-bold text-slate-800">${m.nom}</div><div class="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">${m.cuisine}</div></div>
-                    <div class="text-right"><div class="font-black text-slate-900">${f(m.prixTTC)} DH</div><div class="text-[9px] text-orange-400 font-bold">CM: ${f(m.cmPct)}%</div></div>
-                </div>`).join('');
-        }
+                raw2025 = await readExcel(f25);
+                raw2026 = await readExcel(f26);
 
-        function addToMenu(code) {
-            const prod = baseData.find(x => x.code == code);
-            if(prod) { currentMenu.push({ ...prod, uniqueId: Date.now() }); calculate(true); }
-            document.getElementById('ingSearch').value = "";
-            document.getElementById('suggestionBox').classList.add('hidden');
-        }
-
-        function calculate(fullRender = true) {
-            const target = p(document.getElementById('targetPrice').value);
-            let totalS = 0; currentMenu.forEach(i => totalS += i.prixTTC);
-
-            document.getElementById('totalStrong').innerText = f(totalS) + " DH";
-            const disc = totalS > 0 ? ((totalS - target) / totalS * 100) : 0;
-            document.getElementById('totalDiscount').innerText = f(disc).replace(',00', '') + "%";
-
-            const cuis = {};
-            currentMenu.forEach(i => {
-                const ratio = totalS > 0 ? (i.prixTTC / totalS) : 0;
-                i.ventilation = target * ratio;
-                i.ventiPercent = target > 0 ? (i.ventilation / target * 100) : 0;
-                if(!cuis[i.cuisine]) cuis[i.cuisine] = 0;
-                cuis[i.cuisine] += i.ventilation;
+                document.getElementById('setupPanel').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
                 
-                if (!fullRender) {
-                    const vEl = document.getElementById(`venti-${i.uniqueId}`);
-                    if (vEl) vEl.innerHTML = `<span>${f(i.ventilation)} DH</span><span class="text-[10px] opacity-60 italic">(${f(i.ventiPercent)}%)</span>`;
-                }
+                calculateData();
+
+            } catch (e) {
+                alert("Erreur: " + e.message);
+            }
+        }
+
+        function readExcel(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                    resolve(XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]));
+                };
+                reader.readAsArrayBuffer(file);
             });
-            if (fullRender) renderTable();
-            renderCuisineRecap(cuis, target);
+        }
+
+        function calculateData() {
+            const groups = {};
+
+            const getGroupKey = (row) => {
+                const siteName = (row['Nom Site'] || "").toUpperCase();
+                const code = row['Code article'] || row['Code'];
+
+                // 1. RECO MEGA MALL (y compris "MM")
+                if (siteName.includes("MM") || siteName.includes("MEGA MALL") || siteName.includes("MEGAMALL")) {
+                    return "TOTAL MEGA MALL";
+                }
+
+                // 2. RECO MOHAMMEDIA (gestion de l'orthographe variable)
+                if (siteName.includes("MOHAMEDIA") || siteName.includes("MOHAMMEDIA")) {
+                    return "TOTAL SITE MOHAMMEDIA";
+                }
+
+                // 3. AUTRES SITES GLOBAUX
+                for (const city of EXTERNAL_SITES) {
+                    if (siteName.includes(city)) {
+                        return "TOTAL SITE " + city;
+                    }
+                }
+
+                // 4. RABAT (Détail par famille)
+                return families[code] || "FAMILLE INDÉFINIE (Rabat HQ)";
+            };
+
+            const aggregate = (dataset, yearProp) => {
+                dataset.forEach(row => {
+                    let key = getGroupKey(row);
+                    // On utilise 'CA HT' ou 'CA' ou 'Montant HT' de manière identique pour les deux années
+                    const ca = parseFloat(row['CA HT'] || row['CA'] || row['Montant HT'] || 0);
+
+                    if (!groups[key]) {
+                        groups[key] = { 
+                            name: key, 
+                            ca25: 0, adj25: 0, 
+                            ca26: 0, adj26: 0, 
+                            type: key.includes("TOTAL") ? 'site' : 'famille' 
+                        };
+                    }
+                    groups[key][yearProp] += ca;
+                });
+            };
+
+            aggregate(raw2025, 'ca25');
+            aggregate(raw2026, 'ca26');
+
+            let rabatList = Object.values(groups).filter(g => g.type === 'famille').sort((a,b) => b.ca26 - a.ca26);
+            let siteList = Object.values(groups).filter(g => g.type === 'site').sort((a,b) => b.ca26 - a.ca26);
+
+            finalData = [...rabatList, ...siteList];
+            
+            renderTable();
+            updateKPIs(rabatList, siteList);
+            renderChart();
         }
 
         function renderTable() {
-            document.getElementById('ingTable').innerHTML = currentMenu.map(i => `
-                <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-all">
-                    <td class="p-8"><div class="text-sm font-extrabold text-slate-900 leading-tight">${i.nom}</div><div class="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1">${i.cuisine}</div></td>
-                    <td class="p-8"><input type="text" value="${i.prixTTC.toString().replace('.', ',')}" oninput="editPrice(${i.uniqueId}, this.value)" class="input-premium"></td>
-                    <td class="p-8 text-center"><span class="text-[10px] font-bold text-orange-500 bg-orange-50 px-2 py-1 rounded-lg">${f(i.cmPct)}%</span></td>
-                    <td class="p-8">
-                        <div id="venti-${i.uniqueId}" class="readonly-cell">
-                            <span>${f(i.ventilation)} DH</span>
-                            <span class="text-[10px] opacity-60 italic">(${f(i.ventiPercent)}%)</span>
-                        </div>
+            const tbody = document.getElementById('dispatchTable');
+            tbody.innerHTML = '';
+
+            tbody.innerHTML += `<tr class="bg-slate-100"><td colspan="9" class="p-2 text-center text-xs font-black text-slate-400 uppercase tracking-widest">--- RABAT SIÈGE / LIVRAISON (DÉTAIL FAMILLE) ---</td></tr>`;
+
+            let siteHeaderInserted = false;
+
+            finalData.forEach((row, index) => {
+                if(row.type === 'site' && !siteHeaderInserted) {
+                    tbody.innerHTML += `<tr class="bg-blue-50 border-t-2 border-blue-200"><td colspan="9" class="p-2 text-center text-xs font-black text-blue-600 uppercase tracking-widest mt-4">--- POINTS DE VENTE DISTINCTS (GLOBAL) ---</td></tr>`;
+                    siteHeaderInserted = true;
+                }
+
+                const net25 = row.ca25 + row.adj25;
+                const net26 = row.ca26 + row.adj26;
+                const evo = net25 > 0 ? ((net26 - net25) / net25) * 100 : 0;
+                const primeOk = (net26 > net25);
+
+                const tr = document.createElement('tr');
+                tr.className = `border-b border-slate-50 hover:bg-slate-50 transition ${row.type === 'site' ? 'row-site' : 'row-rabat'}`;
+                
+                tr.innerHTML = `
+                    <td class="p-4 ${row.type === 'site' ? 'text-blue-800 font-black' : 'text-slate-700 font-bold'}">
+                        ${row.name}
                     </td>
-                    <td class="p-8 text-right"><button onclick="removeIng(${i.uniqueId})" class="text-slate-200 hover:text-red-500 text-2xl transition-colors">✕</button></td>
-                </tr>`).join('');
-        }
-
-        function editPrice(uid, val) {
-            const i = currentMenu.find(x => x.uniqueId == uid);
-            if(i) { i.prixTTC = p(val); calculate(false); }
-        }
-
-        function renderCuisineRecap(data, target) {
-            document.getElementById('cuisineSummary').innerHTML = Object.entries(data).map(([n, v]) => `
-                <div>
-                    <div class="flex justify-between items-center mb-1.5"><span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">${n}</span><span class="text-xs font-black">${f(v)} DH</span></div>
-                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden"><div class="bg-blue-600 h-full transition-all duration-500" style="width: ${(v/target*100).toFixed(0)}%"></div></div>
-                </div>`).join('');
-        }
-
-        function removeIng(uid) { currentMenu = currentMenu.filter(i => i.uniqueId !== uid); calculate(true); }
-
-        function saveMenu() {
-            if(currentMenu.length === 0) return;
-            const menu = { id: editingId || Date.now(), name: document.getElementById('menuName').value, date: new Date().toLocaleDateString(), target: p(document.getElementById('targetPrice').value), discount: document.getElementById('totalDiscount').innerText, items: JSON.parse(JSON.stringify(currentMenu)) };
-            const idx = history.findIndex(m => m.id === menu.id);
-            if(idx > -1) history[idx] = menu; else history.unshift(menu);
-            localStorage.setItem('cgi_v8_history', JSON.stringify(history));
-            editingId = null; currentMenu = []; document.getElementById('menuName').value = "Menu Signature";
-            renderHistory(); calculate(true); alert("Menu enregistré.");
-        }
-
-        function loadForEdit(idx) {
-            const m = history[idx]; editingId = m.id;
-            document.getElementById('menuName').value = m.name;
-            document.getElementById('targetPrice').value = m.target.toString().replace('.', ',');
-            currentMenu = JSON.parse(JSON.stringify(m.items));
-            calculate(true); window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-
-        function renderHistory() {
-            document.getElementById('savedMenus').innerHTML = history.map((m, i) => `
-                <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm relative group card-menu">
-                    <div class="flex justify-between items-start mb-6">
-                        <div><div class="text-[9px] font-black text-blue-500 uppercase tracking-widest">${m.date}</div><h4 class="font-bold text-slate-800 text-sm">${m.name}</h4></div>
-                        <div class="flex gap-2">
-                            <button onclick="loadForEdit(${i})" class="p-2.5 bg-slate-50 rounded-xl text-blue-600 hover:bg-blue-100">✏️</button>
-                            <button onclick="deleteHistory(${i})" class="p-2.5 bg-slate-50 rounded-xl text-red-400 hover:bg-red-100">✕</button>
-                        </div>
-                    </div>
-                    <div class="flex justify-between text-xs font-bold pt-4 border-t border-slate-50"><span class="text-slate-400">${f(m.target)} DH</span><span class="text-red-400">-${m.discount}</span></div>
-                </div>`).join('');
-        }
-
-        function deleteHistory(i) { if(confirm("Supprimer ?")) { history.splice(i,1); localStorage.setItem('cgi_v8_history', JSON.stringify(history)); renderHistory(); } }
-        
-        function exportToExcel() {
-            if(history.length === 0) return alert("Rien à exporter.");
-            const exportData = [];
-            history.forEach(m => {
-                m.items.forEach(i => {
-                    exportData.push({ "Menu": m.name, "Date": m.date, "Prix Cible": f(m.target), "Remise %": m.discount, "Produit": i.nom, "Cuisine": i.cuisine, "CM % (Base)": f(i.cmPct), "Prix Fort TTC": f(i.prixTTC), "Ventilation DH": f(i.ventilation), "Ventilation %": f(i.ventiPercent) });
-                });
+                    <td class="p-4 text-right text-slate-400 text-xs">${f(row.ca25)}</td>
+                    <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj25}" onchange="updateVal(${index}, 'adj25', this.value)"></td>
+                    <td class="p-4 text-right font-black text-slate-700 bg-slate-50">${f(net25)}</td>
+                    
+                    <td class="p-4 text-right text-blue-400 text-xs">${f(row.ca26)}</td>
+                    <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj26}" onchange="updateVal(${index}, 'adj26', this.value)"></td>
+                    <td class="p-4 text-right font-black text-blue-900 bg-blue-50/30">${f(net26)}</td>
+                    
+                    <td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo > 0 ? '+' : ''}${evo.toFixed(1)}%</td>
+                    <td class="p-4 text-center">
+                        <span class="text-[10px] font-black px-2 py-1 rounded-full ${primeOk ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}">
+                            ${primeOk ? 'OUI' : 'NON'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Rapport CGI");
-            XLSX.writeFile(wb, "Rapport_Marwan_Final.xlsx");
         }
 
-        function resetApp() { if(confirm("Voulez-vous changer de fichier Excel ?")) { localStorage.clear(); location.reload(); } }
-        renderHistory();
+        function updateVal(idx, field, val) {
+            finalData[idx][field] = parseFloat(val) || 0;
+            renderTable();
+            let rList = finalData.filter(g => g.type === 'famille');
+            let sList = finalData.filter(g => g.type === 'site');
+            updateKPIs(rList, sList);
+            renderChart();
+        }
+
+        function updateKPIs(rabatList, siteList) {
+            const sumRabat = rabatList.reduce((a,b) => a + b.ca26 + b.adj26, 0);
+            const sumSites = siteList.reduce((a,b) => a + b.ca26 + b.adj26, 0);
+            
+            const total25 = finalData.reduce((a,b) => a + b.ca25 + b.adj25, 0);
+            const total26 = finalData.reduce((a,b) => a + b.ca26 + b.adj26, 0);
+            const globalEvo = total25 > 0 ? ((total26 - total25)/total25)*100 : 0;
+
+            document.getElementById('kpiRabat').innerText = f(sumRabat);
+            document.getElementById('kpiSites').innerText = f(sumSites);
+            document.getElementById('kpiGlobalEvo').innerText = (globalEvo > 0 ? '+' : '') + globalEvo.toFixed(2) + "%";
+            document.getElementById('kpiGlobalEvo').className = `text-3xl font-black ${globalEvo > 0 ? 'text-emerald-500' : 'text-red-500'}`;
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('evoChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const sites = finalData.filter(x => x.type === 'site');
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sites.map(d => d.name.replace('TOTAL SITE ', '')),
+                    datasets: [
+                        { label: '2025 Net', data: sites.map(d => d.ca25 + d.adj25), backgroundColor: '#cbd5e1', borderRadius: 4 },
+                        { label: '2026 Net', data: sites.map(d => d.ca26 + d.adj26), backgroundColor: '#2563eb', borderRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+        }
+
+        function f(n) { return Math.round(n).toLocaleString('fr-MA') + ' DH'; }
+
+        function exportReport() {
+            const exportData = finalData.map(d => ({
+                "Section": d.type === 'site' ? 'SITE DISTINCT' : 'RABAT SIEGE',
+                "Désignation": d.name,
+                "CA 2025 Brut": d.ca25,
+                "Ajust. 2025": d.adj25,
+                "CA 2025 NET": d.ca25 + d.adj25,
+                "CA 2026 Brut": d.ca26,
+                "Ajust. 2026": d.adj26,
+                "CA 2026 NET": d.ca26 + d.adj26,
+                "Evolution": (d.ca25 + d.adj25) > 0 ? ((d.ca26+d.adj26 - (d.ca25+d.adj25))/(d.ca25+d.adj25)*100).toFixed(2) + '%' : '0%',
+                "Prime": (d.ca26+d.adj26 > d.ca25+d.adj25) ? "OUI" : "NON"
+            }));
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Primes 2026");
+            XLSX.writeFile(wb, "Blueberry_Analytique_V3.2.xlsx");
+        }
     </script>
 </body>
 </html>
