@@ -1,0 +1,15 @@
+{
+  "name": "Blueberry Evolution",
+  "short_name": "Blueberry",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/135/135620.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
