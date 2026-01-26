@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V5.9 - Rassemblement Global</title>
+    <title>Blueberry Evolution V6.0 - Rassemblement Global</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V5.9</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V6.0</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-2 text-[7px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -43,7 +43,7 @@
     </header>
 
     <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Configuration Analyses V5.9</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Configuration Analyses V6.0</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label><input type="file" id="fileFamily" class="text-[10px] w-full"></div>
             <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">2. Dispatch CDG 2025 (%)</label><input type="file" id="fileDisp25" class="text-[10px] w-full"></div>
@@ -51,7 +51,7 @@
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">4. Ventes 2025</label><input type="file" id="file2025" class="text-[10px] w-full"></div>
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2026</label><input type="file" id="file2026" class="text-[10px] w-full"></div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer l'Analyse</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer la Consolidation</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-full mx-auto p-6 space-y-6">
@@ -60,18 +60,12 @@
         <div id="page-pat" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
         <div id="page-dispatch" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="dispatchTableDOM"><tbody id="tableDispatch"></tbody></table></div></div>
         <div id="page-menu" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="menuTableDOM"><tbody id="tableMenu"></tbody></table></div></div>
-        
-        <div id="page-saisie" class="tab-content hidden space-y-6">
-            <div class="bg-white p-8 rounded-2xl border border-orange-200 shadow-sm"><div class="flex items-center justify-between mb-8"><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie Base 2</h3><div class="flex gap-3"><button onclick="resetBase2()" class="bg-slate-200 text-slate-600 px-6 py-2 rounded-xl font-bold text-[10px] hover:bg-red-100 hover:text-red-600 transition uppercase">Reset</button><button onclick="saveBase2()" class="bg-orange-500 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg hover:bg-orange-600 transition uppercase">Enregistrer</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Glaces & Sorbets</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_gla_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_gla_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Pâtisserie</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_pat_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_pat_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Chariot Rabat</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_cha_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_cha_26" class="input-base2"></div></div></div>
-        </div>
-
-        <div id="page-livraison" class="tab-content hidden space-y-6">
-            <div class="bg-white p-8 rounded-2xl border border-blue-200 shadow-sm"><div class="flex items-center justify-between mb-8"><div><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie Livraison & Glovo</h3><p class="text-[10px] text-slate-400">Total Fichier : <span id="real_liv_25" class="font-bold text-blue-600 mx-2"></span> / <span id="real_liv_26" class="font-bold text-blue-600 mx-2"></span></p></div><button onclick="saveLivData()" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg uppercase">Enregistrer</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900 uppercase">Données 2025</label><input type="number" id="saisie_libl_25" class="input-base2" placeholder="Livraison 25"><input type="number" id="saisie_glo_25" class="input-base2" placeholder="Glovo 25"></div><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900 uppercase">Données 2026</label><input type="number" id="saisie_libl_26" class="input-base2" placeholder="Livraison 26"><input type="number" id="saisie_glo_26" class="input-base2" placeholder="Glovo 26"></div></div></div>
-        </div>
+        <div id="page-saisie" class="tab-content hidden space-y-6"><div class="bg-white p-8 rounded-2xl border border-orange-200 shadow-sm"><div class="flex items-center justify-between mb-8"><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie Base 2</h3><div class="flex gap-3"><button onclick="resetBase2()" class="bg-slate-200 text-slate-600 px-6 py-2 rounded-xl font-bold text-[10px] hover:bg-red-100 hover:text-red-600 transition uppercase">Reset</button><button onclick="saveBase2()" class="bg-orange-500 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg hover:bg-orange-600 transition uppercase">Enregistrer</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Glaces & Sorbets</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_gla_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_gla_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Pâtisserie</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_pat_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_pat_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Chariot Rabat</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_cha_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_cha_26" class="input-base2"></div></div></div></div>
+        <div id="page-livraison" class="tab-content hidden space-y-6"><div class="bg-white p-8 rounded-2xl border border-blue-200 shadow-sm"><div class="flex items-center justify-between mb-8"><div><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie Livraison & Glovo</h3><p class="text-[10px] text-slate-400">Total Fichier : <span id="real_liv_25" class="font-bold text-blue-600 mx-2"></span> / <span id="real_liv_26" class="font-bold text-blue-600 mx-2"></span></p></div><button onclick="saveLivData()" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg uppercase">Enregistrer</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900 uppercase">Données 2025</label><input type="number" id="saisie_libl_25" class="input-base2" placeholder="Livraison 25"><input type="number" id="saisie_glo_25" class="input-base2" placeholder="Glovo 25"></div><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900 uppercase">Données 2026</label><input type="number" id="saisie_libl_26" class="input-base2" placeholder="Livraison 26"><input type="number" id="saisie_glo_26" class="input-base2" placeholder="Glovo 26"></div></div></div></div>
 
         <div id="page-recap" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl border border-yellow-500 overflow-hidden shadow-xl">
-                <div class="p-4 bg-yellow-500 text-yellow-950 font-black uppercase text-xs">Rassemblement Global Consolidé (Rabat & Chariot)</div>
+                <div class="p-4 bg-yellow-500 text-yellow-950 font-black uppercase text-xs tracking-widest">Rassemblement Global Consolidé (Rabat & Chariot)</div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-[9px] border-collapse" id="recapTableDOM">
                         <thead class="bg-slate-100 border-b border-slate-300">
@@ -93,9 +87,12 @@
     </div>
 
     <script>
+        // --- DÉCLARATION GLOBALE DES VARIABLES (FIXED) ---
         let families = {}, dispatchMaps = { 2025: {}, 2026: {} }, globalData = [];
         let cdgSums = { 2025: {}, 2026: {} }, orientSums = { 2025: {}, 2026: {} }, orientArticleSums = { 2025: {}, 2026: {} };
         let brutMatrix = { 2025: {}, 2026: {} }, chariotCA = { 2025: 0, 2026: 0 }, realLivTotal = { 2025: 0, 2026: 0 };
+        let orientTotals = { 2025: {}, 2026: {} }; // Variable qui causait l'erreur
+
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
         
         const ORIENT_CONFIG = {
@@ -107,15 +104,15 @@
 
         document.addEventListener('DOMContentLoaded', () => { loadBase2(); loadLivData(); });
 
-        function saveBase2() { localStorage.setItem('blueberry_b2_v58', JSON.stringify({ gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value], pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value], cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value] })); renderAll(); alert("Sauvegardé !"); }
-        function loadBase2() { const saved = JSON.parse(localStorage.getItem('blueberry_b2_v58') || 'null'); if(saved) { document.getElementById('b2_gla_25').value = saved.gla[0]; document.getElementById('b2_gla_26').value = saved.gla[1]; document.getElementById('b2_pat_25').value = saved.pat[0]; document.getElementById('b2_pat_26').value = saved.pat[1]; document.getElementById('b2_cha_25').value = saved.cha[0]; document.getElementById('b2_cha_26').value = saved.cha[1]; } }
-        function saveLivData() { localStorage.setItem('blueberry_liv_v58', JSON.stringify({ libl: [document.getElementById('saisie_libl_25').value, document.getElementById('saisie_libl_26').value], glo: [document.getElementById('saisie_glo_25').value, document.getElementById('saisie_glo_26').value] })); alert("Sauvegardé !"); }
-        function loadLivData() { const saved = JSON.parse(localStorage.getItem('blueberry_liv_v58') || 'null'); if(saved) { document.getElementById('saisie_libl_25').value = saved.libl[0]; document.getElementById('saisie_libl_26').value = saved.libl[1]; document.getElementById('saisie_glo_25').value = saved.glo[0]; document.getElementById('saisie_glo_26').value = saved.glo[1]; } }
-        function resetBase2() { localStorage.removeItem('blueberry_b2_v58'); location.reload(); }
+        function saveBase2() { localStorage.setItem('blueberry_b2_v60', JSON.stringify({ gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value], pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value], cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value] })); renderAll(); alert("Base 2 Sauvegardée !"); }
+        function loadBase2() { const saved = JSON.parse(localStorage.getItem('blueberry_b2_v60') || 'null'); if(saved) { document.getElementById('b2_gla_25').value = saved.gla[0]; document.getElementById('b2_gla_26').value = saved.gla[1]; document.getElementById('b2_pat_25').value = saved.pat[0]; document.getElementById('b2_pat_26').value = saved.pat[1]; document.getElementById('b2_cha_25').value = saved.cha[0]; document.getElementById('b2_cha_26').value = saved.cha[1]; } }
+        function saveLivData() { localStorage.setItem('blueberry_liv_v60', JSON.stringify({ libl: [document.getElementById('saisie_libl_25').value, document.getElementById('saisie_libl_26').value], glo: [document.getElementById('saisie_glo_25').value, document.getElementById('saisie_glo_26').value] })); alert("Livraison Sauvegardée !"); }
+        function loadLivData() { const saved = JSON.parse(localStorage.getItem('blueberry_liv_v60') || 'null'); if(saved) { document.getElementById('saisie_libl_25').value = saved.libl[0]; document.getElementById('saisie_libl_26').value = saved.libl[1]; document.getElementById('saisie_glo_25').value = saved.glo[0]; document.getElementById('saisie_glo_26').value = saved.glo[1]; } }
+        function resetBase2() { localStorage.removeItem('blueberry_b2_v60'); location.reload(); }
 
         async function processFiles() {
             const files = ['file2025', 'file2026', 'fileFamily', 'fileDisp25', 'fileDisp26'].map(id => document.getElementById(id).files[0]);
-            if (files.some(f => !f)) return alert("Importez les 5 fichiers.");
+            if (files.some(f => !f)) return alert("Veuillez importer les 5 fichiers.");
             try {
                 families = parseBaseFam(await readExcel(files[2]));
                 dispatchMaps[2025] = parseMatrix(await readExcel(files[3]));
@@ -124,7 +121,7 @@
                 document.getElementById('setupPanel').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
                 document.getElementById('navTabs').classList.remove('hidden');
-            } catch(e) { alert("Erreur lors du lancement : " + e.message); }
+            } catch(e) { alert("Erreur lors du traitement : " + e.message); console.error(e); }
         }
 
         function parseBaseFam(rows) { let map = {}; rows.forEach(r => { const c = r['Code article'] || r['Code'], f = (r['Famille'] || "").toUpperCase(); if(c) map[c] = { famille: f, type: f.includes("BAR") || f.includes("BOISSON") ? "BAR" : "RESTO" }; }); return map; }
@@ -133,7 +130,8 @@
 
         function calculateAll(d25, d26) {
             globalData = []; cdgSums = { 2025: {}, 2026: {} }; orientSums = { 2025: {}, 2026: {} }; orientArticleSums = { 2025: {}, 2026: {} };
-            brutMatrix = { 2025: {}, 2026: {} }; chariotCA = { 2025: 0, 2026: 0 }; realLivTotal = { 2025: 0, 2026: 0 };
+            orientTotals = { 2025: {}, 2026: {} }; brutMatrix = { 2025: {}, 2026: {} }; chariotCA = { 2025: 0, 2026: 0 }; realLivTotal = { 2025: 0, 2026: 0 };
+            
             const agg = (data, year) => {
                 const currentDisp = dispatchMaps[year];
                 data.forEach(row => {
@@ -142,6 +140,7 @@
                     let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
                     const info = families[code] || { famille: "AUTRES", type: "RESTO" };
                     pushData(site, info.famille, ca, year, info.type);
+                    
                     if (site === "CHARIOT") chariotCA[year] += ca;
                     if (site === "RABAT SIÈGE") {
                         brutMatrix[year][info.famille] = (brutMatrix[year][info.famille] || 0) + ca;
@@ -151,8 +150,8 @@
                 });
             };
             agg(d25, 2025); agg(d26, 2026);
-            document.getElementById('real_liv_25').innerText = f(realLivTotal[2025]);
-            document.getElementById('real_liv_26').innerText = f(realLivTotal[2026]);
+            document.getElementById('real_liv_25').innerText = f(realLivTotal[2025]) + " DH";
+            document.getElementById('real_liv_26').innerText = f(realLivTotal[2026]) + " DH";
             renderAll();
         }
 
@@ -162,7 +161,8 @@
         function renderRecap() {
             const tbody = document.getElementById('tableRecap'); tbody.innerHTML = '';
             const allFam = [...new Set([...Object.keys(brutMatrix[2026]||{}), ...Object.keys(cdgSums[2026]||{}), ...Object.keys(orientSums[2026]||{})])].sort();
-            const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v58') || '{}');
+            const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v60') || '{}');
+
             allFam.forEach(fam => {
                 const tr = document.createElement('tr'); tr.className = "border-b hover:bg-yellow-50";
                 let rowHtml = `<td class="p-2 font-bold border-r sticky-col">${fam}</td>`;
@@ -171,10 +171,11 @@
                     let b2Val = 0; if(fam === "PATISSERIE") b2Val = parseFloat(b2.pat ? b2.pat[y===2025?0:1] : 0) || 0; if(fam === "GLACES ET SORBETS") b2Val = parseFloat(b2.gla ? b2.gla[y===2025?0:1] : 0) || 0;
                     const total = bM - oArt + oVent + cSum + b2Val;
                     const colClass = y === 2025 ? 'recap-col-25' : 'recap-col-26';
-                    rowHtml += `<td class="p-2 text-right border-r ${colClass}">${f(bM)}</td><td class="p-2 text-right border-r ${colClass} text-red-500">${f(oArt)}</td><td class="p-2 text-right border-r ${colClass} text-emerald-600">${f(oVent)}</td><td class="p-2 text-right border-r ${colClass} text-indigo-600">${f(cSum)}</td><td class="p-2 text-right border-r ${colClass} text-orange-600">${f(b2Val)}</td><td class="p-2 text-right border-r ${colClass} font-black ${y===2026?'text-blue-900':'text-slate-900'}">${f(total)}</td>`;
+                    rowHtml += `<td class="p-2 text-right border-r ${colClass}">${f(bM)}</td><td class="p-2 text-right border-r ${colClass} text-red-500">${f(oArt)}</td><td class="p-2 text-right border-r ${colClass} text-emerald-600">${f(oVent)}</td><td class="p-2 text-right border-r ${colClass} text-indigo-600">${f(cSum)}</td><td class="p-2 text-right border-r ${colClass} text-orange-600">${f(b2Val)}</td><td class="p-2 text-right border-r ${colClass} font-black ${y===2026?'text-blue-900 bg-blue-50':'text-slate-900 bg-slate-50'}">${f(total)}</td>`;
                 });
                 tr.innerHTML = rowHtml; tbody.appendChild(tr);
             });
+
             const trCh = document.createElement('tr'); trCh.className = "bg-orange-50 border-y-2 border-orange-200 font-black";
             let chHtml = `<td class="p-2 border-r sticky-col bg-orange-50 uppercase">CHARIOT RABAT</td>`;
             [2025, 2026].forEach(y => {
@@ -194,7 +195,7 @@
         function renderPat() { const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"]; globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => { tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${d.ca26>d.ca25?'text-emerald-500':'text-red-500'}">${d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(1):'0'}%</td></tr>`; }); }
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('recapTableDOM')), "Consolidation"); XLSX.writeFile(wb, "Blueberry_V5.9.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('recapTableDOM')), "Consolidation Global"); XLSX.writeFile(wb, "Blueberry_V6.0.xlsx"); }
     </script>
 </body>
 </html>
