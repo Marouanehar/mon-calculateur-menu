@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution - Multi-Sites V3.1</title>
+    <title>Blueberry Evolution - CDG Edition V3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,8 +24,8 @@
             <div class="flex items-center gap-3">
                 <span class="text-3xl">🫐</span>
                 <div>
-                    <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.1</span></h1>
-                    <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Rabat (Familles) vs Sites (Global)</p>
+                    <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.2 CDG</span></h1>
+                    <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Ventilation Menus & Multi-Sites</p>
                 </div>
             </div>
             
@@ -38,39 +38,41 @@
         </div>
     </header>
 
-    <div id="setupPanel" class="max-w-3xl mx-auto mt-12 p-10 bg-white rounded-[30px] shadow-2xl border border-slate-100">
+    <div id="setupPanel" class="max-w-4xl mx-auto mt-12 p-10 bg-white rounded-[30px] shadow-2xl border border-slate-100">
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Chargement des Données</h2>
-            <p class="text-sm text-slate-400">Importez les fichiers. Arribat, MegaMall et Chariot seront traités comme des sites globaux.</p>
+            <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Configuration Analytique</h2>
+            <p class="text-sm text-slate-400">Importez les 4 fichiers pour lancer la ventilation du CA par cuisine.</p>
         </div>
         
-        <div class="grid grid-cols-1 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <label class="block text-xs font-black text-blue-900 uppercase mb-2">1. Base Familles (Codes Articles)</label>
-                <input type="file" id="fileFamily" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                <label class="block text-xs font-black text-blue-900 uppercase mb-2">1. Base Familles (Articles)</label>
+                <input type="file" id="fileFamily" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white cursor-pointer">
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <label class="block text-xs font-black text-slate-500 uppercase mb-2">2. Ventes 2025</label>
-                    <input type="file" id="file2025" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
-                </div>
-                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <label class="block text-xs font-black text-slate-500 uppercase mb-2">3. Ventes 2026</label>
-                    <input type="file" id="file2026" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
-                </div>
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                <label class="block text-xs font-black text-amber-900 uppercase mb-2">2. Répartition CGI/CDG (Menus)</label>
+                <input type="file" id="fileCGI" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-amber-600 file:text-white cursor-pointer">
+            </div>
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <label class="block text-xs font-black text-slate-500 uppercase mb-2">3. Ventes 2025 (Brut)</label>
+                <input type="file" id="file2025" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
+            </div>
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <label class="block text-xs font-black text-slate-500 uppercase mb-2">4. Ventes 2026 (Brut)</label>
+                <input type="file" id="file2026" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
             </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition transform active:scale-95 text-sm tracking-widest">LANCER L'ANALYSE V3.1</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition transform active:scale-95 text-sm tracking-widest uppercase">Calculer la Ventilation V3.2</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Reste Rabat (Familles)</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase">Total Rabat (Ventilé)</p>
                 <p id="kpiRabat" class="text-3xl font-black text-blue-900">0 DH</p>
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Sites Distincts (Arribat, Casa, Chariot...)</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase">Sites (Arribat, Casa, Chariot...)</p>
                 <p id="kpiSites" class="text-3xl font-black text-indigo-600">0 DH</p>
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
@@ -82,21 +84,21 @@
         <div class="bg-white rounded-[30px] shadow-lg border border-slate-200 overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
-                    <h3 class="text-lg font-black text-slate-800 uppercase">Matrice des Primes</h3>
-                    <p class="text-xs text-slate-400">Détail Famille (Rabat HQ) + Total par Site (Arribat, Casa, Chariot, Kenitra...)</p>
+                    <h3 class="text-lg font-black text-slate-800 uppercase">Matrice des Primes & Ventilation</h3>
+                    <p class="text-xs text-slate-400">Le CA des menus est réparti selon les ratios CDG importés.</p>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="text-[9px] font-black text-slate-500 uppercase bg-slate-100 border-b border-slate-200 tracking-widest">
-                            <th class="p-4 w-64">Désignation</th>
-                            <th class="p-4 text-right">CA 2025 Brut</th>
-                            <th class="p-4 text-right w-32">Ajust. 25</th>
-                            <th class="p-4 text-right font-bold text-slate-700 bg-slate-50">CA 2025 NET</th>
-                            <th class="p-4 text-right text-blue-600">CA 2026 Brut</th>
-                            <th class="p-4 text-right w-32">Ajust. 26</th>
-                            <th class="p-4 text-right font-bold text-blue-800 bg-blue-50/50">CA 2026 NET</th>
+                            <th class="p-4 w-64">Désignation (Cuisine / Site)</th>
+                            <th class="p-4 text-right">2025 Brut</th>
+                            <th class="p-4 text-right">Ajust.</th>
+                            <th class="p-4 text-right font-bold bg-slate-50">2025 NET</th>
+                            <th class="p-4 text-right text-blue-600">2026 Brut</th>
+                            <th class="p-4 text-right text-blue-600">Ajust.</th>
+                            <th class="p-4 text-right font-bold bg-blue-50/50">2026 NET</th>
                             <th class="p-4 text-center">Evo %</th>
                             <th class="p-4 text-center">Prime</th>
                         </tr>
@@ -105,38 +107,46 @@
                 </table>
             </div>
         </div>
-        
-        <div class="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100">
-            <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-6 text-center">Performance des Sites</h3>
-            <div class="h-64">
-                <canvas id="evoChart"></canvas>
-            </div>
-        </div>
     </div>
 
     <script>
-        let raw2025 = [], raw2026 = [], families = {};
-        let finalData = [];
+        let families = {}, repartitionMap = {};
+        let raw2025 = [], raw2026 = [], finalData = [], groups = {};
         let chartInstance = null;
 
-        // LISTE DES SITES À TRAITER GLOBALEMENT (Ajout de CHARIOT)
-        const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "CASA", "ARRIBAT", "MEGA MALL", "MEGAMALL", "CHARIOT"]; 
+        const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "CASA", "ARRIBAT", "MEGA MALL", "MEGAMALL", "CHARIOT"];
 
         async function processFiles() {
             const f25 = document.getElementById('file2025').files[0];
             const f26 = document.getElementById('file2026').files[0];
             const fFam = document.getElementById('fileFamily').files[0];
+            const fCGI = document.getElementById('fileCGI').files[0];
 
-            if (!f25 || !f26 || !fFam) return alert("Sélectionnez les 3 fichiers svp.");
+            if (!f25 || !f26 || !fFam || !fCGI) return alert("Veuillez importer les 4 fichiers requis.");
 
             try {
+                // 1. Charger Familles
                 const famRows = await readExcel(fFam);
                 families = {};
                 famRows.forEach(r => {
-                    const code = r['Code article'] || r['Code'] || r['CodeArt'];
+                    const code = r['Code article'] || r['Code'];
                     if(code) families[code] = r['Famille'] || 'AUTRES';
                 });
 
+                // 2. Charger Répartition CGI/CDG
+                const cgiRows = await readExcel(fCGI);
+                repartitionMap = {};
+                cgiRows.forEach(r => {
+                    const menu = (r['Menu'] || r['Désignation'] || "").toUpperCase().trim();
+                    if(!menu) return;
+                    if(!repartitionMap[menu]) repartitionMap[menu] = [];
+                    repartitionMap[menu].push({
+                        cuisine: (r['Cuisine'] || r['Famille Destination'] || "INCONNU").toUpperCase(),
+                        ratio: parseFloat(r['Pourcentage'] || r['Ratio'] || 0) / 100
+                    });
+                });
+
+                // 3. Charger Ventes
                 raw2025 = await readExcel(f25);
                 raw2026 = await readExcel(f26);
 
@@ -144,9 +154,8 @@
                 document.getElementById('dashboard').classList.remove('hidden');
                 
                 calculateData();
-
             } catch (e) {
-                alert("Erreur: " + e.message);
+                alert("Erreur lors du traitement : " + e.message);
             }
         }
 
@@ -162,43 +171,42 @@
         }
 
         function calculateData() {
-            const groups = {};
-
-            const getGroupKey = (row) => {
-                const siteName = (row['Nom Site'] || "").toUpperCase();
-                const code = row['Code article'] || row['Code'];
-
-                // Si le site est dans la liste globale (ex: CHARIOT, CASA...)
-                for (const city of EXTERNAL_SITES) {
-                    if (siteName.includes(city)) {
-                        if(city === "MEGA MALL" || city === "MEGAMALL") return "TOTAL MEGA MALL";
-                        return "TOTAL SITE " + city;
-                    }
-                }
-
-                // Sinon, groupement par Famille (Rabat)
-                return families[code] || "FAMILLE INDÉFINIE (Rabat HQ)";
-            };
+            groups = {};
 
             const aggregate = (dataset, yearProp) => {
                 dataset.forEach(row => {
-                    let key = getGroupKey(row);
-                    // Utilisation de la même logique de parsing pour 2025 et 2026
+                    const siteName = (row['Nom Site'] || "").toUpperCase();
+                    const designation = (row['Désignation'] || "").toUpperCase().trim();
+                    const code = row['Code article'] || row['Code'];
                     const ca = parseFloat(row['CA HT'] || row['CA'] || row['Montant HT'] || 0);
 
-                    if (!groups[key]) {
-                        groups[key] = { 
-                            name: key, 
-                            ca25: 0, adj25: 0, 
-                            ca26: 0, adj26: 0, 
-                            type: key.includes("TOTAL") ? 'site' : 'famille' 
-                        };
+                    // LOGIQUE MULTI-SITES (Hors Rabat)
+                    let isExternal = false;
+                    for (const city of EXTERNAL_SITES) {
+                        if (siteName.includes(city)) {
+                            let key = (city === "MEGA MALL" || city === "MEGAMALL") ? "TOTAL MEGA MALL" : "TOTAL SITE " + city;
+                            updateGroup(key, ca, yearProp, 'site');
+                            isExternal = true;
+                            break;
+                        }
                     }
-                    groups[key][yearProp] += ca;
+
+                    if (isExternal) return;
+
+                    // LOGIQUE RABAT : VENTILATION CGI OU FAMILLE SIMPLE
+                    if (repartitionMap[designation]) {
+                        // C'est un Menu -> On ventile vers les cuisines
+                        repartitionMap[designation].forEach(item => {
+                            updateGroup(item.cuisine, ca * item.ratio, yearProp, 'famille');
+                        });
+                    } else {
+                        // Article Standard -> On utilise la famille
+                        let key = families[code] || "FAMILLE INDÉFINIE (Rabat HQ)";
+                        updateGroup(key, ca, yearProp, 'famille');
+                    }
                 });
             };
 
-            // On réinitialise groups pour être sûr que les données ne se mélangent pas
             aggregate(raw2025, 'ca25');
             aggregate(raw2026, 'ca26');
 
@@ -206,23 +214,27 @@
             let siteList = Object.values(groups).filter(g => g.type === 'site').sort((a,b) => b.ca26 - a.ca26);
 
             finalData = [...rabatList, ...siteList];
-            
             renderTable();
             updateKPIs(rabatList, siteList);
-            renderChart();
+        }
+
+        function updateGroup(key, ca, yearProp, type) {
+            if (!groups[key]) {
+                groups[key] = { name: key, ca25: 0, adj25: 0, ca26: 0, adj26: 0, type: type };
+            }
+            groups[key][yearProp] += ca;
         }
 
         function renderTable() {
             const tbody = document.getElementById('dispatchTable');
             tbody.innerHTML = '';
 
-            tbody.innerHTML += `<tr class="bg-slate-100"><td colspan="9" class="p-2 text-center text-xs font-black text-slate-400 uppercase tracking-widest">--- RABAT SIÈGE / LIVRAISON (DÉTAIL FAMILLE) ---</td></tr>`;
+            tbody.innerHTML += `<tr class="bg-slate-100"><td colspan="9" class="p-2 text-center text-[10px] font-black text-slate-500 uppercase">--- RÉSULTAT VENTILÉ PAR CUISINE (RABAT) ---</td></tr>`;
 
             let siteHeaderInserted = false;
-
             finalData.forEach((row, index) => {
                 if(row.type === 'site' && !siteHeaderInserted) {
-                    tbody.innerHTML += `<tr class="bg-blue-50 border-t-2 border-blue-200"><td colspan="9" class="p-2 text-center text-xs font-black text-blue-600 uppercase tracking-widest mt-4">--- POINTS DE VENTE DISTINCTS (GLOBAL) ---</td></tr>`;
+                    tbody.innerHTML += `<tr class="bg-blue-50 border-t-2 border-blue-200"><td colspan="9" class="p-2 text-center text-[10px] font-black text-blue-600 uppercase">--- SITES EXTERNES (GLOBAL) ---</td></tr>`;
                     siteHeaderInserted = true;
                 }
 
@@ -233,19 +245,14 @@
 
                 const tr = document.createElement('tr');
                 tr.className = `border-b border-slate-50 hover:bg-slate-50 transition ${row.type === 'site' ? 'row-site' : 'row-rabat'}`;
-                
                 tr.innerHTML = `
-                    <td class="p-4 ${row.type === 'site' ? 'text-blue-800 font-black' : 'text-slate-700 font-bold'}">
-                        ${row.name}
-                    </td>
+                    <td class="p-4 ${row.type === 'site' ? 'text-blue-800 font-black' : 'text-slate-700 font-bold'}">${row.name}</td>
                     <td class="p-4 text-right text-slate-400 text-xs">${f(row.ca25)}</td>
                     <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj25}" onchange="updateVal(${index}, 'adj25', this.value)"></td>
                     <td class="p-4 text-right font-black text-slate-700 bg-slate-50">${f(net25)}</td>
-                    
                     <td class="p-4 text-right text-blue-400 text-xs">${f(row.ca26)}</td>
                     <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj26}" onchange="updateVal(${index}, 'adj26', this.value)"></td>
                     <td class="p-4 text-right font-black text-blue-900 bg-blue-50/30">${f(net26)}</td>
-                    
                     <td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo > 0 ? '+' : ''}${evo.toFixed(1)}%</td>
                     <td class="p-4 text-center">
                         <span class="text-[10px] font-black px-2 py-1 rounded-full ${primeOk ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}">
@@ -260,16 +267,12 @@
         function updateVal(idx, field, val) {
             finalData[idx][field] = parseFloat(val) || 0;
             renderTable();
-            let rList = finalData.filter(g => g.type === 'famille');
-            let sList = finalData.filter(g => g.type === 'site');
-            updateKPIs(rList, sList);
-            renderChart();
+            updateKPIs(finalData.filter(g => g.type === 'famille'), finalData.filter(g => g.type === 'site'));
         }
 
         function updateKPIs(rabatList, siteList) {
             const sumRabat = rabatList.reduce((a,b) => a + b.ca26 + b.adj26, 0);
             const sumSites = siteList.reduce((a,b) => a + b.ca26 + b.adj26, 0);
-            
             const total25 = finalData.reduce((a,b) => a + b.ca25 + b.adj25, 0);
             const total26 = finalData.reduce((a,b) => a + b.ca26 + b.adj26, 0);
             const globalEvo = total25 > 0 ? ((total26 - total25)/total25)*100 : 0;
@@ -280,44 +283,21 @@
             document.getElementById('kpiGlobalEvo').className = `text-3xl font-black ${globalEvo > 0 ? 'text-emerald-500' : 'text-red-500'}`;
         }
 
-        function renderChart() {
-            const ctx = document.getElementById('evoChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-
-            const sites = finalData.filter(x => x.type === 'site');
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: sites.map(d => d.name.replace('TOTAL SITE ', '')),
-                    datasets: [
-                        { label: '2025 Net', data: sites.map(d => d.ca25 + d.adj25), backgroundColor: '#cbd5e1', borderRadius: 4 },
-                        { label: '2026 Net', data: sites.map(d => d.ca26 + d.adj26), backgroundColor: '#2563eb', borderRadius: 4 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
-            });
-        }
-
         function f(n) { return Math.round(n).toLocaleString('fr-MA') + ' DH'; }
 
         function exportReport() {
             const exportData = finalData.map(d => ({
-                "Section": d.type === 'site' ? 'SITE DISTINCT' : 'RABAT SIEGE',
+                "Type": d.type === 'site' ? 'SITE' : 'CUISINE VENTILÉE',
                 "Désignation": d.name,
-                "CA 2025 Brut": d.ca25,
-                "Ajust. 2025": d.adj25,
                 "CA 2025 NET": d.ca25 + d.adj25,
-                "CA 2026 Brut": d.ca26,
-                "Ajust. 2026": d.adj26,
                 "CA 2026 NET": d.ca26 + d.adj26,
-                "Evolution": d.ca25 + d.adj25 > 0 ? ((d.ca26+d.adj26 - (d.ca25+d.adj25))/(d.ca25+d.adj25)*100).toFixed(2) + '%' : '0%',
+                "Evolution": d.ca25 + d.adj25 > 0 ? (((d.ca26+d.adj26)-(d.ca25+d.adj25))/(d.ca25+d.adj25)*100).toFixed(2) + '%' : '0%',
                 "Prime": (d.ca26+d.adj26 > d.ca25+d.adj25) ? "OUI" : "NON"
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Primes 2026");
-            XLSX.writeFile(wb, "Blueberry_Primes_V3.1.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Analyse CDG 2026");
+            XLSX.writeFile(wb, "Blueberry_CDG_Ventilation_V3.2.xlsx");
         }
     </script>
 </body>
