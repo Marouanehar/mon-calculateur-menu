@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blueberry Master V7.7 - Consolidation Finale</title>
@@ -342,6 +343,12 @@
             addSheet('consolTableDOM', "Consolidation Finale");
             XLSX.writeFile(wb, "Blueberry_Master_V7.7.xlsx");
         }
+
+        // Enregistrement du Service Worker pour l'installation PWA
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+}
+        
     </script>
 </body>
 </html>
