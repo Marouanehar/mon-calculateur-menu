@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V3.8 - CDG Expert</title>
+    <title>Blueberry Evolution V3.9 - CDG Dispatch</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -22,78 +22,70 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.8</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.9</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
                 <button onclick="switchTab('type')" class="tab-btn py-5" id="tab-type">Resto/Bar par Site</button>
                 <button onclick="switchTab('pat')" class="tab-btn py-5" id="tab-pat">Pat/Glace/Burger par Site</button>
+                <button onclick="switchTab('dispatch')" class="tab-btn py-5" id="tab-dispatch">Répartition CDG Familles</button>
             </nav>
-            <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">💾 EXPORT EXCEL (VUE RÉSUMÉE)</button>
+            <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">💾 EXPORT COMPLET</button>
         </div>
     </header>
 
-    <div id="setupPanel" class="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Importation CDG</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">1. Base Familles</label><input type="file" id="fileFamily" class="text-xs w-full"></div>
-            <div class="p-4 bg-amber-50 rounded-xl border-amber-200 border"><label class="block text-[10px] font-black uppercase mb-2 text-amber-700">2. Ratios CGI (Menus)</label><input type="file" id="fileCGI" class="text-xs w-full"></div>
-            <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">3. Ventes 2025</label><input type="file" id="file2025" class="text-xs w-full"></div>
-            <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">4. Ventes 2026</label><input type="file" id="file2026" class="text-xs w-full"></div>
+    <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Importation CDG V3.9</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label><input type="file" id="fileFamily" class="text-[10px] w-full"></div>
+            <div class="p-3 bg-amber-50 rounded-xl border-amber-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-amber-700">2. Ratios CGI (Menus)</label><input type="file" id="fileCGI" class="text-[10px] w-full"></div>
+            <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">3. Dispatch CDG (Articles %)</label><input type="file" id="fileDispatchCDG" class="text-[10px] w-full"></div>
+            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">4. Ventes 2025</label><input type="file" id="file2025" class="text-[10px] w-full"></div>
+            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2026</label><input type="file" id="file2026" class="text-[10px] w-full"></div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer l'Analyse</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer l'Analyse Dispatch</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
         <div id="page-main" class="tab-content space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-xs" id="mainTableDOM">
-                    <thead class="bg-slate-50 border-b border-slate-200">
-                        <tr class="text-[10px] font-black uppercase text-slate-500">
-                            <th class="p-4">Désignation</th>
-                            <th class="p-4 text-right">CA 2025</th>
-                            <th class="p-4 text-right text-blue-700 bg-blue-50">CA 2026</th>
+                <table class="w-full text-left text-xs" id="mainTableDOM"><tbody id="tableMain"></tbody></table>
+            </div>
+        </div>
+
+        <div id="page-type" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="typeTableDOM"><tbody id="tableType"></tbody></table></div></div>
+
+        <div id="page-pat" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
+
+        <div id="page-dispatch" class="tab-content hidden space-y-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <table class="w-full text-left text-xs" id="dispatchTableDOM">
+                    <thead class="bg-indigo-900 text-white uppercase text-[10px]">
+                        <tr>
+                            <th class="p-4">Famille de Répartition (CDG)</th>
+                            <th class="p-4 text-right">CA 2025 Réparti</th>
+                            <th class="p-4 text-right text-indigo-200">CA 2026 Réparti</th>
                             <th class="p-4 text-center">Evo %</th>
-                            <th class="p-4 text-center">Prime</th>
                         </tr>
                     </thead>
-                    <tbody id="tableMain"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="page-type" class="tab-content hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-xs" id="typeTableDOM">
-                    <thead class="bg-slate-800 text-white uppercase text-[10px]">
-                        <tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evolution</th></tr>
-                    </thead>
-                    <tbody id="tableType"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="page-pat" class="tab-content hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-xs" id="patTableDOM">
-                    <thead class="bg-emerald-800 text-white uppercase text-[10px]">
-                        <tr><th class="p-4">Site</th><th class="p-4">Famille Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr>
-                    </thead>
-                    <tbody id="tablePat"></tbody>
+                    <tbody id="tableDispatch"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        let families = {}, repartitionMap = {}, globalData = [];
+        let families = {}, repartitionMap = {}, dispatchCDGMap = {}, globalData = [], dispatchSummary = { ca25: {}, ca26: {} };
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
 
         async function processFiles() {
             const f25 = document.getElementById('file2025').files[0], f26 = document.getElementById('file2026').files[0], 
-                  fFam = document.getElementById('fileFamily').files[0], fCGI = document.getElementById('fileCGI').files[0];
-            if (!f25 || !f26 || !fFam || !fCGI) return alert("Importez les 4 fichiers.");
+                  fFam = document.getElementById('fileFamily').files[0], fCGI = document.getElementById('fileCGI').files[0],
+                  fCDG = document.getElementById('fileDispatchCDG').files[0];
+            
+            if (!f25 || !f26 || !fFam || !fCGI || !fCDG) return alert("Importez les 5 fichiers.");
 
+            // 1. Base Familles
             const famRows = await readExcel(fFam);
             families = {};
             famRows.forEach(r => {
@@ -101,6 +93,7 @@
                 if(code) families[code] = { famille: fName, type: fName.includes("BAR") || fName.includes("BOISSON") ? "BAR" : "RESTO" };
             });
 
+            // 2. Ratios CGI (Menus)
             const cgiRows = await readExcel(fCGI);
             repartitionMap = {};
             cgiRows.forEach(r => {
@@ -111,7 +104,23 @@
                 }
             });
 
-            calculateCDG(await readExcel(f25), await readExcel(f26));
+            // 3. Dispatch CDG (Articles %) - NOUVEAU
+            const cdgRows = await readExcel(fCDG);
+            dispatchCDGMap = {};
+            cdgRows.forEach(r => {
+                const code = r['Code article'] || r['Code'];
+                if(!code) return;
+                const ratios = [];
+                Object.keys(r).forEach(key => {
+                    if(key.includes('%')) {
+                        const val = parseFloat(r[key]);
+                        if(val > 0) ratios.push({ family: key.replace('%', '').trim().toUpperCase(), ratio: val > 1 ? val/100 : val });
+                    }
+                });
+                if(ratios.length > 0) dispatchCDGMap[code] = ratios;
+            });
+
+            calculateAll(await readExcel(f25), await readExcel(f26));
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('navTabs').classList.remove('hidden');
@@ -125,19 +134,32 @@
             });
         }
 
-        function calculateCDG(d25, d26) {
+        function calculateAll(d25, d26) {
             globalData = [];
+            dispatchSummary = { ca25: {}, ca26: {} };
+
             const aggregate = (data, year) => {
                 data.forEach(row => {
                     const design = (row['Désignation'] || "").toUpperCase().trim(), ca = parseFloat(row['CA HT'] || row['CA'] || 0),
                           siteFull = (row['Nom Site'] || "").toUpperCase(), code = row['Code article'] || row['Code'];
                     let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
 
+                    // Logique Matrice/Type/Focus (V3.8)
                     if (repartitionMap[design]) {
                         repartitionMap[design].forEach(c => pushData(site, c.cuisine, ca * c.ratio, year, "RESTO"));
                     } else {
                         const info = families[code] || { famille: "AUTRES", type: "RESTO" };
                         pushData(site, info.famille, ca, year, info.type);
+                    }
+
+                    // NOUVELLE Logique Page 4 (Dispatch CDG par Famille)
+                    if (dispatchCDGMap[code]) {
+                        dispatchCDGMap[code].forEach(item => {
+                            dispatchSummary[year][item.family] = (dispatchSummary[year][item.family] || 0) + (ca * item.ratio);
+                        });
+                    } else {
+                        const defaultFam = (families[code] ? families[code].famille : "AUTRES");
+                        dispatchSummary[year][defaultFam] = (dispatchSummary[year][defaultFam] || 0) + ca;
                     }
                 });
             };
@@ -151,93 +173,83 @@
             found[year] += ca;
         }
 
-        function renderAll() { renderMain(); renderType(); renderPat(); }
+        function renderAll() { renderMain(); renderType(); renderPat(); renderDispatch(); }
 
         function renderMain() {
-            const tbody = document.getElementById('tableMain'); tbody.innerHTML = '';
+            const tbody = document.getElementById('tableMain'); tbody.innerHTML = `
+                <thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
             let tExt25 = 0, tExt26 = 0, tRab25 = 0, tRab26 = 0, tCha25 = 0, tCha26 = 0;
-
-            // 1. EXTERNES
-            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Points de Vente Externes</td></tr>`;
+            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Sites Externes</td></tr>`;
             SITES_LIST.forEach(s => {
                 const d = globalData.filter(x => x.site === s).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
-                if(d.ca25 || d.ca26) {
-                    tbody.appendChild(createRow({name: s, ...d}));
-                    tExt25 += d.ca25; tExt26 += d.ca26;
-                }
+                if(d.ca25 || d.ca26) { tbody.appendChild(createRow(s, d.ca25, d.ca26)); tExt25 += d.ca25; tExt26 += d.ca26; }
             });
             tbody.appendChild(createTotalRow("TOTAL POINTS DE VENTE EXTERNES", tExt25, tExt26));
-
-            // 2. RABAT SIÈGE
-            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège (Cuisines Ventilées)</td></tr>`;
-            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => {
-                tbody.appendChild(createRow({name: r.famille, ...r}));
-                tRab25 += r.ca25; tRab26 += r.ca26;
-            });
+            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège</td></tr>`;
+            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.appendChild(createRow(r.famille, r.ca25, r.ca26)); tRab25 += r.ca25; tRab26 += r.ca26; });
             tbody.appendChild(createTotalRow("TOTAL RABAT SIÈGE", tRab25, tRab26));
-
-            // 3. UNITÉ MOBILE
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Unité Mobile</td></tr>`;
-            const chItems = globalData.filter(x => x.site === "CHARIOT");
-            chItems.forEach(r => { tCha25 += r.ca25; tCha26 += r.ca26; });
-            tbody.appendChild(createRow({name: "CHARIOT RABAT", ca25: tCha25, ca26: tCha26}));
+            const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
+            tbody.appendChild(createRow("CHARIOT RABAT", ch.ca25, ch.ca26)); tCha25 = ch.ca25; tCha26 = ch.ca26;
             tbody.appendChild(createTotalRow("TOTAL UNITÉ MOBILE", tCha25, tCha26));
-
-            // --- NOUVEAUX TOTAUX DEMANDÉS ---
-            const tRabGlobal25 = tRab25 + tCha25;
-            const tRabGlobal26 = tRab26 + tCha26;
-            tbody.appendChild(createTotalRow("TOTAL RABAT (SIÈGE + UNITÉ MOBILE)", tRabGlobal25, tRabGlobal26, "bg-blue-100 font-bold"));
-
-            const tGrandTotal25 = tExt25 + tRabGlobal25;
-            const tGrandTotal26 = tExt26 + tRabGlobal26;
-            tbody.appendChild(createGrandTotalRow("TOTAL GÉNÉRAL (EXTERNES + SIÈGE + MOBILE)", tGrandTotal25, tGrandTotal26));
+            tbody.appendChild(createTotalRow("TOTAL RABAT (SIÈGE + UNITÉ MOBILE)", tRab25 + tCha25, tRab26 + tCha26, "bg-blue-100 font-bold"));
+            tbody.appendChild(createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tExt25 + tRab25 + tCha25, tExt26 + tRab26 + tCha26));
         }
 
-        function createRow(r) {
-            const tr = document.createElement('tr'), evo = r.ca25 > 0 ? ((r.ca26 - r.ca25)/r.ca25)*100 : 0;
+        function renderType() {
+            const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evolution</th></tr></thead>`;
+            [...new Set(globalData.map(d => d.site))].forEach(s => {
+                ["RESTO", "BAR"].forEach(t => {
+                    const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
+                    if(d.ca25 || d.ca26) tbody.appendChild(createSimpleRow(s, t, d.ca25, d.ca26));
+                });
+            });
+        }
+
+        function renderPat() {
+            const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Famille Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
+            const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"];
+            globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => tbody.appendChild(createSimpleRow(d.site, d.famille, d.ca25, d.ca26)));
+        }
+
+        function renderDispatch() {
+            const tbody = document.getElementById('tableDispatch'); tbody.innerHTML = '';
+            const allFam = [...new Set([...Object.keys(dispatchSummary.ca25), ...Object.keys(dispatchSummary.ca26)])].sort();
+            allFam.forEach(fam => {
+                const ca25 = dispatchSummary.ca25[fam] || 0, ca26 = dispatchSummary.ca26[fam] || 0;
+                const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
+                tr.className = "border-b hover:bg-indigo-50";
+                tr.innerHTML = `<td class="p-4 font-bold text-slate-700">${fam}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right font-black text-indigo-900">${f(ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function createRow(name, ca25, ca26) {
+            const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
             tr.className = "border-b hover:bg-slate-50";
-            tr.innerHTML = `<td class="p-4 font-bold text-slate-700">${r.name}</td><td class="p-4 text-right">${f(r.ca25)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(r.ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td><td class="p-4 text-center">${r.ca26 > r.ca25 ? '✅' : '❌'}</td>`;
+            tr.innerHTML = `<td class="p-4 font-bold text-slate-700">${name}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td><td class="p-4 text-center">${ca26 > ca25 ? '✅' : '❌'}</td>`;
             return tr;
         }
 
-        function createTotalRow(label, ca25, ca26, customClass = "row-total") {
+        function createSimpleRow(col1, col2, ca25, ca26) {
             const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
-            tr.className = customClass;
-            tr.innerHTML = `<td class="p-4 uppercase tracking-tighter">${label}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">${ca26 > ca25 ? '🏆' : ''}</td>`;
+            tr.className = "border-b";
+            tr.innerHTML = `<td class="p-4 font-bold text-slate-400">${col1}</td><td class="p-4 font-black text-blue-900">${col2}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right font-black">${f(ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>`;
+            return tr;
+        }
+
+        function createTotalRow(label, ca25, ca26, cls = "row-total") {
+            const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
+            tr.className = cls;
+            tr.innerHTML = `<td class="p-4 uppercase">${label}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">${ca26 > ca25 ? '🏆' : ''}</td>`;
             return tr;
         }
 
         function createGrandTotalRow(label, ca25, ca26) {
             const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
             tr.className = "row-grand-total";
-            tr.innerHTML = `<td class="p-4 uppercase tracking-widest text-[10px]">${label}</td><td class="p-4 text-right font-black text-blue-300">${f(ca25)}</td><td class="p-4 text-right font-black text-emerald-300">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">⭐</td>`;
+            tr.innerHTML = `<td class="p-4 uppercase tracking-widest text-[10px]">${label}</td><td class="p-4 text-right text-blue-300 font-black">${f(ca25)}</td><td class="p-4 text-right text-emerald-300 font-black">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">⭐</td>`;
             return tr;
-        }
-
-        function renderType() {
-            const tbody = document.getElementById('tableType'); tbody.innerHTML = '';
-            [...new Set(globalData.map(d => d.site))].forEach(s => {
-                ["RESTO", "BAR"].forEach(t => {
-                    const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
-                    if(d.ca25 || d.ca26) {
-                        const tr = document.createElement('tr'), evo = d.ca25 > 0 ? ((d.ca26 - d.ca25)/d.ca25)*100 : 0;
-                        tr.className = "border-b";
-                        tr.innerHTML = `<td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black text-blue-900">${t}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>`;
-                        tbody.appendChild(tr);
-                    }
-                });
-            });
-        }
-
-        function renderPat() {
-            const tbody = document.getElementById('tablePat'); tbody.innerHTML = '';
-            const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"];
-            globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => {
-                const tr = document.createElement('tr'), evo = d.ca25 > 0 ? ((d.ca26 - d.ca25)/d.ca25)*100 : 0;
-                tr.className = "border-b";
-                tr.innerHTML = `<td class="p-4 font-bold text-slate-500">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>`;
-                tbody.appendChild(tr);
-            });
         }
 
         function switchTab(id) {
@@ -252,16 +264,11 @@
         function exportReport() {
             try {
                 const wb = XLSX.utils.book_new();
-                // ON UTILISE table_to_sheet POUR GARDER LA VUE RÉSUMÉE IDENTIQUE À L'ÉCRAN
-                const wsMain = XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM'));
-                const wsType = XLSX.utils.table_to_sheet(document.getElementById('typeTableDOM'));
-                const wsPat = XLSX.utils.table_to_sheet(document.getElementById('patTableDOM'));
-                
-                XLSX.utils.book_append_sheet(wb, wsMain, "Matrice Recap");
-                XLSX.utils.book_append_sheet(wb, wsType, "Resto-Bar par Site");
-                XLSX.utils.book_append_sheet(wb, wsPat, "Focus");
-                
-                XLSX.writeFile(wb, "Blueberry_V3.8_CDG_Final.xlsx");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('typeTableDOM')), "Resto-Bar");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('patTableDOM')), "Focus Pat-Glace");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "Repartition CDG");
+                XLSX.writeFile(wb, "Blueberry_V3.9_CDG_Dispatch.xlsx");
             } catch(e) { alert("Erreur export: " + e.message); }
         }
     </script>
