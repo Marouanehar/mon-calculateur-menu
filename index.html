@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V4.5 - CDG Expert</title>
+    <title>Blueberry Evolution V4.6 - CDG & Répartition Fixe</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.5</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.6</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-4 text-[9px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -36,28 +36,27 @@
     </header>
 
     <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Importation Multi-Matrices V4.5</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Configuration V4.6 (Menus Orient Intégrés)</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label><input type="file" id="fileFamily" class="text-[10px] w-full"></div>
             <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">2. Dispatch CDG 2025 (%)</label><input type="file" id="fileDisp25" class="text-[10px] w-full"></div>
             <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">3. Dispatch CDG 2026 (%)</label><input type="file" id="fileDisp26" class="text-[10px] w-full"></div>
-            <div class="p-3 bg-emerald-50 rounded-xl border-emerald-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-emerald-700">4. Répartition Menu (Orient...)</label><input type="file" id="fileRepart" class="text-[10px] w-full"></div>
-            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2025</label><input type="file" id="file2025" class="text-[10px] w-full"></div>
-            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">6. Ventes 2026</label><input type="file" id="file2026" class="text-[10px] w-full"></div>
+            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">4. Ventes 2025</label><input type="file" id="file2025" class="text-[10px] w-full"></div>
+            <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2026</label><input type="file" id="file2026" class="text-[10px] w-full"></div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer les Analyses</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Calculer les Analyses</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
         <div id="page-main" class="tab-content space-y-4"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="mainTableDOM"><tbody id="tableMain"></tbody></table></div></div>
         <div id="page-type" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="typeTableDOM"><tbody id="tableType"></tbody></table></div></div>
         <div id="page-pat" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
-
+        
         <div id="page-dispatch" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-indigo-200 overflow-hidden">
-                <div class="p-4 bg-indigo-900 text-white"><h3 class="font-black uppercase text-xs">Analyse du CA Réparti (CDG Rabat)</h3><p class="text-[10px] opacity-70">Affiche uniquement le CA issu des répartitions (CGI/Articles%).</p></div>
+                <div class="p-4 bg-indigo-900 text-white"><h3 class="font-black uppercase text-xs">CA Réparti (CDG Rabat)</h3></div>
                 <table class="w-full text-left text-xs" id="dispatchTableDOM">
-                    <thead class="bg-slate-100 border-b"><tr class="text-[10px] font-black uppercase text-slate-500"><th class="p-4">Cuisine</th><th class="p-4 text-right">CA Réparti 2025</th><th class="p-4 text-right text-indigo-700">CA Réparti 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>
+                    <thead class="bg-slate-100 border-b"><tr class="text-[10px] font-black uppercase text-slate-500"><th class="p-4">Cuisine</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>
                     <tbody id="tableDispatch"></tbody>
                 </table>
             </div>
@@ -65,9 +64,9 @@
 
         <div id="page-menu" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 overflow-hidden">
-                <div class="p-4 bg-emerald-900 text-white"><h3 class="font-black uppercase text-xs">Répartition Spécifique Menus (Rabat)</h3><p class="text-[10px] opacity-70">Focus sur la re-ventilation après calcul pour les articles sélectionnés.</p></div>
+                <div class="p-4 bg-emerald-900 text-white"><h3 class="font-black uppercase text-xs">Répartition Menus Orient (Rabat)</h3><p class="text-[10px] opacity-70">Analyse fixe pour ORIENT 1, 2, 3 et 4.</p></div>
                 <table class="w-full text-left text-xs" id="menuTableDOM">
-                    <thead class="bg-slate-100 border-b"><tr class="text-[10px] font-black uppercase text-slate-500"><th class="p-4">Famille de Destination</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right text-emerald-700">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>
+                    <thead class="bg-slate-100 border-b"><tr class="text-[10px] font-black uppercase text-slate-500"><th class="p-4">Cuisine de Destination</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>
                     <tbody id="tableMenu"></tbody>
                 </table>
             </div>
@@ -75,18 +74,25 @@
     </div>
 
     <script>
-        let families = {}, dispatchMaps = { 2025: {}, 2026: {} }, repartMenuMap = {}, globalData = [];
-        let cdgCuisineSums = { 2025: {}, 2026: {} }, repartMenuSums = { 2025: {}, 2026: {} };
+        let families = {}, dispatchMaps = { 2025: {}, 2026: {} }, globalData = [];
+        let cdgCuisineSums = { 2025: {}, 2026: {} }, orientMenuSums = { 2025: {}, 2026: {} };
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
 
+        // --- DÉFINITION FIXE DES RÉPARTITIONS ORIENT ---
+        const ORIENT_CONFIG = {
+            "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0.70, "FROZEN YOGURT": 0.30 } },
+            "449619": { name: "ORIENT 4", split: { "CUISINE ORIENTALE": 0.60, "SALADES": 0.40 } },
+            "446716": { name: "ORIENT 1", split: { "CUISINE ORIENTALE": 0.50, "SALADES": 0.50 } },
+            "446717": { name: "ORIENT 2", split: { "CUISINE ORIENTALE": 0.50, "SALADES": 0.50 } }
+        };
+
         async function processFiles() {
-            const files = ['file2025', 'file2026', 'fileFamily', 'fileDisp25', 'fileDisp26', 'fileRepart'].map(id => document.getElementById(id).files[0]);
-            if (files.some(f => !f)) return alert("Veuillez importer les 6 fichiers.");
+            const files = ['file2025', 'file2026', 'fileFamily', 'fileDisp25', 'fileDisp26'].map(id => document.getElementById(id).files[0]);
+            if (files.some(f => !f)) return alert("Veuillez importer les 5 fichiers.");
 
             families = parseBaseFam(await readExcel(files[2]));
             dispatchMaps[2025] = parseMatrix(await readExcel(files[3]));
             dispatchMaps[2026] = parseMatrix(await readExcel(files[4]));
-            repartMenuMap = parseMatrix(await readExcel(files[5])); // Utilise la même logique de colonnes %
 
             calculateAll(await readExcel(files[0]), await readExcel(files[1]));
             document.getElementById('setupPanel').classList.add('hidden');
@@ -129,22 +135,27 @@
         }
 
         function calculateAll(d25, d26) {
-            globalData = []; cdgCuisineSums = { 2025: {}, 2026: {} }; repartMenuSums = { 2025: {}, 2026: {} };
+            globalData = []; cdgCuisineSums = { 2025: {}, 2026: {} }; orientMenuSums = { 2025: {}, 2026: {} };
             const agg = (data, year) => {
                 data.forEach(row => {
-                    const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = row['Code article'] || row['Code'];
+                    const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = String(row['Code article'] || row['Code']);
                     let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
                     const info = families[code] || { famille: "AUTRES", type: "RESTO" };
 
                     pushData(site, info.famille, ca, year, info.type);
 
                     if (site === "RABAT SIÈGE" || site === "CHARIOT") {
-                        // 1. Page 4 : CDG (Base Matrices par année)
+                        // 1. Page 4 : CDG Global
                         const dMap = dispatchMaps[year];
                         if (dMap[code]) dMap[code].forEach(i => cdgCuisineSums[year][i.family] = (cdgCuisineSums[year][i.family] || 0) + (ca * i.ratio));
 
-                        // 2. Page 5 : Répartition Menu (Indépendante)
-                        if (repartMenuMap[code]) repartMenuMap[code].forEach(i => repartMenuSums[year][i.family] = (repartMenuSums[year][i.family] || 0) + (ca * i.ratio));
+                        // 2. Page 5 : Répartition Orient Fixe
+                        if (ORIENT_CONFIG[code]) {
+                            const config = ORIENT_CONFIG[code];
+                            Object.keys(config.split).forEach(fam => {
+                                orientMenuSums[year][fam] = (orientMenuSums[year][fam] || 0) + (ca * config.split[fam]);
+                            });
+                        }
                     }
                 });
             };
@@ -158,32 +169,30 @@
             if(year === 2025) found.ca25 += ca; else found.ca26 += ca;
         }
 
-        function renderAll() {
-            renderMain(); renderType(); renderPat(); renderDispatch(); renderMenuRepart();
-        }
+        function renderAll() { renderMain(); renderType(); renderPat(); renderDispatch(); renderOrient(); }
 
         function renderDispatch() {
             const tbody = document.getElementById('tableDispatch'); tbody.innerHTML = '';
-            const allCuisines = [...new Set([...Object.keys(cdgCuisineSums[2025]), ...Object.keys(cdgCuisineSums[2026])])].sort();
-            let sum25 = 0, sum26 = 0;
-            allCuisines.forEach(c => {
+            const allC = [...new Set([...Object.keys(cdgCuisineSums[2025]), ...Object.keys(cdgCuisineSums[2026])])].sort();
+            let s25=0, s26=0;
+            allC.forEach(c => {
                 const c25 = cdgCuisineSums[2025][c] || 0, c26 = cdgCuisineSums[2026][c] || 0;
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-700">${c}</td><td class="p-4 text-right">${f(c25)}</td><td class="p-4 text-right font-black text-indigo-900">${f(c26)}</td><td class="p-4 text-center font-bold">${c25?((c26-c25)/c25*100).toFixed(1):'0'}%</td></tr>`;
-                sum25 += c25; sum26 += c26;
+                s25 += c25; s26 += c26;
             });
-            tbody.innerHTML += `<tr class="bg-indigo-900 text-white font-black"><td class="p-4 uppercase">TOTAL CA RÉPARTI (RABAT)</td><td class="p-4 text-right text-indigo-200">${f(sum25)}</td><td class="p-4 text-right">${f(sum26)}</td><td class="p-4 text-center">${sum25?((sum26-sum25)/sum25*100).toFixed(1):'0'}%</td></tr>`;
+            tbody.innerHTML += `<tr class="bg-indigo-900 text-white font-black"><td class="p-4 uppercase">TOTAL CDG RÉPARTI</td><td class="p-4 text-right">${f(s25)}</td><td class="p-4 text-right">${f(s26)}</td><td class="p-4 text-center">${s25?((s26-s25)/s25*100).toFixed(1):'0'}%</td></tr>`;
         }
 
-        function renderMenuRepart() {
+        function renderOrient() {
             const tbody = document.getElementById('tableMenu'); tbody.innerHTML = '';
-            const allFam = [...new Set([...Object.keys(repartMenuSums[2025]), ...Object.keys(repartMenuSums[2026])])].sort();
-            let sum25 = 0, sum26 = 0;
-            allFam.forEach(fam => {
-                const c25 = repartMenuSums[2025][fam] || 0, c26 = repartMenuSums[2026][fam] || 0;
+            const allF = [...new Set([...Object.keys(orientMenuSums[2025]), ...Object.keys(orientMenuSums[2026])])].sort();
+            let s25=0, s26=0;
+            allF.forEach(fam => {
+                const c25 = orientMenuSums[2025][fam] || 0, c26 = orientMenuSums[2026][fam] || 0;
                 tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-700">${fam}</td><td class="p-4 text-right">${f(c25)}</td><td class="p-4 text-right font-black text-emerald-900">${f(c26)}</td><td class="p-4 text-center font-bold">${c25?((c26-c25)/c25*100).toFixed(1):'0'}%</td></tr>`;
-                sum25 += c25; sum26 += c26;
+                s25 += c25; s26 += c26;
             });
-            tbody.innerHTML += `<tr class="bg-emerald-900 text-white font-black"><td class="p-4 uppercase">TOTAL RÉPARTITION MENUS</td><td class="p-4 text-right text-emerald-200">${f(sum25)}</td><td class="p-4 text-right">${f(sum26)}</td><td class="p-4 text-center">${sum25?((sum26-sum25)/sum25*100).toFixed(1):'0'}%</td></tr>`;
+            tbody.innerHTML += `<tr class="bg-emerald-900 text-white font-black"><td class="p-4 uppercase">TOTAL RÉPARTITION ORIENT</td><td class="p-4 text-right">${f(s25)}</td><td class="p-4 text-right">${f(s26)}</td><td class="p-4 text-center">${s25?((s26-s25)/s25*100).toFixed(1):'0'}%</td></tr>`;
         }
 
         function renderMain() {
@@ -206,32 +215,14 @@
             tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tE25+tR25+tC25, tE26+tR26+tC26);
         }
 
-        function renderType() {
-            const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Type</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
-            [...new Set(globalData.map(d=>d.site))].forEach(s => {
-                ["RESTO","BAR"].forEach(t => {
-                    const d = globalData.filter(x=>x.site===s && x.type===t).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-                    if(d.c25||d.c26) tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black">${t}</td><td class="p-4 text-right">${f(d.c25)}</td><td class="p-4 text-right font-black">${f(d.c26)}</td><td class="p-4 text-center font-bold ${d.c26>d.c25?'text-emerald-500':'text-red-500'}">${d.c25?((d.c26-d.c25)/d.c25*100).toFixed(1):'0'}%</td></tr>`;
-                });
-            });
-        }
-
-        function renderPat() {
-            const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Famille Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
-            const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"];
-            globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => {
-                const tr = document.createElement('tr'), evo = d.ca25?((d.ca26-d.ca25)/d.ca25*100):0;
-                tr.className="border-b"; tr.innerHTML = `<td class="p-4 font-bold text-slate-400">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${d.ca26>d.ca25?'text-emerald-500':'text-red-500'}">${evo.toFixed(1)}%</td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
         function createRow(n,c1,c2) { return `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold text-slate-700">${n}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(c2)}</td><td class="p-4 text-center font-bold ${c2>c1?'text-emerald-500':'text-red-500'}">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'✅':'❌'}</td></tr>`; }
         function createTotalRow(l,c1,c2,cls="row-total") { return `<tr class="${cls}"><td class="p-4 uppercase">${l}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'🏆':''}</td></tr>`; }
         function createGrandTotalRow(l,c1,c2) { return `<tr class="row-grand-total"><td class="p-4 uppercase tracking-widest text-[10px]">${l}</td><td class="p-4 text-right text-blue-300 font-black">${f(c1)}</td><td class="p-4 text-right text-emerald-300 font-black">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">⭐</td></tr>`; }
+        function renderType() { const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Type</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; [...new Set(globalData.map(d=>d.site))].forEach(s => { ["RESTO","BAR"].forEach(t => { const d = globalData.filter(x=>x.site===s && x.type===t).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black">${t}</td><td class="p-4 text-right">${f(d.c25)}</td><td class="p-4 text-right font-black">${f(d.c26)}</td><td class="p-4 text-center font-bold ${d.c26>d.c25?'text-emerald-500':'text-red-500'}">${d.c25?((d.c26-d.c25)/d.c25*100).toFixed(1):'0'}%</td></tr>`; }); }); }
+        function renderPat() { const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"]; globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => { tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${d.ca26>d.ca25?'text-emerald-500':'text-red-500'}">${d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(1):'0'}%</td></tr>`; }); }
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('menuTableDOM')), "Repart Menus"); XLSX.writeFile(wb, "Blueberry_V4.5_Final.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('menuTableDOM')), "Orient Rabat"); XLSX.writeFile(wb, "Blueberry_V4.6.xlsx"); }
     </script>
 </body>
 </html>
