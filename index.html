@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V7.0 - Consolidation Globale</title>
+    <title>Blueberry Evolution V7.1 - Consolidation Master</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
         <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <span class="text-xl">🫐</span>
-                <h1 class="text-md font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V7.0</span></h1>
+                <h1 class="text-md font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V7.1</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-2 text-[7px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -37,12 +37,12 @@
                 <button onclick="switchTab('recap')" class="tab-btn py-5" id="tab-recap">Rassemblement</button>
                 <button onclick="switchTab('consol')" class="tab-btn py-5 text-emerald-300 font-black" id="tab-consol">CONSOL. CA</button>
             </nav>
-            <button onclick="exportReport()" class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-[9px] font-black">EXPORT</button>
+            <button onclick="exportReport()" class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase">Export Excel</button>
         </div>
     </header>
 
     <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Tableau de Bord V7.0</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Tableau de Bord V7.1</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label><input type="file" id="fileFamily" class="text-[10px] w-full"></div>
             <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">2. Dispatch CDG 2025 (%)</label><input type="file" id="fileDisp25" class="text-[10px] w-full"></div>
@@ -50,7 +50,7 @@
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">4. Ventes 2025</label><input type="file" id="file2025" class="text-[10px] w-full"></div>
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2026</label><input type="file" id="file2026" class="text-[10px] w-full"></div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase text-sm">Lancer la Consolidation Globale</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase text-sm">Lancer l'Analyse Finale</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-full mx-auto p-6 space-y-6">
@@ -59,22 +59,16 @@
         <div id="page-pat" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
         <div id="page-dispatch" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="dispatchTableDOM"><tbody id="tableDispatch"></tbody></table></div></div>
         <div id="page-menu" class="tab-content hidden"><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left text-xs" id="menuTableDOM"><tbody id="tableMenu"></tbody></table></div></div>
-        <div id="page-saisie" class="tab-content hidden space-y-6"><div class="bg-white p-8 rounded-2xl border border-orange-200 shadow-sm"><div class="flex items-center justify-between mb-8"><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie Base 2</h3><div class="flex gap-3"><button onclick="resetBase2()" class="bg-slate-200 text-slate-600 px-6 py-2 rounded-xl font-bold text-[10px] hover:bg-red-100 hover:text-red-600 transition uppercase">Reset</button><button onclick="saveBase2()" class="bg-orange-500 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg hover:bg-orange-600 transition uppercase">Enregistrer</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Glaces & Sorbets</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_gla_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_gla_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Pâtisserie</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_pat_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_pat_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Chariot Rabat</p><label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_cha_25" class="input-base2"><label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_cha_26" class="input-base2"></div></div></div></div>
-        <div id="page-livraison" class="tab-content hidden space-y-6"><div class="bg-white p-8 rounded-2xl border border-blue-200 shadow-sm"><div class="flex items-center justify-between mb-8"><div><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter text-blue-900">Saisie Livraison & Glovo</h3><p class="text-[10px] text-slate-400 italic">Contrôle par rapport au total site Livraison</p></div><button onclick="saveLivData()" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg uppercase">Enregistrer</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900">TOTAL FICHIER 25 : <span id="real_liv_25" class="text-blue-600"></span></p><input type="number" id="saisie_libl_25" class="input-base2" placeholder="Livraison Blueberry 25"><input type="number" id="saisie_glo_25" class="input-base2" placeholder="Glovo 25"></div><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900">TOTAL FICHIER 26 : <span id="real_liv_26" class="text-blue-600"></span></p><input type="number" id="saisie_libl_26" class="input-base2" placeholder="Livraison Blueberry 26"><input type="number" id="saisie_glo_26" class="input-base2" placeholder="Glovo 26"></div></div></div></div>
-        <div id="page-recap" class="tab-content hidden space-y-4"><div class="bg-white rounded-2xl border border-yellow-500 overflow-hidden shadow-xl"><div class="p-4 bg-yellow-500 text-yellow-950 font-black uppercase text-xs">Rassemblement Global (Consolidation Interne)</div><div class="overflow-x-auto"><table class="w-full text-left text-[9px] border-collapse" id="recapTableDOM"><tbody id="tableRecap"></tbody></table></div></div></div>
+        <div id="page-saisie" class="tab-content hidden space-y-6"><div class="bg-white p-8 rounded-2xl border border-orange-200 shadow-sm"><div class="flex items-center justify-between mb-8"><h3 class="text-lg font-black text-slate-800 uppercase">Saisie Base 2</h3><div class="flex gap-3"><button onclick="resetBase2()" class="bg-slate-200 text-slate-600 px-6 py-2 rounded-xl font-bold text-[10px] hover:bg-red-100 hover:text-red-600 transition uppercase">Reset</button><button onclick="saveBase2()" class="bg-orange-500 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg hover:bg-orange-600 transition uppercase">Enregistrer</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Glaces & Sorbets</p><label class="block text-[10px]">B2 - 25</label><input type="number" id="b2_gla_25" class="input-base2"><label class="block text-[10px]">B2 - 26</label><input type="number" id="b2_gla_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Pâtisserie</p><label class="block text-[10px]">B2 - 25</label><input type="number" id="b2_pat_25" class="input-base2"><label class="block text-[10px]">B2 - 26</label><input type="number" id="b2_pat_26" class="input-base2"></div><div class="p-4 bg-slate-50 rounded-xl space-y-3"><p class="font-black text-[10px] text-blue-900 uppercase">Chariot Rabat</p><label class="block text-[10px]">B2 - 25</label><input type="number" id="b2_cha_25" class="input-base2"><label class="block text-[10px]">B2 - 26</label><input type="number" id="b2_cha_26" class="input-base2"></div></div></div></div>
+        <div id="page-livraison" class="tab-content hidden space-y-6"><div class="bg-white p-8 rounded-2xl border border-blue-200 shadow-sm"><div class="flex items-center justify-between mb-8"><div><h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie Livraison & Glovo</h3><p class="text-[10px] text-slate-400">Total Site Livraison : <span id="real_liv_25" class="font-bold text-blue-600 mx-2"></span> / <span id="real_liv_26" class="font-bold text-blue-600 mx-2"></span></p></div><button onclick="saveLivData()" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-black text-[10px] shadow-lg uppercase">Enregistrer</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900 uppercase">Données 2025</label><input type="number" id="saisie_libl_25" class="input-base2" placeholder="Livraison 25"><input type="number" id="saisie_glo_25" class="input-base2" placeholder="Glovo 25"></div><div class="p-4 bg-slate-50 rounded-xl space-y-4"><p class="font-black text-[10px] text-blue-900 uppercase">Données 2026</label><input type="number" id="saisie_libl_26" class="input-base2" placeholder="Livraison 26"><input type="number" id="saisie_glo_26" class="input-base2" placeholder="Glovo 26"></div></div></div></div>
+        <div id="page-recap" class="tab-content hidden space-y-4"><div class="bg-white rounded-2xl border border-yellow-500 overflow-hidden shadow-xl"><div class="p-4 bg-yellow-500 text-yellow-950 font-black uppercase text-xs tracking-widest">Rassemblement Global (Cuisines Rabat)</div><div class="overflow-x-auto"><table class="w-full text-left text-[9px] border-collapse" id="recapTableDOM"><tbody id="tableRecap"></tbody></table></div></div></div>
 
         <div id="page-consol" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl border border-emerald-500 overflow-hidden shadow-xl">
-                <div class="p-4 bg-emerald-600 text-white font-black uppercase text-xs tracking-widest">Tableau de Consolidation du CA (Synthèse)</div>
+                <div class="p-4 bg-emerald-600 text-white font-black uppercase text-xs tracking-widest">Synthèse Consolidation du CA Global</div>
                 <table class="w-full text-left text-xs" id="consolTableDOM">
                     <thead class="bg-slate-100 border-b text-slate-600 font-black uppercase">
-                        <tr>
-                            <th class="p-4">Famille / Site</th>
-                            <th class="p-4 text-right">Total 25</th>
-                            <th class="p-4 text-right">Total 26</th>
-                            <th class="p-4 text-center">Evo %</th>
-                            <th class="p-4 text-center">Source</th>
-                        </tr>
+                        <tr><th class="p-4">Famille / Site</th><th class="p-4 text-right">Total 2025</th><th class="p-4 text-right">Total 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Source Info</th></tr>
                     </thead>
                     <tbody id="tableConsol"></tbody>
                 </table>
@@ -83,11 +77,11 @@
     </div>
 
     <script>
-        // --- VARIABLES GLOBALES ---
+        // --- DÉCLARATION VARIABLES GLOBALES ---
         let families = {}, dispatchMaps = { 2025: {}, 2026: {} }, globalData = [];
         let cdgSums = { 2025: {}, 2026: {} }, orientSums = { 2025: {}, 2026: {} }, orientArticleSums = { 2025: {}, 2026: {} };
         let brutMatrix = { 2025: {}, 2026: {} }, orientTotals = { 2025: {}, 2026: {} }, chariotCA = { 2025: 0, 2026: 0 }, realLivTotal = { 2025: 0, 2026: 0 };
-
+        
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
         const ORIENT_CONFIG = {
             "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0.84, "FROZEN YOGURT": 0.16 } },
@@ -98,11 +92,11 @@
 
         document.addEventListener('DOMContentLoaded', () => { loadBase2(); loadLivData(); });
 
-        function saveBase2() { localStorage.setItem('blueberry_b2_v70', JSON.stringify({ gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value], pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value], cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value] })); renderAll(); alert("Base 2 Sauvegardée !"); }
-        function loadBase2() { const saved = JSON.parse(localStorage.getItem('blueberry_b2_v70') || 'null'); if(saved) { document.getElementById('b2_gla_25').value = saved.gla[0]; document.getElementById('b2_gla_26').value = saved.gla[1]; document.getElementById('b2_pat_25').value = saved.pat[0]; document.getElementById('b2_pat_26').value = saved.pat[1]; document.getElementById('b2_cha_25').value = saved.cha[0]; document.getElementById('b2_cha_26').value = saved.cha[1]; } }
-        function saveLivData() { localStorage.setItem('blueberry_liv_v70', JSON.stringify({ libl: [document.getElementById('saisie_libl_25').value, document.getElementById('saisie_libl_26').value], glo: [document.getElementById('saisie_glo_25').value, document.getElementById('saisie_glo_26').value] })); alert("Livraison Sauvegardée !"); }
-        function loadLivData() { const saved = JSON.parse(localStorage.getItem('blueberry_liv_v70') || 'null'); if(saved) { document.getElementById('saisie_libl_25').value = saved.libl[0]; document.getElementById('saisie_libl_26').value = saved.libl[1]; document.getElementById('saisie_glo_25').value = saved.glo[0]; document.getElementById('saisie_glo_26').value = saved.glo[1]; } }
-        function resetBase2() { localStorage.removeItem('blueberry_b2_v70'); location.reload(); }
+        function saveBase2() { localStorage.setItem('blueberry_b2_v71', JSON.stringify({ gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value], pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value], cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value] })); renderAll(); alert("Enregistré !"); }
+        function loadBase2() { const saved = JSON.parse(localStorage.getItem('blueberry_b2_v71') || 'null'); if(saved) { document.getElementById('b2_gla_25').value = saved.gla[0]; document.getElementById('b2_gla_26').value = saved.gla[1]; document.getElementById('b2_pat_25').value = saved.pat[0]; document.getElementById('b2_pat_26').value = saved.pat[1]; document.getElementById('b2_cha_25').value = saved.cha[0]; document.getElementById('b2_cha_26').value = saved.cha[1]; } }
+        function saveLivData() { localStorage.setItem('blueberry_liv_v71', JSON.stringify({ libl: [document.getElementById('saisie_libl_25').value, document.getElementById('saisie_libl_26').value], glo: [document.getElementById('saisie_glo_25').value, document.getElementById('saisie_glo_26').value] })); renderAll(); alert("Enregistré !"); }
+        function loadLivData() { const saved = JSON.parse(localStorage.getItem('blueberry_liv_v71') || 'null'); if(saved) { document.getElementById('saisie_libl_25').value = saved.libl[0]; document.getElementById('saisie_libl_26').value = saved.libl[1]; document.getElementById('saisie_glo_25').value = saved.glo[0]; document.getElementById('saisie_glo_26').value = saved.glo[1]; } }
+        function resetBase2() { localStorage.removeItem('blueberry_b2_v71'); location.reload(); }
 
         async function processFiles() {
             const files = ['file2025', 'file2026', 'fileFamily', 'fileDisp25', 'fileDisp26'].map(id => document.getElementById(id).files[0]);
@@ -125,7 +119,6 @@
         function calculateAll(d25, d26) {
             globalData = []; cdgSums = { 2025: {}, 2026: {} }; orientSums = { 2025: {}, 2026: {} }; orientArticleSums = { 2025: {}, 2026: {} };
             orientTotals = { 2025: {}, 2026: {} }; brutMatrix = { 2025: {}, 2026: {} }; chariotCA = { 2025: 0, 2026: 0 }; realLivTotal = { 2025: 0, 2026: 0 };
-            
             const agg = (data, year) => {
                 const currentDisp = dispatchMaps[year];
                 data.forEach(row => {
@@ -138,7 +131,7 @@
                     if (site === "RABAT SIÈGE") {
                         brutMatrix[year][info.famille] = (brutMatrix[year][info.famille] || 0) + ca;
                         if(currentDisp[code]) currentDisp[code].forEach(i => cdgSums[year][i.family] = (cdgSums[year][i.family] || 0) + (ca * i.ratio));
-                        if(ORIENT_CONFIG[code]) { const cfg = ORIENT_CONFIG[code]; orientArticleSums[year][info.famille] = (orientArticleSums[year][info.famille] || 0) + ca; Object.keys(cfg.split).forEach(fam => orientSums[year][fam] = (orientSums[year][fam] || 0) + (ca * cfg.split[fam])); }
+                        if(ORIENT_CONFIG[code]) { const cfg = ORIENT_CONFIG[code]; orientArticleSums[year][info.famille] = (orientArticleSums[year][info.famille] || 0) + ca; orientTotals[year][cfg.name] = (orientTotals[year][cfg.name] || 0) + ca; Object.keys(cfg.split).forEach(fam => orientSums[year][fam] = (orientSums[year][fam] || 0) + (ca * cfg.split[fam])); }
                     }
                 });
             };
@@ -151,13 +144,15 @@
         function pushData(site, famille, ca, year, type) { let found = globalData.find(d => d.site === site && d.famille === famille); if (!found) { found = { site, famille, ca25: 0, ca26: 0, type }; globalData.push(found); } if(year === 2025) found.ca25 += ca; else found.ca26 += ca; }
         function renderAll() { renderMain(); renderType(); renderPat(); renderDispatch(); renderOrient(); renderRecap(); renderConsol(); }
 
-        // --- PAGE 9 : CONSOLIDATION SYNTHÈSE ---
+        // --- PAGE 9 : SYNTHÈSE CONSOLIDATION ---
         function renderConsol() {
             const tbody = document.getElementById('tableConsol'); tbody.innerHTML = '';
             const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort();
-            const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v70') || '{}');
-            
-            // 1. Les Familles Consolidées
+            const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v71') || '{}');
+            const liv = JSON.parse(localStorage.getItem('blueberry_liv_v71') || '{}');
+            let sum25 = 0, sum26 = 0;
+
+            // 1. Familles
             allFam.forEach(fam => {
                 let t25 = 0, t26 = 0;
                 [2025, 2026].forEach(y => {
@@ -165,26 +160,30 @@
                     let b2Val = 0; if(fam === "PATISSERIE") b2Val = parseFloat(b2.pat ? b2.pat[y===2025?0:1] : 0) || 0; if(fam === "GLACES ET SORBETS") b2Val = parseFloat(b2.gla ? b2.gla[y===2025?0:1] : 0) || 0;
                     if(y===2025) t25 = bM - oArt + oVent + cSum + b2Val; else t26 = bM - oArt + oVent + cSum + b2Val;
                 });
-                tbody.innerHTML += createConsolRow(fam, t25, t26, "Rassemblement Global");
+                tbody.innerHTML += createConsRow(fam, t25, t26, "Rassemblement Global");
+                sum25 += t25; sum26 += t26;
             });
-
-            // 2. Ligne Spécifique CDG (Total des répartitions)
-            let cdg25 = 0, cdg26 = 0;
-            Object.values(cdgSums[2025]).forEach(v => cdg25 += v); Object.values(cdgSums[2026]).forEach(v => cdg26 += v);
-            tbody.innerHTML += createConsolRow("CDG (VALEUR RÉPARTIE)", cdg25, cdg26, "CDG Rabat", "bg-indigo-50 font-black");
-
-            // 3. Chariot
-            const ch25 = chariotCA[2025] + (parseFloat(b2.cha ? b2.cha[0] : 0) || 0);
-            const ch26 = chariotCA[2026] + (parseFloat(b2.cha ? b2.cha[1] : 0) || 0);
-            tbody.innerHTML += createConsolRow("CHARIOT RABAT", ch25, ch26, "Rassemblement Global", "bg-orange-50 font-black");
+            // 2. CDG
+            let c25 = 0, c26 = 0; Object.values(cdgSums[2025]).forEach(v => c25 += v); Object.values(cdgSums[2026]).forEach(v => c26 += v);
+            tbody.innerHTML += createConsRow("CDG (TOTAL RÉPARTI)", c25, c26, "CDG Rabat", "bg-indigo-50 font-bold");
+            // 3. Externe
+            let ext25 = 0, ext26 = 0; SITES_LIST.forEach(s => { const d = globalData.filter(x => x.site === s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); ext25 += d.c25; ext26 += d.c26; });
+            tbody.innerHTML += createConsRow("EXTERNE", ext25, ext26, "Matrice", "bg-slate-50 font-bold"); sum25 += ext25; sum26 += ext26;
+            // 4. Glovo / Livraison
+            const gl25 = parseFloat(liv.glo ? liv.glo[0] : 0) || 0; const gl26 = parseFloat(liv.glo ? liv.glo[1] : 0) || 0;
+            tbody.innerHTML += createConsRow("SITE GLOVO", gl25, gl26, "Livraison & Glovo");
+            const lb25 = parseFloat(liv.libl ? liv.libl[0] : 0) || 0; const lb26 = parseFloat(liv.libl ? liv.libl[1] : 0) || 0;
+            tbody.innerHTML += createConsRow("SITE LIVRAISON BLUEBERRY", lb25, lb26, "Livraison & Glovo");
+            // 5. Chariot
+            const ch25 = chariotCA[2025] + (parseFloat(b2.cha ? b2.cha[0] : 0) || 0); const ch26 = chariotCA[2026] + (parseFloat(b2.cha ? b2.cha[1] : 0) || 0);
+            tbody.innerHTML += createConsRow("CHARIOT RABAT", ch25, ch26, "Rassemblement Global", "bg-orange-50 font-bold"); sum25 += ch25; sum26 += ch26;
+            // TOTAL
+            tbody.innerHTML += `<tr class="bg-emerald-600 text-white font-black"><td class="p-4 uppercase">TOTAL GÉNÉRAL CONSOLIDÉ</td><td class="p-4 text-right">${f(sum25)}</td><td class="p-4 text-right">${f(sum26)}</td><td class="p-4 text-center">${sum25?((sum26-sum25)/sum25*100).toFixed(1):'0'}%</td><td class="p-4"></td></tr>`;
         }
 
-        function createConsolRow(n, v1, v2, src, cls="") {
-            const evo = v1 ? ((v2-v1)/v1*100).toFixed(1) : '0';
-            return `<tr class="border-b hover:bg-slate-50 ${cls}"><td class="p-4 font-bold">${n}</td><td class="p-4 text-right">${f(v1)}</td><td class="p-4 text-right">${f(v2)}</td><td class="p-4 text-center font-black ${v2>v1?'text-emerald-600':'text-red-600'}">${evo}%</td><td class="p-4 text-center text-[10px] opacity-60 italic">${src}</td></tr>`;
-        }
+        function createConsRow(n, v1, v2, src, cls="") { const e = v1?((v2-v1)/v1*100).toFixed(1):'0'; return `<tr class="border-b ${cls}"><td class="p-4 font-bold uppercase text-[10px]">${n}</td><td class="p-4 text-right font-black">${f(v1)}</td><td class="p-4 text-right font-black">${f(v2)}</td><td class="p-4 text-center font-bold ${v2>v1?'text-emerald-600':'text-red-600'}">${e}%</td><td class="p-4 text-center text-[9px] opacity-60 italic">${src}</td></tr>`; }
 
-        // --- PAGE 1 : MATRICE (CORRECTION DOUBLE COMPTAGE LIVRAISON) ---
+        // --- PAGE 1 : MATRICE (CORRECTION LIVRAISON) ---
         function renderMain() {
             const tbody = document.getElementById('tableMain'); tbody.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
             let tE25=0, tE26=0, tR25=0, tR26=0, tC25=0, tC26=0;
@@ -196,23 +195,22 @@
             tbody.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tR25, tR26);
             const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
             tbody.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26); tC25=ch.c25; tC26=ch.c26;
-            // NOTE : realLivTotal est déjà dans tR25 car mappé sur Rabat Siège dans agg(). On n'ajoute rien dans les sommes de pied de page.
             tbody.innerHTML += createTotalRow("TOTAL RABAT GLOBAL", tR25+tC25, tR26+tC26, "bg-blue-100 font-bold");
             tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL", tE25+tR25+tC25, tE26+tR26+tC26);
         }
 
-        // --- Fonctions Rendu intermédiaires ---
-        function renderRecap() { const tbody = document.getElementById('tableRecap'); tbody.innerHTML = `<thead class="bg-slate-100 border-b border-slate-300"><tr><th rowspan="2" class="p-3 border-r sticky-col">Famille / Site</th><th colspan="6" class="p-2 text-center border-r">2025</th><th colspan="6" class="p-2 text-center">2026</th></tr><tr class="text-[8px] uppercase text-slate-500"><th class="p-2 text-right border-r">CA Brut</th><th class="p-2 text-right border-r text-red-500">(-) Orient</th><th class="p-2 text-right border-r text-emerald-600">(+) Orient</th><th class="p-2 text-right border-r text-indigo-600">(+) CDG</th><th class="p-2 text-right border-r text-orange-600">B2</th><th class="p-2 text-right border-r font-black">Total 25</th><th class="p-2 text-right border-r">CA Brut</th><th class="p-2 text-right border-r text-red-500">(-) Orient</th><th class="p-2 text-right border-r text-emerald-600">(+) Orient</th><th class="p-2 text-right border-r text-indigo-600">(+) CDG</th><th class="p-2 text-right border-r text-orange-600">B2</th><th class="p-2 text-right font-black">Total 26</th></tr></thead>`; const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort(); const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v70') || '{}'); allFam.forEach(fam => { const tr = document.createElement('tr'); tr.className = "border-b hover:bg-yellow-50 text-[8px]"; let rh = `<td class="p-2 font-bold border-r sticky-col">${fam}</td>`; [2025, 2026].forEach(y => { const bM = brutMatrix[y][fam] || 0, oArt = orientArticleSums[y][fam] || 0, oVent = orientSums[y][fam] || 0, cSum = cdgSums[y][fam] || 0; let b2Val = 0; if(fam === "PATISSERIE") b2Val = parseFloat(b2.pat ? b2.pat[y===2025?0:1] : 0) || 0; if(fam === "GLACES ET SORBETS") b2Val = parseFloat(b2.gla ? b2.gla[y===2025?0:1] : 0) || 0; const total = bM - oArt + oVent + cSum + b2Val; rh += `<td class="p-2 text-right border-r">${f(bM)}</td><td class="p-2 text-right border-r text-red-400">${f(oArt)}</td><td class="p-2 text-right border-r text-emerald-600">${f(oVent)}</td><td class="p-2 text-right border-r text-indigo-600">${f(cSum)}</td><td class="p-2 text-right border-r text-orange-600">${f(b2Val)}</td><td class="p-2 text-right border-r font-black bg-slate-50">${f(total)}</td>`; }); tr.innerHTML = rh; tbody.appendChild(tr); }); }
+        // --- Fonctions Rendu Standards ---
+        function renderRecap() { const tbody = document.getElementById('tableRecap'); tbody.innerHTML = `<thead class="bg-slate-100 border-b border-slate-300"><tr><th rowspan="2" class="p-3 border-r sticky-col">Famille</th><th colspan="6" class="p-2 text-center border-r">2025</th><th colspan="6" class="p-2 text-center">2026</th></tr><tr class="text-[8px] uppercase text-slate-500"><th class="p-2 text-right border-r">CA Brut</th><th class="p-2 text-right border-r text-red-500">(-) Orient</th><th class="p-2 text-right border-r text-emerald-600">(+) Orient</th><th class="p-2 text-right border-r text-indigo-600">(+) CDG</th><th class="p-2 text-right border-r text-orange-600">B2</th><th class="p-2 text-right border-r font-black">Total 25</th><th class="p-2 text-right border-r">CA Brut</th><th class="p-2 text-right border-r text-red-500">(-) Orient</th><th class="p-2 text-right border-r text-emerald-600">(+) Orient</th><th class="p-2 text-right border-r text-indigo-600">(+) CDG</th><th class="p-2 text-right border-r text-orange-600">B2</th><th class="p-2 text-right font-black">Total 26</th></tr></thead>`; const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort(); const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v71') || '{}'); allFam.forEach(fam => { const tr = document.createElement('tr'); tr.className = "border-b hover:bg-yellow-50 text-[8px]"; let rh = `<td class="p-2 font-bold border-r sticky-col">${fam}</td>`; [2025, 2026].forEach(y => { const bM = brutMatrix[y][fam] || 0, oArt = orientArticleSums[y][fam] || 0, oVent = orientSums[y][fam] || 0, cSum = cdgSums[y][fam] || 0; let b2Val = 0; if(fam === "PATISSERIE") b2Val = parseFloat(b2.pat ? b2.pat[y===2025?0:1] : 0) || 0; if(fam === "GLACES ET SORBETS") b2Val = parseFloat(b2.gla ? b2.gla[y===2025?0:1] : 0) || 0; const total = bM - oArt + oVent + cSum + b2Val; rh += `<td class="p-2 text-right border-r">${f(bM)}</td><td class="p-2 text-right border-r text-red-400">${f(oArt)}</td><td class="p-2 text-right border-r text-emerald-600">${f(oVent)}</td><td class="p-2 text-right border-r text-indigo-600">${f(cSum)}</td><td class="p-2 text-right border-r text-orange-600">${f(b2Val)}</td><td class="p-2 text-right border-r font-black bg-slate-50">${f(total)}</td>`; }); tr.innerHTML = rh; tbody.appendChild(tr); }); }
         function createRow(n,c1,c2) { return `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold text-slate-700">${n}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(c2)}</td><td class="p-4 text-center font-bold ${c2>c1?'text-emerald-500':'text-red-500'}">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'✅':'❌'}</td></tr>`; }
         function createTotalRow(l,c1,c2,cls="row-total") { return `<tr class="${cls}"><td class="p-4 uppercase">${l}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'🏆':''}</td></tr>`; }
         function createGrandTotalRow(l,c1,c2) { return `<tr class="row-grand-total"><td class="p-4 uppercase tracking-widest text-[10px]">${l}</td><td class="p-4 text-right text-blue-300 font-black">${f(c1)}</td><td class="p-4 text-right text-emerald-300 font-black">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">⭐</td></tr>`; }
         function renderDispatch() { const tbody = document.getElementById('tableDispatch'); tbody.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Cuisine</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; const allC = [...new Set([...Object.keys(cdgSums[2025]), ...Object.keys(cdgSums[2026])])].sort(); let s25=0, s26=0; allC.forEach(c => { const c25 = cdgSums[2025][c] || 0, c26 = cdgSums[2026][c] || 0; tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-700">${c}</td><td class="p-4 text-right">${f(c25)}</td><td class="p-4 text-right font-black text-indigo-900">${f(c26)}</td><td class="p-4 text-center font-bold">${c25?((c26-c25)/c25*100).toFixed(1):'0'}%</td></tr>`; s25 += c25; s26 += c26; }); tbody.innerHTML += `<tr class="bg-indigo-900 text-white font-black"><td class="p-4 uppercase">TOTAL CDG RÉPARTI</td><td class="p-4 text-right">${f(s25)}</td><td class="p-4 text-right">${f(s26)}</td><td class="p-4 text-center">${s25?((s26-s25)/s25*100).toFixed(1):'0'}%</td></tr>`; }
         function renderOrient() { const tbody = document.getElementById('tableMenu'); tbody.innerHTML = `<tr class="bg-emerald-50 text-emerald-900 font-black uppercase text-[9px]"><td colspan="4" class="p-2 italic">I. CA Total par Article (Rabat)</td></tr>`; Object.keys(ORIENT_CONFIG).forEach(c => { const n = ORIENT_CONFIG[c].name; tbody.innerHTML += createRow(n, orientTotals[2025][n]||0, orientTotals[2026][n]||0); }); tbody.innerHTML += `<tr class="bg-emerald-50 text-emerald-900 font-black uppercase text-[9px] mt-4"><td colspan="4" class="p-2 italic">II. Ventilation par Atelier</td></tr>`; const allF = [...new Set([...Object.keys(orientSums[2025]), ...Object.keys(orientSums[2026])])].sort(); allF.forEach(fam => { tbody.innerHTML += createRow(fam, orientSums[2025][fam]||0, orientSums[2026][fam]||0); }); }
-        function renderType() { const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Type</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; [...new Set(globalData.map(d=>d.site))].forEach(s => { ["RESTO","BAR"].forEach(t => { const d = globalData.filter(x=>x.site===s && x.type===t).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black">${t}</td><td class="p-4 text-right">${f(d.c25)}</td><td class="p-4 text-right font-black">${f(d.c26)}</td><td class="p-4 text-center font-bold ${d.c26>d.c25?'text-emerald-600':'text-red-500'}">${d.c25?((d.c26-d.c25)/d.c25*100).toFixed(1):'0'}%</td></tr>`; }); }); }
+        function renderType() { const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Type</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; [...new Set(globalData.map(d=>d.site))].forEach(s => { ["RESTO","BAR"].forEach(t => { const d = globalData.filter(x=>x.site===s && x.type===t).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black">${t}</td><td class="p-4 text-right">${f(d.c25)}</td><td class="p-4 text-right font-black">${f(d.c26)}</td><td class="p-4 text-center font-bold ${d.c26>d.c25?'text-emerald-500':'text-red-500'}">${d.c25?((d.c26-d.c25)/d.c25*100).toFixed(1):'0'}%</td></tr>`; }); }); }
         function renderPat() { const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"]; globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => { tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${d.ca26>d.ca25?'text-emerald-500':'text-red-500'}">${d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(1):'0'}%</td></tr>`; }); }
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA').replace(/,/g, '.'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('consolTableDOM')), "Consolidation Globale"); XLSX.writeFile(wb, "Blueberry_V7.0.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('consolTableDOM')), "Consolidation Globale"); XLSX.writeFile(wb, "Blueberry_V7.1.xlsx"); }
     </script>
 </body>
 </html>
