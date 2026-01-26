@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V4.0 - CDG Répartition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Blueberry Evolution V4.1 - CDG Dual Matrix</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
@@ -14,7 +14,6 @@
         .row-site-header { background-color: #e2e8f0; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
         .row-total { background-color: #f8fafc; font-weight: 900; border-top: 2px solid #cbd5e1; color: #1e293b; }
         .row-grand-total { background-color: #1e293b; color: white; font-weight: 900; }
-        .bg-dispatch { background-color: #f5f3ff; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -23,7 +22,7 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.0 CDG</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.1 CDG</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -35,98 +34,110 @@
         </div>
     </header>
 
-    <div id="setupPanel" class="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Pilotage CDG & Répartition</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="p-4 bg-slate-50 rounded-xl border">
-                <label class="block text-[10px] font-black uppercase mb-2">1. Base Familles (Articles)</label>
-                <input type="file" id="fileFamily" class="text-xs w-full">
+    <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Configuration CDG - Dual Matrix</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div class="p-3 bg-slate-50 rounded-xl border">
+                <label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label>
+                <input type="file" id="fileFamily" class="text-[10px] w-full">
             </div>
-            <div class="p-4 bg-indigo-50 rounded-xl border-indigo-200 border">
-                <label class="block text-[10px] font-black uppercase mb-2 text-indigo-700">2. Matrice de Répartition CDG (%)</label>
-                <input type="file" id="fileDispatch" class="text-xs w-full">
+            <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border">
+                <label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">2. Dispatch CDG 2025 (%)</label>
+                <input type="file" id="fileDisp25" class="text-[10px] w-full">
             </div>
-            <div class="p-4 bg-slate-50 rounded-xl border">
-                <label class="block text-[10px] font-black uppercase mb-2">3. Ventes 2025</label>
-                <input type="file" id="file2025" class="text-xs w-full">
+            <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border">
+                <label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">3. Dispatch CDG 2026 (%)</label>
+                <input type="file" id="fileDisp26" class="text-[10px] w-full">
             </div>
-            <div class="p-4 bg-slate-50 rounded-xl border">
-                <label class="block text-[10px] font-black uppercase mb-2">4. Ventes 2026</label>
-                <input type="file" id="file2026" class="text-xs w-full">
+            <div class="p-3 bg-slate-50 rounded-xl border">
+                <label class="block text-[9px] font-black uppercase mb-1">4. Ventes 2025 (Brut)</label>
+                <input type="file" id="file2025" class="text-[10px] w-full">
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border">
+                <label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2026 (Brut)</label>
+                <input type="file" id="file2026" class="text-[10px] w-full">
             </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Calculer la Répartition V4.0</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Calculer la Répartition V4.1</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
-        
         <div id="page-main" class="tab-content space-y-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-xs" id="mainTableDOM"><tbody id="tableMain"></tbody></table>
-            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="mainTableDOM"><tbody id="tableMain"></tbody></table></div>
         </div>
-
         <div id="page-type" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="typeTableDOM"><tbody id="tableType"></tbody></table></div></div>
-
         <div id="page-pat" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
 
         <div id="page-dispatch" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-4 bg-indigo-900 text-white">
-                    <h3 class="font-black uppercase text-xs tracking-widest">Analyse de la Charge de Travail (Cuisines Rabat)</h3>
-                    <p class="text-[10px] opacity-70">Affiche uniquement le CA dispatché selon les ratios CDG pour le Siège et le Chariot.</p>
+                    <h3 class="font-black uppercase text-xs tracking-widest">Charge de Travail Cuisines (Rabat & Chariot)</h3>
+                    <p class="text-[10px] opacity-70">Ventilation basée sur les matrices spécifiques de chaque année.</p>
                 </div>
                 <table class="w-full text-left text-xs" id="dispatchTableDOM">
                     <thead class="bg-slate-100 border-b">
                         <tr class="text-[10px] font-black uppercase text-slate-500">
-                            <th class="p-4">Cuisine / Famille travaillée</th>
+                            <th class="p-4">Cuisine</th>
                             <th class="p-4 text-right">Montant CDG 2025</th>
                             <th class="p-4 text-right text-indigo-700">Montant CDG 2026</th>
-                            <th class="p-4 text-center">Evolution CDG %</th>
+                            <th class="p-4 text-center">Evo %</th>
                         </tr>
                     </thead>
                     <tbody id="tableDispatch"></tbody>
                 </table>
             </div>
         </div>
-
     </div>
 
     <script>
-        let families = {}, dispatchMap = {}, globalData = [], cdgCuisineSums = { 2025: {}, 2026: {} };
+        let families = {}, dispatchMaps = { 2025: {}, 2026: {} }, globalData = [], cdgCuisineSums = { 2025: {}, 2026: {} };
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
 
         async function processFiles() {
             const f25 = document.getElementById('file2025').files[0], f26 = document.getElementById('file2026').files[0], 
-                  fFam = document.getElementById('fileFamily').files[0], fDisp = document.getElementById('fileDispatch').files[0];
-            if (!f25 || !f26 || !fFam || !fDisp) return alert("Veuillez importer les 4 fichiers.");
+                  fFam = document.getElementById('fileFamily').files[0], 
+                  fD25 = document.getElementById('fileDisp25').files[0], fD26 = document.getElementById('fileDisp26').files[0];
+            
+            if (!f25 || !f26 || !fFam || !fD25 || !fD26) return alert("Veuillez importer les 5 fichiers.");
 
-            const famRows = await readExcel(fFam);
-            families = {};
-            famRows.forEach(r => {
+            // 1. Charger Familles
+            families = parseBaseFam(await readExcel(fFam));
+
+            // 2. Charger les deux Matrices de Dispatch (2025 et 2026)
+            dispatchMaps[2025] = parseDispatchMatrix(await readExcel(fD25));
+            dispatchMaps[2026] = parseDispatchMatrix(await readExcel(fD26));
+
+            calculateAll(await readExcel(f25), await readExcel(f26));
+            
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('navTabs').classList.remove('hidden');
+        }
+
+        function parseBaseFam(rows) {
+            let map = {};
+            rows.forEach(r => {
                 const code = r['Code article'] || r['Code'], fName = (r['Famille'] || "").toUpperCase();
-                if(code) families[code] = { famille: fName, type: fName.includes("BAR") || fName.includes("BOISSON") ? "BAR" : "RESTO" };
+                if(code) map[code] = { famille: fName, type: fName.includes("BAR") || fName.includes("BOISSON") ? "BAR" : "RESTO" };
             });
+            return map;
+        }
 
-            const dispRows = await readExcel(fDisp);
-            dispatchMap = {};
-            dispRows.forEach(r => {
+        function parseDispatchMatrix(rows) {
+            let map = {};
+            rows.forEach(r => {
                 const code = r['Code article'] || r['Code'];
                 if(!code) return;
                 const ratios = [];
                 Object.keys(r).forEach(key => {
                     if(key.includes('%')) {
-                        const val = parseFloat(r[key]);
+                        let val = parseFloat(r[key]);
                         if(val > 0) ratios.push({ family: key.replace('%', '').trim().toUpperCase(), ratio: val > 1 ? val/100 : val });
                     }
                 });
-                if(ratios.length > 0) dispatchMap[code] = ratios;
+                if(ratios.length > 0) map[code] = ratios;
             });
-
-            calculateAll(await readExcel(f25), await readExcel(f26));
-            document.getElementById('setupPanel').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('navTabs').classList.remove('hidden');
+            return map;
         }
 
         function readExcel(file) {
@@ -142,22 +153,22 @@
             cdgCuisineSums = { 2025: {}, 2026: {} };
 
             const aggregate = (data, year) => {
+                const currentDispatchMap = dispatchMaps[year]; // Utilise la matrice de l'année correspondante
                 data.forEach(row => {
                     const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = row['Code article'] || row['Code'];
                     let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
                     const info = families[code] || { famille: "AUTRES", type: "RESTO" };
 
-                    // 1. Pages Standards (Matrice, Type, Focus)
+                    // 1. Données standards
                     pushData(site, info.famille, ca, year, info.type);
 
-                    // 2. LOGIQUE PAGE 4 (Répartition CDG Rabat)
+                    // 2. Logic CDG Rabat (Page 4) - Utilisation du dispatch map de l'année
                     if (site === "RABAT SIÈGE" || site === "CHARIOT") {
-                        if (dispatchMap[code]) {
-                            dispatchMap[code].forEach(item => {
+                        if (currentDispatchMap[code]) {
+                            currentDispatchMap[code].forEach(item => {
                                 cdgCuisineSums[year][item.family] = (cdgCuisineSums[year][item.family] || 0) + (ca * item.ratio);
                             });
                         }
-                        // Note: On ne compte QUE ce qui est dans le fichier dispatch ici pour isoler le CA CDG.
                     }
                 });
             };
@@ -171,37 +182,30 @@
             if(year === 2025) found.ca25 += ca; else found.ca26 += ca;
         }
 
-        function renderAll() {
-            renderMain(); renderType(); renderPat(); renderDispatch();
-        }
+        function renderAll() { renderMain(); renderType(); renderPat(); renderDispatch(); }
 
         function renderMain() {
-            const tbody = document.getElementById('tableMain'); tbody.innerHTML = `
-                <thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
+            const tbody = document.getElementById('tableMain'); tbody.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
             let tExt25 = 0, tExt26 = 0, tRab25 = 0, tRab26 = 0, tCha25 = 0, tCha26 = 0;
-
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Sites Externes</td></tr>`;
             SITES_LIST.forEach(s => {
                 const d = globalData.filter(x => x.site === s).reduce((a,b) => ({c25: a.c25+b.ca25, c26: a.c26+b.ca26}), {c25:0, c26:0});
                 if(d.c25 || d.c26) { tbody.innerHTML += createRow(s, d.c25, d.c26); tExt25 += d.c25; tExt26 += d.c26; }
             });
             tbody.innerHTML += createTotalRow("TOTAL POINTS DE VENTE EXTERNES", tExt25, tExt26);
-
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège</td></tr>`;
             globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.innerHTML += createRow(r.famille, r.ca25, r.ca26); tRab25 += r.ca25; tRab26 += r.ca26; });
             tbody.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tRab25, tRab26);
-
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Unité Mobile</td></tr>`;
             const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b) => ({c25: a.c25+b.ca25, c26: a.c26+b.ca26}), {c25:0, c26:0});
             tbody.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26); tCha25 = ch.c25; tCha26 = ch.c26;
             tbody.innerHTML += createTotalRow("TOTAL UNITÉ MOBILE", tCha25, tCha26);
-
             tbody.innerHTML += createTotalRow("TOTAL RABAT GLOBAL (SIÈGE + MOBILE)", tRab25 + tCha25, tRab26 + tCha26, "bg-blue-100 font-bold");
             tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tExt25 + tRab25 + tCha25, tExt26 + tRab26 + tCha26);
         }
 
         function renderType() {
-            const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
+            const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evolution</th></tr></thead>`;
             [...new Set(globalData.map(d => d.site))].forEach(s => {
                 ["RESTO", "BAR"].forEach(t => {
                     const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({c25: a.c25+b.ca25, c26: a.c26+b.ca26}), {c25:0, c26:0});
@@ -220,7 +224,6 @@
             const tbody = document.getElementById('tableDispatch'); tbody.innerHTML = '';
             const allCuisines = [...new Set([...Object.keys(cdgCuisineSums[2025]), ...Object.keys(cdgCuisineSums[2026])])].sort();
             let sum25 = 0, sum26 = 0;
-
             allCuisines.forEach(c => {
                 const c25 = cdgCuisineSums[2025][c] || 0, c26 = cdgCuisineSums[2026][c] || 0;
                 const evo = c25 > 0 ? ((c26 - c25)/c25)*100 : 0;
@@ -237,7 +240,7 @@
         
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.writeFile(wb, "Blueberry_V4.0_CDG.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.writeFile(wb, "Blueberry_V4.1_CDG.xlsx"); }
     </script>
 </body>
 </html>
