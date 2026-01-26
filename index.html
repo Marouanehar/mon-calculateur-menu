@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V4.6 - CDG & Répartition Fixe</title>
+    <title>Blueberry Evolution V4.7 - CDG Expert</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.6</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.7</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-4 text-[9px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -36,7 +36,7 @@
     </header>
 
     <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Configuration V4.6 (Menus Orient Intégrés)</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Configuration V4.7 (Ratios Orient Corrigés)</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label><input type="file" id="fileFamily" class="text-[10px] w-full"></div>
             <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">2. Dispatch CDG 2025 (%)</label><input type="file" id="fileDisp25" class="text-[10px] w-full"></div>
@@ -64,7 +64,7 @@
 
         <div id="page-menu" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 overflow-hidden">
-                <div class="p-4 bg-emerald-900 text-white"><h3 class="font-black uppercase text-xs">Répartition Menus Orient (Rabat)</h3><p class="text-[10px] opacity-70">Analyse fixe pour ORIENT 1, 2, 3 et 4.</p></div>
+                <div class="p-4 bg-emerald-900 text-white"><h3 class="font-black uppercase text-xs">Répartition Spécifique Menus Orient (Rabat)</h3></div>
                 <table class="w-full text-left text-xs" id="menuTableDOM">
                     <thead class="bg-slate-100 border-b"><tr class="text-[10px] font-black uppercase text-slate-500"><th class="p-4">Cuisine de Destination</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>
                     <tbody id="tableMenu"></tbody>
@@ -78,12 +78,12 @@
         let cdgCuisineSums = { 2025: {}, 2026: {} }, orientMenuSums = { 2025: {}, 2026: {} };
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
 
-        // --- DÉFINITION FIXE DES RÉPARTITIONS ORIENT ---
+        // --- DÉFINITION FIXE DES RÉPARTITIONS ORIENT V4.7 ---
         const ORIENT_CONFIG = {
-            "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0,84, "FROZEN YOGURT": 0,16 } },
-            "449619": { name: "ORIENT 4", split: { "CUISINE ORIENTALE": 0,67, "SALADES": 0,33 } },
-            "446716": { name: "ORIENT 1", split: { "CUISINE ORIENTALE": 0,54, "SALADES": 0,46 } },
-            "446717": { name: "ORIENT 2", split: { "CUISINE ORIENTALE": 0,45, "SALADES": 0,55 } }
+            "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0.84, "FROZEN YOGURT": 0.16 } },
+            "449619": { name: "ORIENT 4", split: { "CUISINE ORIENTALE": 0.67, "SALADES": 0.33 } },
+            "446716": { name: "ORIENT 1", split: { "CUISINE ORIENTALE": 0.54, "SALADES": 0.46 } },
+            "446717": { name: "ORIENT 2", split: { "CUISINE ORIENTALE": 0.45, "SALADES": 0.55 } }
         };
 
         async function processFiles() {
@@ -145,11 +145,9 @@
                     pushData(site, info.famille, ca, year, info.type);
 
                     if (site === "RABAT SIÈGE" || site === "CHARIOT") {
-                        // 1. Page 4 : CDG Global
                         const dMap = dispatchMaps[year];
                         if (dMap[code]) dMap[code].forEach(i => cdgCuisineSums[year][i.family] = (cdgCuisineSums[year][i.family] || 0) + (ca * i.ratio));
 
-                        // 2. Page 5 : Répartition Orient Fixe
                         if (ORIENT_CONFIG[code]) {
                             const config = ORIENT_CONFIG[code];
                             Object.keys(config.split).forEach(fam => {
@@ -222,7 +220,7 @@
         function renderPat() { const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"]; globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => { tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${d.ca26>d.ca25?'text-emerald-500':'text-red-500'}">${d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(1):'0'}%</td></tr>`; }); }
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('menuTableDOM')), "Orient Rabat"); XLSX.writeFile(wb, "Blueberry_V4.6.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('menuTableDOM')), "Orient Rabat"); XLSX.writeFile(wb, "Blueberry_V4.7.xlsx"); }
     </script>
 </body>
 </html>
