@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V3.7 - CDG Expert</title>
+    <title>Blueberry Evolution V3.8 - CDG Expert</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.7</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.8</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -34,7 +34,7 @@
     </header>
 
     <div id="setupPanel" class="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Importation des Données</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Importation CDG</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">1. Base Familles</label><input type="file" id="fileFamily" class="text-xs w-full"></div>
             <div class="p-4 bg-amber-50 rounded-xl border-amber-200 border"><label class="block text-[10px] font-black uppercase mb-2 text-amber-700">2. Ratios CGI (Menus)</label><input type="file" id="fileCGI" class="text-xs w-full"></div>
@@ -52,7 +52,7 @@
                         <tr class="text-[10px] font-black uppercase text-slate-500">
                             <th class="p-4">Désignation</th>
                             <th class="p-4 text-right">CA 2025</th>
-                            <th class="p-4 text-right">CA 2026</th>
+                            <th class="p-4 text-right text-blue-700 bg-blue-50">CA 2026</th>
                             <th class="p-4 text-center">Evo %</th>
                             <th class="p-4 text-center">Prime</th>
                         </tr>
@@ -64,7 +64,7 @@
 
         <div id="page-type" class="tab-content hidden">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-xs">
+                <table class="w-full text-left text-xs" id="typeTableDOM">
                     <thead class="bg-slate-800 text-white uppercase text-[10px]">
                         <tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evolution</th></tr>
                     </thead>
@@ -75,7 +75,7 @@
 
         <div id="page-pat" class="tab-content hidden">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-xs">
+                <table class="w-full text-left text-xs" id="patTableDOM">
                     <thead class="bg-emerald-800 text-white uppercase text-[10px]">
                         <tr><th class="p-4">Site</th><th class="p-4">Famille Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr>
                     </thead>
@@ -92,7 +92,7 @@
         async function processFiles() {
             const f25 = document.getElementById('file2025').files[0], f26 = document.getElementById('file2026').files[0], 
                   fFam = document.getElementById('fileFamily').files[0], fCGI = document.getElementById('fileCGI').files[0];
-            if (!f25 || !f26 || !fFam || !fCGI) return alert("Fichiers manquants.");
+            if (!f25 || !f26 || !fFam || !fCGI) return alert("Importez les 4 fichiers.");
 
             const famRows = await readExcel(fFam);
             families = {};
@@ -157,7 +157,7 @@
             const tbody = document.getElementById('tableMain'); tbody.innerHTML = '';
             let tExt25 = 0, tExt26 = 0, tRab25 = 0, tRab26 = 0, tCha25 = 0, tCha26 = 0;
 
-            // 1. BLOC EXTERNES
+            // 1. EXTERNES
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Points de Vente Externes</td></tr>`;
             SITES_LIST.forEach(s => {
                 const d = globalData.filter(x => x.site === s).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
@@ -168,7 +168,7 @@
             });
             tbody.appendChild(createTotalRow("TOTAL POINTS DE VENTE EXTERNES", tExt25, tExt26));
 
-            // 2. BLOC RABAT
+            // 2. RABAT SIÈGE
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège (Cuisines Ventilées)</td></tr>`;
             globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => {
                 tbody.appendChild(createRow({name: r.famille, ...r}));
@@ -176,21 +176,21 @@
             });
             tbody.appendChild(createTotalRow("TOTAL RABAT SIÈGE", tRab25, tRab26));
 
-            // 3. BLOC CHARIOT
+            // 3. UNITÉ MOBILE
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Unité Mobile</td></tr>`;
             const chItems = globalData.filter(x => x.site === "CHARIOT");
             chItems.forEach(r => { tCha25 += r.ca25; tCha26 += r.ca26; });
             tbody.appendChild(createRow({name: "CHARIOT RABAT", ca25: tCha25, ca26: tCha26}));
             tbody.appendChild(createTotalRow("TOTAL UNITÉ MOBILE", tCha25, tCha26));
 
-            // --- NOUVEAUX TOTAUX COMBINÉS ---
+            // --- NOUVEAUX TOTAUX DEMANDÉS ---
             const tRabGlobal25 = tRab25 + tCha25;
             const tRabGlobal26 = tRab26 + tCha26;
-            tbody.appendChild(createTotalRow("TOTAL RABAT (SIÈGE + UNITÉ MOBILE)", tRabGlobal25, tRabGlobal26, "bg-blue-100"));
+            tbody.appendChild(createTotalRow("TOTAL RABAT (SIÈGE + UNITÉ MOBILE)", tRabGlobal25, tRabGlobal26, "bg-blue-100 font-bold"));
 
             const tGrandTotal25 = tExt25 + tRabGlobal25;
             const tGrandTotal26 = tExt26 + tRabGlobal26;
-            tbody.appendChild(createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU (EXTERNES + RABAT GLOBAL)", tGrandTotal25, tGrandTotal26));
+            tbody.appendChild(createGrandTotalRow("TOTAL GÉNÉRAL (EXTERNES + SIÈGE + MOBILE)", tGrandTotal25, tGrandTotal26));
         }
 
         function createRow(r) {
@@ -200,17 +200,17 @@
             return tr;
         }
 
-        function createTotalRow(label, ca25, ca26, customBg = "row-total") {
+        function createTotalRow(label, ca25, ca26, customClass = "row-total") {
             const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
-            tr.className = customBg;
-            tr.innerHTML = `<td class="p-4 uppercase tracking-tighter">${label}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right">${f(ca26)}</td><td class="p-4 text-center">${evo.toFixed(1)}%</td><td class="p-4 text-center">${ca26 > ca25 ? '🏆' : ''}</td>`;
+            tr.className = customClass;
+            tr.innerHTML = `<td class="p-4 uppercase tracking-tighter">${label}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">${ca26 > ca25 ? '🏆' : ''}</td>`;
             return tr;
         }
 
         function createGrandTotalRow(label, ca25, ca26) {
             const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
             tr.className = "row-grand-total";
-            tr.innerHTML = `<td class="p-4 uppercase tracking-widest text-[11px]">${label}</td><td class="p-4 text-right text-blue-300 font-black">${f(ca25)}</td><td class="p-4 text-right text-emerald-300 font-black">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">⭐</td>`;
+            tr.innerHTML = `<td class="p-4 uppercase tracking-widest text-[10px]">${label}</td><td class="p-4 text-right font-black text-blue-300">${f(ca25)}</td><td class="p-4 text-right font-black text-emerald-300">${f(ca26)}</td><td class="p-4 text-center font-black">${evo.toFixed(1)}%</td><td class="p-4 text-center">⭐</td>`;
             return tr;
         }
 
@@ -252,15 +252,18 @@
         function exportReport() {
             try {
                 const wb = XLSX.utils.book_new();
+                // ON UTILISE table_to_sheet POUR GARDER LA VUE RÉSUMÉE IDENTIQUE À L'ÉCRAN
+                const wsMain = XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM'));
+                const wsType = XLSX.utils.table_to_sheet(document.getElementById('typeTableDOM'));
+                const wsPat = XLSX.utils.table_to_sheet(document.getElementById('patTableDOM'));
                 
-                // --- ONGLER 1: MATRICE (VUE RÉSUMÉE IDENTIQUE À L'ÉCRAN) ---
-                // On utilise la méthode 'table_to_sheet' sur l'élément DOM pour garder la structure visuelle
-                const mainWs = XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM'));
-                XLSX.utils.book_append_sheet(wb, mainWs, "Matrice Recap");
-
-                // --- ONGLER 2: RESTO VS BAR PAR SITE ---
-                const typeData = [];
-                [...new Set(globalData.map(d => d.site))].forEach(s => {
-                    ["RESTO", "BAR"].forEach(t => {
-                        const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
-                        if(d.ca25 || d.ca26) typeData.push({ Site: s, Categorie: t, "CA 2025": d.ca25, "CA 2026": d.ca26, Evo: d.ca25 ? ((d.ca26-d.ca25)/d.ca25*100).
+                XLSX.utils.book_append_sheet(wb, wsMain, "Matrice Recap");
+                XLSX.utils.book_append_sheet(wb, wsType, "Resto-Bar par Site");
+                XLSX.utils.book_append_sheet(wb, wsPat, "Focus");
+                
+                XLSX.writeFile(wb, "Blueberry_V3.8_CDG_Final.xlsx");
+            } catch(e) { alert("Erreur export: " + e.message); }
+        }
+    </script>
+</body>
+</html>
