@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution - Multi-Sites V3.2</title>
+    <title>Blueberry Evolution - Multi-Sites V3.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,7 +24,7 @@
             <div class="flex items-center gap-3">
                 <span class="text-3xl">🫐</span>
                 <div>
-                    <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.2</span></h1>
+                    <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.1</span></h1>
                     <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Rabat (Familles) vs Sites (Global)</p>
                 </div>
             </div>
@@ -41,7 +41,7 @@
     <div id="setupPanel" class="max-w-3xl mx-auto mt-12 p-10 bg-white rounded-[30px] shadow-2xl border border-slate-100">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Chargement des Données</h2>
-            <p class="text-sm text-slate-400">Importez les fichiers. Les sites externes sont regroupés globalement (MM inclus).</p>
+            <p class="text-sm text-slate-400">Importez les fichiers. Arribat, MegaMall et Chariot seront traités comme des sites globaux.</p>
         </div>
         
         <div class="grid grid-cols-1 gap-6 mb-8">
@@ -60,7 +60,7 @@
                 </div>
             </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition transform active:scale-95 text-sm tracking-widest">LANCER L'ANALYSE V3.2</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition transform active:scale-95 text-sm tracking-widest">LANCER L'ANALYSE V3.1</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-8">
@@ -70,7 +70,7 @@
                 <p id="kpiRabat" class="text-3xl font-black text-blue-900">0 DH</p>
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Sites Distincts (Global)</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase">Sites Distincts (Arribat, Casa, Chariot...)</p>
                 <p id="kpiSites" class="text-3xl font-black text-indigo-600">0 DH</p>
             </div>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
@@ -83,7 +83,7 @@
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
                     <h3 class="text-lg font-black text-slate-800 uppercase">Matrice des Primes</h3>
-                    <p class="text-xs text-slate-400">Détail Famille (Rabat) + Global par Site (Casa, Chariot, MegaMall...)</p>
+                    <p class="text-xs text-slate-400">Détail Famille (Rabat HQ) + Total par Site (Arribat, Casa, Chariot, Kenitra...)</p>
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -119,7 +119,7 @@
         let finalData = [];
         let chartInstance = null;
 
-        // LISTE DES MOTS CLÉS POUR LE REGROUPEMENT GLOBAL
+        // LISTE DES SITES À TRAITER GLOBALEMENT (Ajout de CHARIOT)
         const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "CASA", "ARRIBAT", "MEGA MALL", "MEGAMALL", "CHARIOT"]; 
 
         async function processFiles() {
@@ -168,31 +168,22 @@
                 const siteName = (row['Nom Site'] || "").toUpperCase();
                 const code = row['Code article'] || row['Code'];
 
-                // 1. RECO MEGA MALL (y compris "MM")
-                if (siteName.includes("MM") || siteName.includes("MEGA MALL") || siteName.includes("MEGAMALL")) {
-                    return "TOTAL MEGA MALL";
-                }
-
-                // 2. RECO MOHAMMEDIA (gestion de l'orthographe variable)
-                if (siteName.includes("MOHAMEDIA") || siteName.includes("MOHAMMEDIA")) {
-                    return "TOTAL SITE MOHAMMEDIA";
-                }
-
-                // 3. AUTRES SITES GLOBAUX
+                // Si le site est dans la liste globale (ex: CHARIOT, CASA...)
                 for (const city of EXTERNAL_SITES) {
                     if (siteName.includes(city)) {
+                        if(city === "MEGA MALL" || city === "MEGAMALL") return "TOTAL MEGA MALL";
                         return "TOTAL SITE " + city;
                     }
                 }
 
-                // 4. RABAT (Détail par famille)
+                // Sinon, groupement par Famille (Rabat)
                 return families[code] || "FAMILLE INDÉFINIE (Rabat HQ)";
             };
 
             const aggregate = (dataset, yearProp) => {
                 dataset.forEach(row => {
                     let key = getGroupKey(row);
-                    // On utilise 'CA HT' ou 'CA' ou 'Montant HT' de manière identique pour les deux années
+                    // Utilisation de la même logique de parsing pour 2025 et 2026
                     const ca = parseFloat(row['CA HT'] || row['CA'] || row['Montant HT'] || 0);
 
                     if (!groups[key]) {
@@ -207,6 +198,7 @@
                 });
             };
 
+            // On réinitialise groups pour être sûr que les données ne se mélangent pas
             aggregate(raw2025, 'ca25');
             aggregate(raw2026, 'ca26');
 
@@ -319,13 +311,13 @@
                 "CA 2026 Brut": d.ca26,
                 "Ajust. 2026": d.adj26,
                 "CA 2026 NET": d.ca26 + d.adj26,
-                "Evolution": (d.ca25 + d.adj25) > 0 ? ((d.ca26+d.adj26 - (d.ca25+d.adj25))/(d.ca25+d.adj25)*100).toFixed(2) + '%' : '0%',
+                "Evolution": d.ca25 + d.adj25 > 0 ? ((d.ca26+d.adj26 - (d.ca25+d.adj25))/(d.ca25+d.adj25)*100).toFixed(2) + '%' : '0%',
                 "Prime": (d.ca26+d.adj26 > d.ca25+d.adj25) ? "OUI" : "NON"
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Primes 2026");
-            XLSX.writeFile(wb, "Blueberry_Analytique_V3.2.xlsx");
+            XLSX.writeFile(wb, "Blueberry_Primes_V3.1.xlsx");
         }
     </script>
 </body>
