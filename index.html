@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution - CDG Edition V3.2</title>
+    <title>Blueberry Evolution - CDG V3.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,9 +12,6 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
         .input-adjust { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; width: 90px; text-align: right; font-size: 0.8rem; font-weight: bold; }
-        .row-rabat { background-color: #ffffff; }
-        .row-site { background-color: #eff6ff; font-weight: bold; border-left: 4px solid #3b82f6; }
-        .row-total { background-color: #1e293b; color: white; }
     </style>
 </head>
 <body class="min-h-screen text-slate-800">
@@ -25,74 +22,53 @@
                 <span class="text-3xl">🫐</span>
                 <div>
                     <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.2 CDG</span></h1>
-                    <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Ventilation Menus & Multi-Sites</p>
+                    <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Contrôle de Gestion & Ventilation</p>
                 </div>
             </div>
-            
-            <div class="flex gap-3">
-                <button onclick="exportReport()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition flex items-center gap-2">
-                    <span>💾</span> EXPORT EXCEL
-                </button>
-                <button onclick="location.reload()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-xl transition">🔄</button>
-            </div>
+            <button onclick="exportReport()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition">💾 EXPORT EXCEL</button>
         </div>
     </header>
 
     <div id="setupPanel" class="max-w-4xl mx-auto mt-12 p-10 bg-white rounded-[30px] shadow-2xl border border-slate-100">
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Configuration Analytique</h2>
-            <p class="text-sm text-slate-400">Importez les 4 fichiers pour lancer la ventilation du CA par cuisine.</p>
+            <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Chargement des Données CDG</h2>
+            <p class="text-sm text-slate-400">Importez les fichiers pour activer la répartition automatique des menus.</p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
                 <label class="block text-xs font-black text-blue-900 uppercase mb-2">1. Base Familles (Articles)</label>
-                <input type="file" id="fileFamily" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white cursor-pointer">
+                <input type="file" id="fileFamily" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
             </div>
+
             <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
-                <label class="block text-xs font-black text-amber-900 uppercase mb-2">2. Répartition CGI/CDG (Menus)</label>
-                <input type="file" id="fileCGI" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-amber-600 file:text-white cursor-pointer">
+                <label class="block text-xs font-black text-amber-900 uppercase mb-2">2. Fichier Répartition (CGI/CDG)</label>
+                <input type="file" id="fileCGI" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-amber-600 file:text-white cursor-pointer">
             </div>
+
             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <label class="block text-xs font-black text-slate-500 uppercase mb-2">3. Ventes 2025 (Brut)</label>
-                <input type="file" id="file2025" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
+                <label class="block text-xs font-black text-slate-500 uppercase mb-2">3. Ventes 2025</label>
+                <input type="file" id="file2025" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-slate-200 cursor-pointer">
             </div>
+
             <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <label class="block text-xs font-black text-slate-500 uppercase mb-2">4. Ventes 2026 (Brut)</label>
-                <input type="file" id="file2026" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 cursor-pointer">
+                <label class="block text-xs font-black text-slate-500 uppercase mb-2">4. Ventes 2026</label>
+                <input type="file" id="file2026" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-slate-200 cursor-pointer">
             </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition transform active:scale-95 text-sm tracking-widest uppercase">Calculer la Ventilation V3.2</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition text-sm tracking-widest uppercase">Lancer l'Analyse V3.2</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Total Rabat (Ventilé)</p>
-                <p id="kpiRabat" class="text-3xl font-black text-blue-900">0 DH</p>
+        <div id="kpiContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Sites (Arribat, Casa, Chariot...)</p>
-                <p id="kpiSites" class="text-3xl font-black text-indigo-600">0 DH</p>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase">Évolution Globale</p>
-                <p id="kpiGlobalEvo" class="text-3xl font-black text-slate-800">0%</p>
-            </div>
-        </div>
 
         <div class="bg-white rounded-[30px] shadow-lg border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <div>
-                    <h3 class="text-lg font-black text-slate-800 uppercase">Matrice des Primes & Ventilation</h3>
-                    <p class="text-xs text-slate-400">Le CA des menus est réparti selon les ratios CDG importés.</p>
-                </div>
-            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="text-[9px] font-black text-slate-500 uppercase bg-slate-100 border-b border-slate-200 tracking-widest">
-                            <th class="p-4 w-64">Désignation (Cuisine / Site)</th>
+                        <tr class="text-[9px] font-black text-slate-500 uppercase bg-slate-100 border-b border-slate-200">
+                            <th class="p-4">Désignation Cuisine/Site</th>
                             <th class="p-4 text-right">2025 Brut</th>
                             <th class="p-4 text-right">Ajust.</th>
                             <th class="p-4 text-right font-bold bg-slate-50">2025 NET</th>
@@ -110,10 +86,7 @@
     </div>
 
     <script>
-        let families = {}, repartitionMap = {};
-        let raw2025 = [], raw2026 = [], finalData = [], groups = {};
-        let chartInstance = null;
-
+        let families = {}, repartitionMap = {}, groups = {}, finalData = [];
         const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "CASA", "ARRIBAT", "MEGA MALL", "MEGAMALL", "CHARIOT"];
 
         async function processFiles() {
@@ -122,10 +95,10 @@
             const fFam = document.getElementById('fileFamily').files[0];
             const fCGI = document.getElementById('fileCGI').files[0];
 
-            if (!f25 || !f26 || !fFam || !fCGI) return alert("Veuillez importer les 4 fichiers requis.");
+            if (!f25 || !f26 || !fFam || !fCGI) return alert("Sélectionnez les 4 fichiers.");
 
             try {
-                // 1. Charger Familles
+                // 1. Lire Familles
                 const famRows = await readExcel(fFam);
                 families = {};
                 famRows.forEach(r => {
@@ -133,7 +106,7 @@
                     if(code) families[code] = r['Famille'] || 'AUTRES';
                 });
 
-                // 2. Charger Répartition CGI/CDG
+                // 2. ACTIVATION DE LA REPARTITION MAP (Lecture du 4ème fichier)
                 const cgiRows = await readExcel(fCGI);
                 repartitionMap = {};
                 cgiRows.forEach(r => {
@@ -146,17 +119,15 @@
                     });
                 });
 
-                // 3. Charger Ventes
-                raw2025 = await readExcel(f25);
-                raw2026 = await readExcel(f26);
+                // 3. Lire Ventes
+                const raw25 = await readExcel(f25);
+                const raw26 = await readExcel(f26);
 
+                calculateData(raw25, raw26);
                 document.getElementById('setupPanel').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
-                
-                calculateData();
-            } catch (e) {
-                alert("Erreur lors du traitement : " + e.message);
-            }
+
+            } catch (e) { alert("Erreur: " + e.message); }
         }
 
         function readExcel(file) {
@@ -170,95 +141,72 @@
             });
         }
 
-        function calculateData() {
+        function calculateData(data25, data26) {
             groups = {};
 
             const aggregate = (dataset, yearProp) => {
                 dataset.forEach(row => {
-                    const siteName = (row['Nom Site'] || "").toUpperCase();
+                    const site = (row['Nom Site'] || "").toUpperCase();
                     const designation = (row['Désignation'] || "").toUpperCase().trim();
-                    const code = row['Code article'] || row['Code'];
-                    const ca = parseFloat(row['CA HT'] || row['CA'] || row['Montant HT'] || 0);
+                    const ca = parseFloat(row['CA HT'] || row['CA'] || 0);
 
-                    // LOGIQUE MULTI-SITES (Hors Rabat)
+                    // Vérifier si c'est un site externe (traitement global)
                     let isExternal = false;
-                    for (const city of EXTERNAL_SITES) {
-                        if (siteName.includes(city)) {
-                            let key = (city === "MEGA MALL" || city === "MEGAMALL") ? "TOTAL MEGA MALL" : "TOTAL SITE " + city;
-                            updateGroup(key, ca, yearProp, 'site');
-                            isExternal = true;
-                            break;
+                    for (const s of EXTERNAL_SITES) {
+                        if (site.includes(s)) {
+                            updateGroup("SITE " + s, ca, yearProp, 'site');
+                            isExternal = true; break;
                         }
                     }
-
                     if (isExternal) return;
 
-                    // LOGIQUE RABAT : VENTILATION CGI OU FAMILLE SIMPLE
+                    // SI LE MENU EST DANS LA REPARTITION MAP (Activation Ventilation)
                     if (repartitionMap[designation]) {
-                        // C'est un Menu -> On ventile vers les cuisines
                         repartitionMap[designation].forEach(item => {
                             updateGroup(item.cuisine, ca * item.ratio, yearProp, 'famille');
                         });
                     } else {
-                        // Article Standard -> On utilise la famille
-                        let key = families[code] || "FAMILLE INDÉFINIE (Rabat HQ)";
-                        updateGroup(key, ca, yearProp, 'famille');
+                        // Sinon famille standard
+                        const code = row['Code article'] || row['Code'];
+                        const fam = families[code] || "AUTRES (Rabat)";
+                        updateGroup(fam, ca, yearProp, 'famille');
                     }
                 });
             };
 
-            aggregate(raw2025, 'ca25');
-            aggregate(raw2026, 'ca26');
+            aggregate(data25, 'ca25');
+            aggregate(data26, 'ca26');
 
-            let rabatList = Object.values(groups).filter(g => g.type === 'famille').sort((a,b) => b.ca26 - a.ca26);
-            let siteList = Object.values(groups).filter(g => g.type === 'site').sort((a,b) => b.ca26 - a.ca26);
-
-            finalData = [...rabatList, ...siteList];
             renderTable();
-            updateKPIs(rabatList, siteList);
         }
 
         function updateGroup(key, ca, yearProp, type) {
-            if (!groups[key]) {
-                groups[key] = { name: key, ca25: 0, adj25: 0, ca26: 0, adj26: 0, type: type };
-            }
+            if (!groups[key]) groups[key] = { name: key, ca25: 0, adj25: 0, ca26: 0, adj26: 0, type: type };
             groups[key][yearProp] += ca;
         }
 
         function renderTable() {
             const tbody = document.getElementById('dispatchTable');
             tbody.innerHTML = '';
+            finalData = Object.values(groups).sort((a,b) => b.ca26 - a.ca26);
 
-            tbody.innerHTML += `<tr class="bg-slate-100"><td colspan="9" class="p-2 text-center text-[10px] font-black text-slate-500 uppercase">--- RÉSULTAT VENTILÉ PAR CUISINE (RABAT) ---</td></tr>`;
-
-            let siteHeaderInserted = false;
             finalData.forEach((row, index) => {
-                if(row.type === 'site' && !siteHeaderInserted) {
-                    tbody.innerHTML += `<tr class="bg-blue-50 border-t-2 border-blue-200"><td colspan="9" class="p-2 text-center text-[10px] font-black text-blue-600 uppercase">--- SITES EXTERNES (GLOBAL) ---</td></tr>`;
-                    siteHeaderInserted = true;
-                }
-
                 const net25 = row.ca25 + row.adj25;
                 const net26 = row.ca26 + row.adj26;
-                const evo = net25 > 0 ? ((net26 - net25) / net25) * 100 : 0;
-                const primeOk = (net26 > net25);
-
+                const evo = net25 > 0 ? ((net26 - net25)/net25)*100 : 0;
+                
                 const tr = document.createElement('tr');
-                tr.className = `border-b border-slate-50 hover:bg-slate-50 transition ${row.type === 'site' ? 'row-site' : 'row-rabat'}`;
+                tr.className = "border-b hover:bg-slate-50";
                 tr.innerHTML = `
-                    <td class="p-4 ${row.type === 'site' ? 'text-blue-800 font-black' : 'text-slate-700 font-bold'}">${row.name}</td>
-                    <td class="p-4 text-right text-slate-400 text-xs">${f(row.ca25)}</td>
+                    <td class="p-4 font-bold">${row.name}</td>
+                    <td class="p-4 text-right">${Math.round(row.ca25)}</td>
                     <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj25}" onchange="updateVal(${index}, 'adj25', this.value)"></td>
-                    <td class="p-4 text-right font-black text-slate-700 bg-slate-50">${f(net25)}</td>
-                    <td class="p-4 text-right text-blue-400 text-xs">${f(row.ca26)}</td>
+                    <td class="p-4 text-right font-black bg-slate-50">${Math.round(net25)}</td>
+                    <td class="p-4 text-right">${Math.round(row.ca26)}</td>
                     <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj26}" onchange="updateVal(${index}, 'adj26', this.value)"></td>
-                    <td class="p-4 text-right font-black text-blue-900 bg-blue-50/30">${f(net26)}</td>
-                    <td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo > 0 ? '+' : ''}${evo.toFixed(1)}%</td>
-                    <td class="p-4 text-center">
-                        <span class="text-[10px] font-black px-2 py-1 rounded-full ${primeOk ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}">
-                            ${primeOk ? 'OUI' : 'NON'}
-                        </span>
-                    </td>
+                    <td class="p-4 text-right font-black bg-blue-50">${Math.round(net26)}</td>
+                    <td class="p-4 text-center ${evo > 0 ? 'text-emerald-500' : 'text-red-500'} font-bold">${evo.toFixed(1)}%</td>
+                    <td class="p-4 text-center font-black">${net26 > net25 ? 'OUI' : 'NON'}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -267,37 +215,13 @@
         function updateVal(idx, field, val) {
             finalData[idx][field] = parseFloat(val) || 0;
             renderTable();
-            updateKPIs(finalData.filter(g => g.type === 'famille'), finalData.filter(g => g.type === 'site'));
         }
-
-        function updateKPIs(rabatList, siteList) {
-            const sumRabat = rabatList.reduce((a,b) => a + b.ca26 + b.adj26, 0);
-            const sumSites = siteList.reduce((a,b) => a + b.ca26 + b.adj26, 0);
-            const total25 = finalData.reduce((a,b) => a + b.ca25 + b.adj25, 0);
-            const total26 = finalData.reduce((a,b) => a + b.ca26 + b.adj26, 0);
-            const globalEvo = total25 > 0 ? ((total26 - total25)/total25)*100 : 0;
-
-            document.getElementById('kpiRabat').innerText = f(sumRabat);
-            document.getElementById('kpiSites').innerText = f(sumSites);
-            document.getElementById('kpiGlobalEvo').innerText = (globalEvo > 0 ? '+' : '') + globalEvo.toFixed(2) + "%";
-            document.getElementById('kpiGlobalEvo').className = `text-3xl font-black ${globalEvo > 0 ? 'text-emerald-500' : 'text-red-500'}`;
-        }
-
-        function f(n) { return Math.round(n).toLocaleString('fr-MA') + ' DH'; }
 
         function exportReport() {
-            const exportData = finalData.map(d => ({
-                "Type": d.type === 'site' ? 'SITE' : 'CUISINE VENTILÉE',
-                "Désignation": d.name,
-                "CA 2025 NET": d.ca25 + d.adj25,
-                "CA 2026 NET": d.ca26 + d.adj26,
-                "Evolution": d.ca25 + d.adj25 > 0 ? (((d.ca26+d.adj26)-(d.ca25+d.adj25))/(d.ca25+d.adj25)*100).toFixed(2) + '%' : '0%',
-                "Prime": (d.ca26+d.adj26 > d.ca25+d.adj25) ? "OUI" : "NON"
-            }));
-            const ws = XLSX.utils.json_to_sheet(exportData);
+            const ws = XLSX.utils.json_to_sheet(finalData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Analyse CDG 2026");
-            XLSX.writeFile(wb, "Blueberry_CDG_Ventilation_V3.2.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Primes");
+            XLSX.writeFile(wb, "Blueberry_V3.2_CDG.xlsx");
         }
     </script>
 </body>
