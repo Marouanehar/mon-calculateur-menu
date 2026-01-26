@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V3.5 - CDG</title>
+    <title>Blueberry Evolution V3.6 - CDG</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -12,6 +12,7 @@
         .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
         .tab-active { border-bottom: 4px solid #3b82f6; color: #1e40af; font-weight: 800; }
         .row-site-header { background-color: #e2e8f0; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
+        .row-total { background-color: #f8fafc; font-weight: 900; border-top: 2px solid #cbd5e1; color: #1e293b; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -20,14 +21,14 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.5</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.6</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
                 <button onclick="switchTab('type')" class="tab-btn py-5" id="tab-type">Resto/Bar par Site</button>
                 <button onclick="switchTab('pat')" class="tab-btn py-5" id="tab-pat">Pat/Glace/Burger par Site</button>
             </nav>
-            <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">EXPORT EXCEL</button>
+            <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">💾 EXPORT EXCEL COMPLET</button>
         </div>
     </header>
 
@@ -43,7 +44,6 @@
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
-        
         <div id="page-main" class="tab-content space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table class="w-full text-left text-xs">
@@ -65,13 +65,7 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-slate-800 text-white uppercase text-[10px]">
-                        <tr>
-                            <th class="p-4">Site</th>
-                            <th class="p-4">Catégorie</th>
-                            <th class="p-4 text-right">CA 2025</th>
-                            <th class="p-4 text-right">CA 2026</th>
-                            <th class="p-4 text-center">Evolution</th>
-                        </tr>
+                        <tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evolution</th></tr>
                     </thead>
                     <tbody id="tableType"></tbody>
                 </table>
@@ -82,13 +76,7 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table class="w-full text-left text-xs">
                     <thead class="bg-emerald-800 text-white uppercase text-[10px]">
-                        <tr>
-                            <th class="p-4">Site</th>
-                            <th class="p-4">Famille Focus</th>
-                            <th class="p-4 text-right">CA 2025</th>
-                            <th class="p-4 text-right">CA 2026</th>
-                            <th class="p-4 text-center">Evo %</th>
-                        </tr>
+                        <tr><th class="p-4">Site</th><th class="p-4">Famille Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr>
                     </thead>
                     <tbody id="tablePat"></tbody>
                 </table>
@@ -162,34 +150,64 @@
             found[year] += ca;
         }
 
-        function renderAll() {
-            renderMain(); renderType(); renderPat();
-        }
+        function renderAll() { renderMain(); renderType(); renderPat(); }
 
         function renderMain() {
             const tbody = document.getElementById('tableMain'); tbody.innerHTML = '';
-            // Bloc Sites Externes
+            let tExt25 = 0, tExt26 = 0, tRab25 = 0, tRab26 = 0, tCha25 = 0, tCha26 = 0;
+
+            // BLOC EXTERNES
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Points de Vente Externes</td></tr>`;
             SITES_LIST.forEach(s => {
                 const d = globalData.filter(x => x.site === s).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
-                if(d.ca25 || d.ca26) tbody.appendChild(createRow({name: s, ...d}));
+                if(d.ca25 || d.ca26) {
+                    tbody.appendChild(createRow({name: s, ...d}));
+                    tExt25 += d.ca25; tExt26 += d.ca26;
+                }
             });
-            // Bloc Rabat
+            tbody.appendChild(createTotalRow("TOTAL POINTS DE VENTE EXTERNES", tExt25, tExt26));
+
+            // BLOC RABAT
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège (Cuisines Ventilées)</td></tr>`;
-            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => tbody.appendChild(createRow({name: r.famille, ...r})));
-            // Bloc Chariot
+            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => {
+                tbody.appendChild(createRow({name: r.famille, ...r}));
+                tRab25 += r.ca25; tRab26 += r.ca26;
+            });
+            tbody.appendChild(createTotalRow("TOTAL RABAT SIÈGE", tRab25, tRab26));
+
+            // BLOC CHARIOT
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Unité Mobile</td></tr>`;
-            const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
-            tbody.appendChild(createRow({name: "CHARIOT RABAT", ...ch}));
+            const chItems = globalData.filter(x => x.site === "CHARIOT");
+            chItems.forEach(r => { tCha25 += r.ca25; tCha26 += r.ca26; });
+            tbody.appendChild(createRow({name: "CHARIOT RABAT", ca25: tCha25, ca26: tCha26}));
+            tbody.appendChild(createTotalRow("TOTAL UNITÉ MOBILE", tCha25, tCha26));
+        }
+
+        function createRow(r) {
+            const tr = document.createElement('tr'), evo = r.ca25 > 0 ? ((r.ca26 - r.ca25)/r.ca25)*100 : 0;
+            tr.className = "border-b hover:bg-slate-50";
+            tr.innerHTML = `<td class="p-4 font-bold text-slate-700">${r.name}</td><td class="p-4 text-right">${f(r.ca25)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(r.ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td><td class="p-4 text-center">${r.ca26 > r.ca25 ? '✅' : '❌'}</td>`;
+            return tr;
+        }
+
+        function createTotalRow(label, ca25, ca26) {
+            const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
+            tr.className = "row-total";
+            tr.innerHTML = `<td class="p-4 uppercase tracking-tighter">${label}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right">${f(ca26)}</td><td class="p-4 text-center">${evo.toFixed(1)}%</td><td class="p-4 text-center">${ca26 > ca25 ? '🏆' : ''}</td>`;
+            return tr;
         }
 
         function renderType() {
             const tbody = document.getElementById('tableType'); tbody.innerHTML = '';
-            const sites = [...new Set(globalData.map(d => d.site))];
-            sites.forEach(s => {
+            [...new Set(globalData.map(d => d.site))].forEach(s => {
                 ["RESTO", "BAR"].forEach(t => {
                     const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
-                    if(d.ca25 || d.ca26) tbody.appendChild(createTypeRow(s, t, d.ca25, d.ca26));
+                    if(d.ca25 || d.ca26) {
+                        const tr = document.createElement('tr'), evo = d.ca25 > 0 ? ((d.ca26 - d.ca25)/d.ca25)*100 : 0;
+                        tr.className = "border-b";
+                        tr.innerHTML = `<td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black text-blue-900">${t}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>`;
+                        tbody.appendChild(tr);
+                    }
                 });
             });
         }
@@ -205,20 +223,6 @@
             });
         }
 
-        function createRow(r) {
-            const tr = document.createElement('tr'), evo = r.ca25 > 0 ? ((r.ca26 - r.ca25)/r.ca25)*100 : 0;
-            tr.className = "border-b hover:bg-slate-50";
-            tr.innerHTML = `<td class="p-4 font-bold text-slate-700">${r.name}</td><td class="p-4 text-right">${f(r.ca25)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(r.ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td><td class="p-4 text-center">${r.ca26 > r.ca25 ? '✅' : '❌'}</td>`;
-            return tr;
-        }
-
-        function createTypeRow(site, type, ca25, ca26) {
-            const tr = document.createElement('tr'), evo = ca25 > 0 ? ((ca26 - ca25)/ca25)*100 : 0;
-            tr.className = "border-b";
-            tr.innerHTML = `<td class="p-4 font-bold text-slate-400">${site}</td><td class="p-4 font-black text-blue-900">${type}</td><td class="p-4 text-right">${f(ca25)}</td><td class="p-4 text-right font-black">${f(ca26)}</td><td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>`;
-            return tr;
-        }
-
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
@@ -227,7 +231,33 @@
         }
 
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { XLSX.writeFile(XLSX.utils.book_new(), "Blueberry_V3.5.xlsx"); }
+
+        function exportReport() {
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                // Feuille 1: Matrice
+                const matData = globalData.map(d => ({ Site: d.site, Famille: d.famille, "CA 2025": d.ca25, "CA 2026": d.ca26, Evolution: d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(2)+'%':'0%' }));
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matData), "Matrice Detaille");
+
+                // Feuille 2: Resto vs Bar
+                const typeData = [];
+                [...new Set(globalData.map(d => d.site))].forEach(s => {
+                    ["RESTO", "BAR"].forEach(t => {
+                        const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({ca25: a.ca25+b.ca25, ca26: a.ca26+b.ca26}), {ca25:0, ca26:0});
+                        if(d.ca25 || d.ca26) typeData.push({ Site: s, Type: t, "CA 2025": d.ca25, "CA 2026": d.ca26 });
+                    });
+                });
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(typeData), "Resto-Bar par Site");
+
+                // Feuille 3: Focus
+                const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"];
+                const focData = globalData.filter(d => focus.some(f => d.famille.includes(f))).map(d => ({ Site: d.site, Famille: d.famille, "CA 2025": d.ca25, "CA 2026": d.ca26 }));
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(focData), "Focus PAT-GLACE-BURGER");
+
+                XLSX.writeFile(wb, "Blueberry_Rapport_Complet_V3.6.xlsx");
+            } catch(e) { alert("Erreur export: " + e.message); }
+        }
     </script>
 </body>
 </html>
