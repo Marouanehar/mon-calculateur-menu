@@ -3,91 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution - CDG V3.2</title>
+    <title>Blueberry Evolution V3.3 - Multi-Views</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
         .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
-        .input-adjust { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; width: 90px; text-align: right; font-size: 0.8rem; font-weight: bold; }
+        .tab-active { border-bottom: 4px solid #3b82f6; color: #1e40af; font-weight: 800; }
+        .input-adjust { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; width: 80px; text-align: right; font-size: 0.75rem; }
     </style>
 </head>
-<body class="min-h-screen text-slate-800">
+<body class="min-h-screen">
 
-    <header class="gradient-header text-white sticky top-0 z-50 shadow-lg">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <header class="gradient-header text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span class="text-3xl">🫐</span>
-                <div>
-                    <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-300">V3.2 CDG</span></h1>
-                    <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Contrôle de Gestion & Ventilation</p>
-                </div>
+                <span class="text-2xl">🫐</span>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V3.3</span></h1>
             </div>
-            <button onclick="exportReport()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg transition">💾 EXPORT EXCEL</button>
+            <div class="flex gap-4 items-center">
+                <nav id="navTabs" class="hidden flex gap-6 text-xs font-bold uppercase tracking-widest text-slate-300">
+                    <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
+                    <button onclick="switchTab('type')" class="tab-btn py-5" id="tab-type">Par TYPE</button>
+                    <button onclick="switchTab('pat')" class="tab-btn py-5" id="tab-pat">PAT / GLACE</button>
+                </nav>
+                <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">EXPORT EXCEL</button>
+            </div>
         </div>
     </header>
 
-    <div id="setupPanel" class="max-w-4xl mx-auto mt-12 p-10 bg-white rounded-[30px] shadow-2xl border border-slate-100">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl font-black text-slate-800 uppercase mb-2">Chargement des Données CDG</h2>
-            <p class="text-sm text-slate-400">Importez les fichiers pour activer la répartition automatique des menus.</p>
-        </div>
-        
+    <div id="setupPanel" class="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Configuration des Données</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <label class="block text-xs font-black text-blue-900 uppercase mb-2">1. Base Familles (Articles)</label>
-                <input type="file" id="fileFamily" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <label class="block text-[10px] font-black text-blue-900 uppercase mb-2">1. Base Familles & Types</label>
+                <input type="file" id="fileFamily" class="text-xs w-full">
             </div>
-
-            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
-                <label class="block text-xs font-black text-amber-900 uppercase mb-2">2. Fichier Répartition (CGI/CDG)</label>
-                <input type="file" id="fileCGI" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-amber-600 file:text-white cursor-pointer">
+            <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                <label class="block text-[10px] font-black text-amber-900 uppercase mb-2">2. Répartition CGI (Menus)</label>
+                <input type="file" id="fileCGI" class="text-xs w-full">
             </div>
-
-            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <label class="block text-xs font-black text-slate-500 uppercase mb-2">3. Ventes 2025</label>
-                <input type="file" id="file2025" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-slate-200 cursor-pointer">
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">3. Ventes 2025</label>
+                <input type="file" id="file2025" class="text-xs w-full">
             </div>
-
-            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <label class="block text-xs font-black text-slate-500 uppercase mb-2">4. Ventes 2026</label>
-                <input type="file" id="file2026" accept=".xlsx, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-slate-200 cursor-pointer">
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">4. Ventes 2026</label>
+                <input type="file" id="file2026" class="text-xs w-full">
             </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-800 transition text-sm tracking-widest uppercase">Lancer l'Analyse V3.2</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg hover:bg-blue-800 transition uppercase tracking-widest text-sm">Lancer l'Analyse</button>
     </div>
 
-    <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-8">
-        <div id="kpiContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            </div>
-
-        <div class="bg-white rounded-[30px] shadow-lg border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-[9px] font-black text-slate-500 uppercase bg-slate-100 border-b border-slate-200">
-                            <th class="p-4">Désignation Cuisine/Site</th>
-                            <th class="p-4 text-right">2025 Brut</th>
-                            <th class="p-4 text-right">Ajust.</th>
-                            <th class="p-4 text-right font-bold bg-slate-50">2025 NET</th>
-                            <th class="p-4 text-right text-blue-600">2026 Brut</th>
-                            <th class="p-4 text-right text-blue-600">Ajust.</th>
-                            <th class="p-4 text-right font-bold bg-blue-50/50">2026 NET</th>
+    <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
+        
+        <div id="page-main" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr class="text-[10px] font-black uppercase text-slate-500">
+                            <th class="p-4">Désignation</th>
+                            <th class="p-4 text-right">CA 2025 NET</th>
+                            <th class="p-4 text-right text-blue-700 bg-blue-50">CA 2026 NET</th>
                             <th class="p-4 text-center">Evo %</th>
                             <th class="p-4 text-center">Prime</th>
                         </tr>
                     </thead>
-                    <tbody id="dispatchTable" class="text-sm font-medium"></tbody>
+                    <tbody id="tableMain"></tbody>
                 </table>
             </div>
         </div>
+
+        <div id="page-type" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-800 text-white uppercase text-[10px]">
+                        <tr>
+                            <th class="p-4">Type d'Activité</th>
+                            <th class="p-4 text-right">CA 2025</th>
+                            <th class="p-4 text-right">CA 2026</th>
+                            <th class="p-4 text-center">Evolution</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableType"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-pat" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-pink-600 text-white uppercase text-[10px]">
+                        <tr>
+                            <th class="p-4">Focus Pâtisserie & Glace</th>
+                            <th class="p-4 text-right">CA 2025</th>
+                            <th class="p-4 text-right">CA 2026</th>
+                            <th class="p-4 text-center">Evolution</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablePat"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        let families = {}, repartitionMap = {}, groups = {}, finalData = [];
-        const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "CASA", "ARRIBAT", "MEGA MALL", "MEGAMALL", "CHARIOT"];
+        let families = {}, repartitionMap = {}, groups = {};
+        const EXTERNAL_SITES = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
+        const CHARIOT_KEY = "CHARIOT";
 
         async function processFiles() {
             const f25 = document.getElementById('file2025').files[0];
@@ -95,39 +120,43 @@
             const fFam = document.getElementById('fileFamily').files[0];
             const fCGI = document.getElementById('fileCGI').files[0];
 
-            if (!f25 || !f26 || !fFam || !fCGI) return alert("Sélectionnez les 4 fichiers.");
+            if (!f25 || !f26 || !fFam || !fCGI) return alert("Fichiers manquants.");
 
-            try {
-                // 1. Lire Familles
-                const famRows = await readExcel(fFam);
-                families = {};
-                famRows.forEach(r => {
-                    const code = r['Code article'] || r['Code'];
-                    if(code) families[code] = r['Famille'] || 'AUTRES';
+            // 1. Charger Familles & Types
+            const famRows = await readExcel(fFam);
+            families = {};
+            famRows.forEach(r => {
+                const code = r['Code article'] || r['Code'];
+                if(code) {
+                    families[code] = {
+                        famille: (r['Famille'] || 'AUTRES').toUpperCase(),
+                        type: (r['Type'] || 'NON CLASSIFIÉ').toUpperCase()
+                    };
+                }
+            });
+
+            // 2. Charger CGI (Ventilation)
+            const cgiRows = await readExcel(fCGI);
+            repartitionMap = {};
+            cgiRows.forEach(r => {
+                const menu = (r['Menu'] || r['Désignation'] || "").toUpperCase().trim();
+                if(!menu) return;
+                if(!repartitionMap[menu]) repartitionMap[menu] = [];
+                repartitionMap[menu].push({
+                    cuisine: (r['Cuisine'] || r['Famille Destination']).toUpperCase(),
+                    ratio: parseFloat(r['Pourcentage'] || r['Ratio'] || 0) / 100
                 });
+            });
 
-                // 2. ACTIVATION DE LA REPARTITION MAP (Lecture du 4ème fichier)
-                const cgiRows = await readExcel(fCGI);
-                repartitionMap = {};
-                cgiRows.forEach(r => {
-                    const menu = (r['Menu'] || r['Désignation'] || "").toUpperCase().trim();
-                    if(!menu) return;
-                    if(!repartitionMap[menu]) repartitionMap[menu] = [];
-                    repartitionMap[menu].push({
-                        cuisine: (r['Cuisine'] || r['Famille Destination'] || "INCONNU").toUpperCase(),
-                        ratio: parseFloat(r['Pourcentage'] || r['Ratio'] || 0) / 100
-                    });
-                });
+            // 3. Charger Ventes
+            const raw25 = await readExcel(f25);
+            const raw26 = await readExcel(f26);
 
-                // 3. Lire Ventes
-                const raw25 = await readExcel(f25);
-                const raw26 = await readExcel(f26);
+            calculateAll(raw25, raw26);
 
-                calculateData(raw25, raw26);
-                document.getElementById('setupPanel').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-
-            } catch (e) { alert("Erreur: " + e.message); }
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('navTabs').classList.remove('hidden');
         }
 
         function readExcel(file) {
@@ -141,35 +170,37 @@
             });
         }
 
-        function calculateData(data25, data26) {
+        function calculateAll(data25, data26) {
             groups = {};
 
             const aggregate = (dataset, yearProp) => {
                 dataset.forEach(row => {
                     const site = (row['Nom Site'] || "").toUpperCase();
-                    const designation = (row['Désignation'] || "").toUpperCase().trim();
+                    const design = (row['Désignation'] || "").toUpperCase().trim();
                     const ca = parseFloat(row['CA HT'] || row['CA'] || 0);
+                    const code = row['Code article'] || row['Code'];
 
-                    // Vérifier si c'est un site externe (traitement global)
-                    let isExternal = false;
-                    for (const s of EXTERNAL_SITES) {
-                        if (site.includes(s)) {
-                            updateGroup("SITE " + s, ca, yearProp, 'site');
-                            isExternal = true; break;
-                        }
+                    // 1. SITE EXTERNE ? (MegaMall, Mohammedia, Arribat, Casa, Kenitra)
+                    let externalFound = EXTERNAL_SITES.find(s => site.includes(s));
+                    if (externalFound) {
+                        updateGroup(externalFound, ca, yearProp, 'site', 'SITE EXTERNE');
+                        return;
                     }
-                    if (isExternal) return;
 
-                    // SI LE MENU EST DANS LA REPARTITION MAP (Activation Ventilation)
-                    if (repartitionMap[designation]) {
-                        repartitionMap[designation].forEach(item => {
-                            updateGroup(item.cuisine, ca * item.ratio, yearProp, 'famille');
+                    // 2. CHARIOT ? (Toujours seul, mais classé avec Rabat)
+                    if (site.includes("CHARIOT")) {
+                        updateGroup("CHARIOT", ca, yearProp, 'chariot', 'RABAT GROUP');
+                        return;
+                    }
+
+                    // 3. RABAT HQ (Avec ventilation CGI)
+                    if (repartitionMap[design]) {
+                        repartitionMap[design].forEach(item => {
+                            updateGroup(item.cuisine, ca * item.ratio, yearProp, 'famille', 'RABAT GROUP');
                         });
                     } else {
-                        // Sinon famille standard
-                        const code = row['Code article'] || row['Code'];
-                        const fam = families[code] || "AUTRES (Rabat)";
-                        updateGroup(fam, ca, yearProp, 'famille');
+                        const info = families[code] || { famille: 'AUTRES (Rabat)', type: 'AUTRES' };
+                        updateGroup(info.famille, ca, yearProp, 'famille', 'RABAT GROUP', info.type);
                     }
                 });
             };
@@ -177,51 +208,94 @@
             aggregate(data25, 'ca25');
             aggregate(data26, 'ca26');
 
-            renderTable();
+            renderMainTable();
+            renderTypeTable();
+            renderPatGlaceTable();
         }
 
-        function updateGroup(key, ca, yearProp, type) {
-            if (!groups[key]) groups[key] = { name: key, ca25: 0, adj25: 0, ca26: 0, adj26: 0, type: type };
-            groups[key][yearProp] += ca;
+        function updateGroup(name, ca, yearProp, groupType, section, activityType = 'AUTRES') {
+            if (!groups[name]) groups[name] = { name, ca25: 0, ca26: 0, groupType, section, activityType };
+            groups[name][yearProp] += ca;
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('dispatchTable');
+        function renderMainTable() {
+            const tbody = document.getElementById('tableMain');
             tbody.innerHTML = '';
-            finalData = Object.values(groups).sort((a,b) => b.ca26 - a.ca26);
+            const sorted = Object.values(groups);
 
-            finalData.forEach((row, index) => {
-                const net25 = row.ca25 + row.adj25;
-                const net26 = row.ca26 + row.adj26;
-                const evo = net25 > 0 ? ((net26 - net25)/net25)*100 : 0;
-                
-                const tr = document.createElement('tr');
-                tr.className = "border-b hover:bg-slate-50";
-                tr.innerHTML = `
-                    <td class="p-4 font-bold">${row.name}</td>
-                    <td class="p-4 text-right">${Math.round(row.ca25)}</td>
-                    <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj25}" onchange="updateVal(${index}, 'adj25', this.value)"></td>
-                    <td class="p-4 text-right font-black bg-slate-50">${Math.round(net25)}</td>
-                    <td class="p-4 text-right">${Math.round(row.ca26)}</td>
-                    <td class="p-4 text-right"><input type="number" class="input-adjust" value="${row.adj26}" onchange="updateVal(${index}, 'adj26', this.value)"></td>
-                    <td class="p-4 text-right font-black bg-blue-50">${Math.round(net26)}</td>
-                    <td class="p-4 text-center ${evo > 0 ? 'text-emerald-500' : 'text-red-500'} font-bold">${evo.toFixed(1)}%</td>
-                    <td class="p-4 text-center font-black">${net26 > net25 ? 'OUI' : 'NON'}</td>
-                `;
-                tbody.appendChild(tr);
+            // BLOC SITES EXTERNES
+            tbody.innerHTML += `<tr class="bg-slate-100 font-black text-[10px]"><td colspan="5" class="p-2 px-4">SITES EXTERNES</td></tr>`;
+            sorted.filter(g => g.groupType === 'site').forEach(r => tbody.appendChild(createRow(r)));
+
+            // BLOC RABAT + CHARIOT
+            tbody.innerHTML += `<tr class="bg-blue-900 text-white font-black text-[10px]"><td colspan="5" class="p-2 px-4">RABAT SIÈGE & FAMILLES</td></tr>`;
+            sorted.filter(g => g.groupType === 'famille').forEach(r => tbody.appendChild(createRow(r)));
+            
+            tbody.innerHTML += `<tr class="bg-amber-100 font-black text-[10px]"><td colspan="5" class="p-2 px-4">UNITÉ MOBILE</td></tr>`;
+            sorted.filter(g => g.groupType === 'chariot').forEach(r => tbody.appendChild(createRow(r)));
+        }
+
+        function renderTypeTable() {
+            const tbody = document.getElementById('tableType');
+            tbody.innerHTML = '';
+            const typeSums = {};
+            Object.values(groups).forEach(g => {
+                const t = g.activityType;
+                if(!typeSums[t]) typeSums[t] = { name: t, ca25: 0, ca26: 0 };
+                typeSums[t].ca25 += g.ca25;
+                typeSums[t].ca26 += g.ca26;
             });
+            Object.values(typeSums).sort((a,b) => b.ca26 - a.ca26).forEach(r => tbody.appendChild(createSimpleRow(r)));
         }
 
-        function updateVal(idx, field, val) {
-            finalData[idx][field] = parseFloat(val) || 0;
-            renderTable();
+        function renderPatGlaceTable() {
+            const tbody = document.getElementById('tablePat');
+            tbody.innerHTML = '';
+            Object.values(groups)
+                .filter(g => g.name.includes("PAT") || g.name.includes("GLACE") || g.name.includes("SUCRE"))
+                .forEach(r => tbody.appendChild(createSimpleRow(r)));
         }
+
+        function createRow(r) {
+            const tr = document.createElement('tr');
+            const evo = r.ca25 > 0 ? ((r.ca26 - r.ca25)/r.ca25)*100 : 0;
+            tr.className = "border-b hover:bg-slate-50";
+            tr.innerHTML = `
+                <td class="p-4 font-bold ${r.groupType === 'site' ? 'text-blue-600' : 'text-slate-700'}">${r.name}</td>
+                <td class="p-4 text-right">${f(r.ca25)}</td>
+                <td class="p-4 text-right font-black bg-blue-50/50">${f(r.ca26)}</td>
+                <td class="p-4 text-center font-bold ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>
+                <td class="p-4 text-center font-black text-[10px]">${r.ca26 > r.ca25 ? '✅' : '❌'}</td>
+            `;
+            return tr;
+        }
+
+        function createSimpleRow(r) {
+            const tr = document.createElement('tr');
+            const evo = r.ca25 > 0 ? ((r.ca26 - r.ca25)/r.ca25)*100 : 0;
+            tr.className = "border-b";
+            tr.innerHTML = `
+                <td class="p-4 font-bold">${r.name}</td>
+                <td class="p-4 text-right">${f(r.ca25)}</td>
+                <td class="p-4 text-right font-black">${f(r.ca26)}</td>
+                <td class="p-4 text-center ${evo > 0 ? 'text-emerald-500' : 'text-red-500'}">${evo.toFixed(1)}%</td>
+            `;
+            return tr;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('tab-active');
+        }
+
+        function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
 
         function exportReport() {
-            const ws = XLSX.utils.json_to_sheet(finalData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Primes");
-            XLSX.writeFile(wb, "Blueberry_V3.2_CDG.xlsx");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Object.values(groups)), "Global");
+            XLSX.writeFile(wb, "Blueberry_V3.3.xlsx");
         }
     </script>
 </body>
