@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V5.1 - CDG, Livraison & Glovo</title>
+    <title>Blueberry Evolution V5.2 - CDG & Répartition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V5.1</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V5.2</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-4 text-[9px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
@@ -38,7 +38,7 @@
     </header>
 
     <div id="setupPanel" class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Configuration V5.1</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Configuration V5.2</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">1. Base Familles</label><input type="file" id="fileFamily" class="text-[10px] w-full"></div>
             <div class="p-3 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[9px] font-black uppercase mb-1 text-indigo-700">2. Dispatch CDG 2025 (%)</label><input type="file" id="fileDisp25" class="text-[10px] w-full"></div>
@@ -46,7 +46,7 @@
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">4. Ventes 2025</label><input type="file" id="file2025" class="text-[10px] w-full"></div>
             <div class="p-3 bg-slate-50 rounded-xl border"><label class="block text-[9px] font-black uppercase mb-1">5. Ventes 2026</label><input type="file" id="file2026" class="text-[10px] w-full"></div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer les Analyses</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer l'Analyse</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
@@ -61,11 +61,11 @@
                 <div class="flex items-center justify-between mb-8">
                     <h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter">Saisie de la Deuxième Base</h3>
                     <div class="flex gap-3">
-                        <button onclick="resetBase2()" class="bg-slate-200 text-slate-600 px-6 py-2 rounded-xl font-bold text-xs hover:bg-red-100 hover:text-red-600 transition tracking-widest">RESET TOUT</button>
-                        <button onclick="saveBase2()" class="bg-orange-500 text-white px-8 py-2 rounded-xl font-black text-xs shadow-lg hover:bg-orange-600 transition tracking-widest">ENREGISTRER</button>
+                        <button onclick="resetBase2()" class="bg-slate-200 text-slate-600 px-6 py-2 rounded-xl font-bold text-xs hover:bg-red-100 hover:text-red-600 transition tracking-widest uppercase">Reset</button>
+                        <button onclick="saveBase2()" class="bg-orange-500 text-white px-8 py-2 rounded-xl font-black text-xs shadow-lg hover:bg-orange-600 transition tracking-widest uppercase">Enregistrer</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="p-4 bg-slate-50 rounded-xl space-y-3 border border-slate-100">
                         <p class="font-black text-[10px] text-blue-900 uppercase">Glaces & Sorbets</p>
                         <label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_gla_25" class="input-base2" placeholder="0">
@@ -80,16 +80,6 @@
                         <p class="font-black text-[10px] text-blue-900 uppercase">Chariot Rabat</p>
                         <label class="block text-[10px] text-slate-500 italic">B2 - 2025</label><input type="number" id="b2_cha_25" class="input-base2" placeholder="0">
                         <label class="block text-[10px] text-slate-500 italic">B2 - 2026</label><input type="number" id="b2_cha_26" class="input-base2" placeholder="0">
-                    </div>
-                    <div class="p-4 bg-blue-50 rounded-xl space-y-3 border border-blue-100">
-                        <p class="font-black text-[10px] text-blue-800 uppercase">Livraison Blueberry</p>
-                        <label class="block text-[10px] text-blue-400 italic">B2 - 2025</label><input type="number" id="b2_libl_25" class="input-base2" placeholder="0">
-                        <label class="block text-[10px] text-blue-400 italic">B2 - 2026</label><input type="number" id="b2_libl_26" class="input-base2" placeholder="0">
-                    </div>
-                    <div class="p-4 bg-emerald-50 rounded-xl space-y-3 border border-emerald-100">
-                        <p class="font-black text-[10px] text-emerald-800 uppercase">Glovo</p>
-                        <label class="block text-[10px] text-emerald-400 italic">B2 - 2025</label><input type="number" id="b2_glo_25" class="input-base2" placeholder="0">
-                        <label class="block text-[10px] text-emerald-400 italic">B2 - 2026</label><input type="number" id="b2_glo_26" class="input-base2" placeholder="0">
                     </div>
                 </div>
             </div>
@@ -114,29 +104,25 @@
             const data = {
                 gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value],
                 pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value],
-                cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value],
-                libl: [document.getElementById('b2_libl_25').value, document.getElementById('b2_libl_26').value],
-                glo: [document.getElementById('b2_glo_25').value, document.getElementById('b2_glo_26').value]
+                cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value]
             };
-            localStorage.setItem('blueberry_v51_b2', JSON.stringify(data));
+            localStorage.setItem('blueberry_v52_b2', JSON.stringify(data));
             if(globalData.length > 0) renderAll();
-            alert("Base 2 enregistrée !");
+            alert("Base 2 sauvegardée.");
         }
 
         function loadBase2() {
-            const saved = JSON.parse(localStorage.getItem('blueberry_v51_b2') || 'null');
+            const saved = JSON.parse(localStorage.getItem('blueberry_v52_b2') || 'null');
             if(saved) {
                 document.getElementById('b2_gla_25').value = saved.gla[0]; document.getElementById('b2_gla_26').value = saved.gla[1];
                 document.getElementById('b2_pat_25').value = saved.pat[0]; document.getElementById('b2_pat_26').value = saved.pat[1];
                 document.getElementById('b2_cha_25').value = saved.cha[0]; document.getElementById('b2_cha_26').value = saved.cha[1];
-                document.getElementById('b2_libl_25').value = saved.libl[0]; document.getElementById('b2_libl_26').value = saved.libl[1];
-                document.getElementById('b2_glo_25').value = saved.glo[0]; document.getElementById('b2_glo_26').value = saved.glo[1];
             }
         }
 
         function resetBase2() {
-            if(confirm("Confirmez-vous le RESET complet de la Base 2 ?")) {
-                localStorage.removeItem('blueberry_v51_b2');
+            if(confirm("Confirmez-vous le RESET ?")) {
+                localStorage.removeItem('blueberry_v52_b2');
                 document.querySelectorAll('.input-base2').forEach(i => i.value = '');
                 if(globalData.length > 0) renderAll();
             }
@@ -144,7 +130,7 @@
 
         async function processFiles() {
             const files = ['file2025', 'file2026', 'fileFamily', 'fileDisp25', 'fileDisp26'].map(id => document.getElementById(id).files[0]);
-            if (files.some(f => !f)) return alert("Veuillez importer les 5 fichiers.");
+            if (files.some(f => !f)) return alert("Importez les 5 fichiers.");
             families = parseBaseFam(await readExcel(files[2]));
             dispatchMaps[2025] = parseMatrix(await readExcel(files[3]));
             dispatchMaps[2026] = parseMatrix(await readExcel(files[4]));
@@ -172,19 +158,13 @@
                 data.forEach(row => {
                     const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = String(row['Code article'] || row['Code']);
                     
-                    // NOUVELLE LOGIQUE DE DÉTECTION DES SITES
-                    let site = SITES_LIST.find(s => siteFull.includes(s));
-                    if (!site) {
-                        if (siteFull.includes("CHARIOT")) site = "CHARIOT";
-                        else if (siteFull.includes("GLOVO")) site = "GLOVO";
-                        else if (siteFull.includes("LIVRAISON")) site = "LIVRAISON BLUEBERRY";
-                        else site = "RABAT SIÈGE";
-                    }
+                    // SIMPLIFICATION : Seul le Chariot est isolé, le reste va à Rabat Siège
+                    let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
 
                     const info = families[code] || { famille: "AUTRES", type: "RESTO" };
                     pushData(site, info.famille, ca, year, info.type);
 
-                    if (site === "RABAT SIÈGE" || site === "CHARIOT" || site.includes("LIVRAISON") || site === "GLOVO") {
+                    if (site === "RABAT SIÈGE" || site === "CHARIOT") {
                         const dMap = dispatchMaps[year];
                         if (dMap[code]) dMap[code].forEach(i => cdgSums[year][i.family] = (cdgSums[year][i.family] || 0) + (ca * i.ratio));
                         if (ORIENT_CONFIG[code]) {
@@ -209,29 +189,23 @@
 
         function renderMain() {
             const tbody = document.getElementById('tableMain'); tbody.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
-            let tExt25=0, tExt26=0, tRab25=0, tRab26=0, tMob25=0, tMob26=0;
+            let tE25=0, tE26=0, tR25=0, tR26=0, tC25=0, tC26=0;
             
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Points de Vente Externes</td></tr>`;
-            SITES_LIST.forEach(s => { const d = globalData.filter(x => x.site === s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) { tbody.innerHTML += createRow(s, d.c25, d.c26); tExt25+=d.c25; tExt26+=d.c26; } });
-            tbody.innerHTML += createTotalRow("TOTAL EXTERNES", tExt25, tExt26);
+            SITES_LIST.forEach(s => { const d = globalData.filter(x => x.site === s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) { tbody.innerHTML += createRow(s, d.c25, d.c26); tE25+=d.c25; tE26+=d.c26; } });
+            tbody.innerHTML += createTotalRow("TOTAL EXTERNES", tE25, tE26);
 
             tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège</td></tr>`;
-            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.innerHTML += createRow(r.famille, r.ca25, r.ca26); tRab25+=r.ca25; tRab26+=r.ca26; });
-            tbody.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tRab25, tRab26);
+            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.innerHTML += createRow(r.famille, r.ca25, r.ca26); tR25+=r.ca25; tR26+=r.ca26; });
+            tbody.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tR25, tR26);
 
-            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Services Mobiles & Livraison</td></tr>`;
+            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Services Mobiles</td></tr>`;
             const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-            tbody.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26);
-            const libl = globalData.filter(x => x.site === "LIVRAISON BLUEBERRY").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-            tbody.innerHTML += createRow("LIVRAISON BLUEBERRY", libl.c25, libl.c26);
-            const glo = globalData.filter(x => x.site === "GLOVO").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-            tbody.innerHTML += createRow("GLOVO", glo.c25, glo.c26);
+            tbody.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26); tC25=ch.c25; tC26=ch.c26;
+            tbody.innerHTML += createTotalRow("TOTAL UNITÉ MOBILE", tC25, tC26);
             
-            tMob25 = ch.c25 + libl.c25 + glo.c25; tMob26 = ch.c26 + libl.c26 + glo.c26;
-            tbody.innerHTML += createTotalRow("TOTAL MOBILES / LIVRAISON", tMob25, tMob26);
-            
-            tbody.innerHTML += createTotalRow("TOTAL RABAT GLOBAL", tRab25 + tMob25, tRab26 + tMob26, "bg-blue-100 font-bold");
-            tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tExt25 + tRab25 + tMob25, tExt26 + tRab26 + tMob26);
+            tbody.innerHTML += createTotalRow("TOTAL RABAT GLOBAL", tR25+tC25, tR26+tC26, "bg-blue-100 font-bold");
+            tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tE25+tR25+tC25, tE26+tR26+tC26);
         }
 
         function renderDispatch() {
@@ -262,7 +236,7 @@
         function renderPat() { const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`; const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"]; globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => { tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${d.site}</td><td class="p-4 font-black">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold ${d.ca26>d.ca25?'text-emerald-500':'text-red-500'}">${d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(1):'0'}%</td></tr>`; }); }
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('menuTableDOM')), "Orient Rabat"); XLSX.writeFile(wb, "Blueberry_V5.1.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('menuTableDOM')), "Orient Rabat"); XLSX.writeFile(wb, "Blueberry_V5.2_Clean.xlsx"); }
     </script>
 </body>
 </html>
