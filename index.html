@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry Evolution V4.0 - CDG Dispatch</title>
+    <title>Blueberry Evolution V4.0 - CDG Répartition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
         .row-site-header { background-color: #e2e8f0; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
         .row-total { background-color: #f8fafc; font-weight: 900; border-top: 2px solid #cbd5e1; color: #1e293b; }
         .row-grand-total { background-color: #1e293b; color: white; font-weight: 900; }
+        .bg-dispatch { background-color: #f5f3ff; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -22,29 +23,43 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">🫐</span>
-                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.0</span></h1>
+                <h1 class="text-lg font-black uppercase tracking-tighter">Blueberry <span class="text-blue-400">V4.0 CDG</span></h1>
             </div>
             <nav id="navTabs" class="hidden flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-300">
                 <button onclick="switchTab('main')" class="tab-btn tab-active py-5" id="tab-main">Matrice</button>
                 <button onclick="switchTab('type')" class="tab-btn py-5" id="tab-type">Resto/Bar par Site</button>
-                <button onclick="switchTab('dispatch')" class="tab-btn py-5" id="tab-dispatch">Répartition CDG Familles</button>
+                <button onclick="switchTab('pat')" class="tab-btn py-5" id="tab-pat">Pat/Glace/Burger</button>
+                <button onclick="switchTab('dispatch')" class="tab-btn py-5 text-indigo-300" id="tab-dispatch">Répartition Cuisines (CDG)</button>
             </nav>
-            <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">💾 EXPORT VUE RÉSUMÉE</button>
+            <button onclick="exportReport()" class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black shadow-lg">💾 EXPORT EXCEL</button>
         </div>
     </header>
 
     <div id="setupPanel" class="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-xl border border-slate-200">
-        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase">Configuration CDG</h2>
+        <h2 class="text-xl font-black text-slate-800 mb-6 text-center uppercase tracking-tighter">Pilotage CDG & Répartition</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">1. Base Familles (Articles)</label><input type="file" id="fileFamily" class="text-xs w-full"></div>
-            <div class="p-4 bg-indigo-50 rounded-xl border-indigo-200 border"><label class="block text-[10px] font-black uppercase mb-2 text-indigo-700">2. Matrice de Répartition CDG (%)</label><input type="file" id="fileDispatch" class="text-xs w-full"></div>
-            <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">3. Ventes 2025</label><input type="file" id="file2025" class="text-xs w-full"></div>
-            <div class="p-4 bg-slate-50 rounded-xl border"><label class="block text-[10px] font-black uppercase mb-2">4. Ventes 2026</label><input type="file" id="file2026" class="text-xs w-full"></div>
+            <div class="p-4 bg-slate-50 rounded-xl border">
+                <label class="block text-[10px] font-black uppercase mb-2">1. Base Familles (Articles)</label>
+                <input type="file" id="fileFamily" class="text-xs w-full">
+            </div>
+            <div class="p-4 bg-indigo-50 rounded-xl border-indigo-200 border">
+                <label class="block text-[10px] font-black uppercase mb-2 text-indigo-700">2. Matrice de Répartition CDG (%)</label>
+                <input type="file" id="fileDispatch" class="text-xs w-full">
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border">
+                <label class="block text-[10px] font-black uppercase mb-2">3. Ventes 2025</label>
+                <input type="file" id="file2025" class="text-xs w-full">
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border">
+                <label class="block text-[10px] font-black uppercase mb-2">4. Ventes 2026</label>
+                <input type="file" id="file2026" class="text-xs w-full">
+            </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Lancer l'Analyse CDG</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Calculer la Répartition V4.0</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-7xl mx-auto p-6 space-y-6">
+        
         <div id="page-main" class="tab-content space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table class="w-full text-left text-xs" id="mainTableDOM"><tbody id="tableMain"></tbody></table>
@@ -53,26 +68,38 @@
 
         <div id="page-type" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="typeTableDOM"><tbody id="tableType"></tbody></table></div></div>
 
+        <div id="page-pat" class="tab-content hidden"><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><table class="w-full text-left text-xs" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
+
         <div id="page-dispatch" class="tab-content hidden space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 bg-indigo-900 text-white">
+                    <h3 class="font-black uppercase text-xs tracking-widest">Analyse de la Charge de Travail (Cuisines Rabat)</h3>
+                    <p class="text-[10px] opacity-70">Affiche uniquement le CA dispatché selon les ratios CDG pour le Siège et le Chariot.</p>
+                </div>
                 <table class="w-full text-left text-xs" id="dispatchTableDOM">
-                    <thead class="bg-indigo-900 text-white uppercase text-[10px]">
-                        <tr><th class="p-4">Famille Répartie (CDG)</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr>
+                    <thead class="bg-slate-100 border-b">
+                        <tr class="text-[10px] font-black uppercase text-slate-500">
+                            <th class="p-4">Cuisine / Famille travaillée</th>
+                            <th class="p-4 text-right">Montant CDG 2025</th>
+                            <th class="p-4 text-right text-indigo-700">Montant CDG 2026</th>
+                            <th class="p-4 text-center">Evolution CDG %</th>
+                        </tr>
                     </thead>
                     <tbody id="tableDispatch"></tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
     <script>
-        let families = {}, dispatchMap = {}, globalData = [], dispatchSummary = { 2025: {}, 2026: {} };
+        let families = {}, dispatchMap = {}, globalData = [], cdgCuisineSums = { 2025: {}, 2026: {} };
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
 
         async function processFiles() {
             const f25 = document.getElementById('file2025').files[0], f26 = document.getElementById('file2026').files[0], 
                   fFam = document.getElementById('fileFamily').files[0], fDisp = document.getElementById('fileDispatch').files[0];
-            if (!f25 || !f26 || !fFam || !fDisp) return alert("Importez les 4 fichiers.");
+            if (!f25 || !f26 || !fFam || !fDisp) return alert("Veuillez importer les 4 fichiers.");
 
             const famRows = await readExcel(fFam);
             families = {};
@@ -96,7 +123,7 @@
                 if(ratios.length > 0) dispatchMap[code] = ratios;
             });
 
-            calculate(await readExcel(f25), await readExcel(f26));
+            calculateAll(await readExcel(f25), await readExcel(f26));
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('navTabs').classList.remove('hidden');
@@ -110,32 +137,32 @@
             });
         }
 
-        function calculate(d25, d26) {
-            globalData = []; dispatchSummary = { 2025: {}, 2026: {} };
+        function calculateAll(d25, d26) {
+            globalData = []; 
+            cdgCuisineSums = { 2025: {}, 2026: {} };
 
-            const agg = (data, year) => {
+            const aggregate = (data, year) => {
                 data.forEach(row => {
                     const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = row['Code article'] || row['Code'];
                     let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
                     const info = families[code] || { famille: "AUTRES", type: "RESTO" };
 
-                    // 1. Matrice Standard (par site/famille primaire)
+                    // 1. Pages Standards (Matrice, Type, Focus)
                     pushData(site, info.famille, ca, year, info.type);
 
-                    // 2. Répartition CDG (uniquement pour Rabat Siège + Mobile selon ton souhait)
+                    // 2. LOGIQUE PAGE 4 (Répartition CDG Rabat)
                     if (site === "RABAT SIÈGE" || site === "CHARIOT") {
                         if (dispatchMap[code]) {
                             dispatchMap[code].forEach(item => {
-                                dispatchSummary[year][item.family] = (dispatchSummary[year][item.family] || 0) + (ca * item.ratio);
+                                cdgCuisineSums[year][item.family] = (cdgCuisineSums[year][item.family] || 0) + (ca * item.ratio);
                             });
-                        } else {
-                            dispatchSummary[year][info.famille] = (dispatchSummary[year][info.famille] || 0) + ca;
                         }
+                        // Note: On ne compte QUE ce qui est dans le fichier dispatch ici pour isoler le CA CDG.
                     }
                 });
             };
-            agg(d25, 2025); agg(d26, 2026);
-            render();
+            aggregate(d25, 2025); aggregate(d26, 2026);
+            renderAll();
         }
 
         function pushData(site, famille, ca, year, type) {
@@ -144,53 +171,73 @@
             if(year === 2025) found.ca25 += ca; else found.ca26 += ca;
         }
 
-        function render() {
-            // MATRICE
-            const tm = document.getElementById('tableMain'); tm.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
-            let tE25=0, tE26=0, tR25=0, tR26=0, tC25=0, tC26=0;
-            
-            tm.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Sites Externes</td></tr>`;
+        function renderAll() {
+            renderMain(); renderType(); renderPat(); renderDispatch();
+        }
+
+        function renderMain() {
+            const tbody = document.getElementById('tableMain'); tbody.innerHTML = `
+                <thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`;
+            let tExt25 = 0, tExt26 = 0, tRab25 = 0, tRab26 = 0, tCha25 = 0, tCha26 = 0;
+
+            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Sites Externes</td></tr>`;
             SITES_LIST.forEach(s => {
-                const d = globalData.filter(x => x.site === s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-                if(d.c25||d.c26) { tm.innerHTML += createRow(s, d.c25, d.c26); tE25+=d.c25; tE26+=d.c26; }
+                const d = globalData.filter(x => x.site === s).reduce((a,b) => ({c25: a.c25+b.ca25, c26: a.c26+b.ca26}), {c25:0, c26:0});
+                if(d.c25 || d.c26) { tbody.innerHTML += createRow(s, d.c25, d.c26); tExt25 += d.c25; tExt26 += d.c26; }
             });
-            tm.innerHTML += createTotalRow("TOTAL EXTERNES", tE25, tE26);
+            tbody.innerHTML += createTotalRow("TOTAL POINTS DE VENTE EXTERNES", tExt25, tExt26);
 
-            tm.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège</td></tr>`;
-            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tm.innerHTML += createRow(r.famille, r.ca25, r.ca26); tR25+=r.ca25; tR26+=r.ca26; });
-            tm.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tR25, tR26);
+            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Rabat Siège</td></tr>`;
+            globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.innerHTML += createRow(r.famille, r.ca25, r.ca26); tRab25 += r.ca25; tRab26 += r.ca26; });
+            tbody.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tRab25, tRab26);
 
-            tm.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Unité Mobile</td></tr>`;
-            const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-            tm.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26); tC25=ch.c25; tC26=ch.c26;
-            tm.innerHTML += createTotalRow("TOTAL UNITÉ MOBILE", tC25, tC26);
-            
-            tm.innerHTML += createTotalRow("TOTAL RABAT GLOBAL (SIÈGE + MOBILE)", tR25+tC25, tR26+tC26, "bg-blue-100 font-bold");
-            tm.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tE25+tR25+tC25, tE26+tR26+tC26);
+            tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4">Unité Mobile</td></tr>`;
+            const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b) => ({c25: a.c25+b.ca25, c26: a.c26+b.ca26}), {c25:0, c26:0});
+            tbody.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26); tCha25 = ch.c25; tCha26 = ch.c26;
+            tbody.innerHTML += createTotalRow("TOTAL UNITÉ MOBILE", tCha25, tCha26);
 
-            // TYPE
-            const tt = document.getElementById('tableType'); tt.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Type</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
-            [...new Set(globalData.map(d=>d.site))].forEach(s => {
-                ["RESTO","BAR"].forEach(t => {
-                    const d = globalData.filter(x=>x.site===s && x.type===t).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-                    if(d.c25||d.c26) tt.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black">${t}</td><td class="p-4 text-right">${f(d.c25)}</td><td class="p-4 text-right font-black">${f(d.c26)}</td><td class="p-4 text-center font-bold ${d.c26>d.c25?'text-emerald-500':'text-red-500'}">${d.c25?((d.c26-d.c25)/d.c25*100).toFixed(1):'0'}%</td></tr>`;
+            tbody.innerHTML += createTotalRow("TOTAL RABAT GLOBAL (SIÈGE + MOBILE)", tRab25 + tCha25, tRab26 + tCha26, "bg-blue-100 font-bold");
+            tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tExt25 + tRab25 + tCha25, tExt26 + tRab26 + tCha26);
+        }
+
+        function renderType() {
+            const tbody = document.getElementById('tableType'); tbody.innerHTML = `<thead class="bg-slate-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Catégorie</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
+            [...new Set(globalData.map(d => d.site))].forEach(s => {
+                ["RESTO", "BAR"].forEach(t => {
+                    const d = globalData.filter(x => x.site === s && x.type === t).reduce((a,b) => ({c25: a.c25+b.ca25, c26: a.c26+b.ca26}), {c25:0, c26:0});
+                    if(d.c25 || d.c26) tbody.innerHTML += createSimpleRow(s, t, d.c25, d.c26);
                 });
-            });
-
-            // DISPATCH
-            const td = document.getElementById('tableDispatch'); td.innerHTML = '';
-            Object.keys(dispatchSummary[2026]).sort().forEach(fam => {
-                const c25 = dispatchSummary[2025][fam]||0, c26 = dispatchSummary[2026][fam]||0, evo = c25?((c26-c25)/c25*100):0;
-                td.innerHTML += `<tr class="border-b hover:bg-indigo-50"><td class="p-4 font-bold text-slate-700">${fam}</td><td class="p-4 text-right">${f(c25)}</td><td class="p-4 text-right font-black text-indigo-900">${f(c26)}</td><td class="p-4 text-center font-bold ${c26>c25?'text-emerald-500':'text-red-500'}">${evo.toFixed(1)}%</td></tr>`;
             });
         }
 
+        function renderPat() {
+            const tbody = document.getElementById('tablePat'); tbody.innerHTML = `<thead class="bg-emerald-800 text-white uppercase text-[10px]"><tr><th class="p-4">Site</th><th class="p-4">Famille Focus</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th></tr></thead>`;
+            const focus = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"];
+            globalData.filter(d => focus.some(f => d.famille.includes(f))).sort((a,b) => a.site.localeCompare(b.site)).forEach(d => tbody.innerHTML += createSimpleRow(d.site, d.famille, d.ca25, d.ca26));
+        }
+
+        function renderDispatch() {
+            const tbody = document.getElementById('tableDispatch'); tbody.innerHTML = '';
+            const allCuisines = [...new Set([...Object.keys(cdgCuisineSums[2025]), ...Object.keys(cdgCuisineSums[2026])])].sort();
+            let sum25 = 0, sum26 = 0;
+
+            allCuisines.forEach(c => {
+                const c25 = cdgCuisineSums[2025][c] || 0, c26 = cdgCuisineSums[2026][c] || 0;
+                const evo = c25 > 0 ? ((c26 - c25)/c25)*100 : 0;
+                tbody.innerHTML += `<tr class="border-b hover:bg-indigo-50"><td class="p-4 font-bold text-slate-700">${c}</td><td class="p-4 text-right">${f(c25)}</td><td class="p-4 text-right font-black text-indigo-900">${f(c26)}</td><td class="p-4 text-center font-bold ${c26>c25?'text-emerald-500':'text-red-500'}">${evo.toFixed(1)}%</td></tr>`;
+                sum25 += c25; sum26 += c26;
+            });
+            tbody.innerHTML += `<tr class="bg-indigo-900 text-white font-black"><td class="p-4 uppercase tracking-widest">TOTAL CA RÉPARTI (CDG RABAT)</td><td class="p-4 text-right text-indigo-200">${f(sum25)}</td><td class="p-4 text-right text-indigo-100">${f(sum26)}</td><td class="p-4 text-center">${sum25?((sum26-sum25)/sum25*100).toFixed(1):'0'}%</td></tr>`;
+        }
+
         function createRow(n,c1,c2) { return `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold text-slate-700">${n}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(c2)}</td><td class="p-4 text-center font-bold ${c2>c1?'text-emerald-500':'text-red-500'}">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'✅':'❌'}</td></tr>`; }
-        function createTotalRow(l,c1,c2,cls="row-total") { return `<tr class="${cls}"><td class="p-4 uppercase">${l}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'🏆':''}</td></tr>`; }
+        function createSimpleRow(s,t,c1,c2) { return `<tr class="border-b"><td class="p-4 font-bold text-slate-400">${s}</td><td class="p-4 font-black text-blue-900">${t}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right font-black">${f(c2)}</td><td class="p-4 text-center font-bold ${c2>c1?'text-emerald-500':'text-red-500'}">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td></tr>`; }
+        function createTotalRow(l,c1,c2,cls="row-total") { return `<tr class="${cls}"><td class="p-4 uppercase tracking-tighter">${l}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">${c2>c1?'🏆':''}</td></tr>`; }
         function createGrandTotalRow(l,c1,c2) { return `<tr class="row-grand-total"><td class="p-4 uppercase tracking-widest text-[10px]">${l}</td><td class="p-4 text-right text-blue-300 font-black">${f(c1)}</td><td class="p-4 text-right text-emerald-300 font-black">${f(c2)}</td><td class="p-4 text-center font-black">${c1?((c2-c1)/c1*100).toFixed(1):'0'}%</td><td class="p-4 text-center">⭐</td></tr>`; }
+        
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); document.getElementById('page-'+id).classList.remove('hidden'); document.getElementById('tab-'+id).classList.add('tab-active'); }
         function f(n) { return Math.round(n).toLocaleString('fr-MA'); }
-        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "Repartition CDG"); XLSX.writeFile(wb, "Blueberry_V4.0_CDG.xlsx"); }
+        function exportReport() { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('mainTableDOM')), "Matrice"); XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById('dispatchTableDOM')), "CDG Rabat"); XLSX.writeFile(wb, "Blueberry_V4.0_CDG.xlsx"); }
     </script>
 </body>
 </html>
