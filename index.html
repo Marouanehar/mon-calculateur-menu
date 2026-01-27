@@ -19,10 +19,6 @@
         .input-base2 { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 8px; width: 100%; text-align: right; font-weight: 700; color: #1e40af; }
         .card { background: white; border-radius: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; }
         .sticky-col { position: sticky; left: 0; background: white; z-index: 10; border-right: 2px solid #f1f5f9; }
-        .bcg-star { background: #ecfdf5; border: 1px solid #10b981; color: #065f46; }
-        .bcg-cow { background: #eff6ff; border: 1px solid #3b82f6; color: #1e40af; }
-        .bcg-dog { background: #fef2f2; border: 1px solid #ef4444; color: #991b1b; }
-        .bcg-puzzle { background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -38,36 +34,51 @@
             </div>
             
             <nav id="navTabs" class="hidden flex-1 flex gap-1 overflow-x-auto no-scrollbar">
-                <button onclick="switchTab('main')" class="tab-btn tab-active uppercase" id="tab-main">1. MATRICE</button>
+                <button onclick="switchTab('main')" class="tab-btn tab-active" id="tab-main">1. MATRICE</button>
                 <button onclick="switchTab('type')" class="tab-btn" id="tab-type">2. RESTO/BAR</button>
                 <button onclick="switchTab('pat')" class="tab-btn" id="tab-pat">3. PAT/GLACE</button>
-                <button onclick="switchTab('dispatch')" class="tab-btn" id="tab-dispatch">4. CDG</button>
+                <button onclick="switchTab('dispatch')" class="tab-btn" id="tab-dispatch">4. CUISINES</button>
                 <button onclick="switchTab('menu')" class="tab-btn" id="tab-menu">5. ORIENT</button>
                 <button onclick="switchTab('saisie')" class="tab-btn" id="tab-saisie">6. BASE 2</button>
                 <button onclick="switchTab('livraison')" class="tab-btn" id="tab-livraison">7. LIVRAISON</button>
-                <button onclick="switchTab('recap')" class="tab-btn" id="tab-recap">8. RECAP</button>
-                <button onclick="switchTab('consol')" class="tab-btn text-yellow-400 font-black italic" id="tab-consol">9. CONSOL</button>
+                <button onclick="switchTab('recap')" class="tab-btn" id="tab-recap">8. RASSEMBL.</button>
+                <button onclick="switchTab('consol')" class="tab-btn" id="tab-consol">9. CONSOL.</button>
                 <button onclick="switchTab('focus')" class="tab-btn text-red-400 font-black" id="tab-focus">10. FOCUS</button>
-                <button onclick="switchTab('kpi')" class="tab-btn text-purple-400 font-black" id="tab-kpi">11. KPI 1</button>
+                <button onclick="switchTab('kpi')" class="tab-btn text-purple-400 font-black" id="tab-kpi">11. KPI</button>
                 <button onclick="switchTab('strat')" class="tab-btn text-emerald-400 font-black" id="tab-strat">12. STRATÉGIE</button>
             </nav>
 
-            <button onclick="exportReport()" class="ml-6 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg">
-                <span>💾</span> EXPORT EXCEL
+            <button onclick="exportReport()" class="ml-6 bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg hover:scale-105 transition-transform">
+                💾 EXPORT EXCEL
             </button>
         </div>
     </header>
 
     <div id="setupPanel" class="max-w-6xl mx-auto mt-12 p-10 card">
-        <div class="text-center mb-10"><h2 class="text-3xl font-black text-slate-800 uppercase tracking-tighter">Analyseur de Performance</h2><p class="text-slate-500 italic">Importez vos fichiers pour la Page 12.</p></div>
+        <div class="text-center mb-10"><h2 class="text-3xl font-black uppercase tracking-tighter">Analyseur de Performance</h2></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            <div class="p-5 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200"><label class="block text-[10px] font-black uppercase text-slate-400 mb-2">1. Base Familles</label><input type="file" id="fileFamily" class="text-xs w-full"></div>
-            <div class="p-5 bg-indigo-50/50 rounded-2xl border-2 border-dashed border-indigo-200"><label class="block text-[10px] font-black uppercase text-indigo-400 mb-2">2. Dispatch CDG 25</label><input type="file" id="fileDisp25" class="text-xs w-full"></div>
-            <div class="p-5 bg-indigo-50/50 rounded-2xl border-2 border-dashed border-indigo-200"><label class="block text-[10px] font-black uppercase text-indigo-400 mb-2">3. Dispatch CDG 26</label><input type="file" id="fileDisp26" class="text-xs w-full"></div>
-            <div class="p-5 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200"><label class="block text-[10px] font-black uppercase text-slate-400 mb-2">4. Ventes 2025</label><input type="file" id="file2025" class="text-xs w-full"></div>
-            <div class="p-5 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200"><label class="block text-[10px] font-black uppercase text-slate-400 mb-2">5. Ventes 2026</label><input type="file" id="file2026" class="text-xs w-full"></div>
+            <div class="p-5 bg-slate-50 border-2 border-dashed rounded-2xl">
+                <label class="block text-[10px] font-black mb-2 uppercase text-slate-400">1. Base Familles (Excel)</label>
+                <input type="file" id="fileFamily" class="text-xs w-full">
+            </div>
+            <div class="p-5 bg-indigo-50/50 border-2 border-dashed rounded-2xl">
+                <label class="block text-[10px] font-black mb-2 uppercase text-indigo-400">2. Dispatch CDG 2025</label>
+                <input type="file" id="fileDisp25" class="text-xs w-full">
+            </div>
+            <div class="p-5 bg-indigo-50/50 border-2 border-dashed rounded-2xl">
+                <label class="block text-[10px] font-black mb-2 uppercase text-indigo-400">3. Dispatch CDG 2026</label>
+                <input type="file" id="fileDisp26" class="text-xs w-full">
+            </div>
+            <div class="p-5 bg-slate-50 border-2 border-dashed rounded-2xl">
+                <label class="block text-[10px] font-black mb-2 uppercase text-slate-400">4. Ventes 2025</label>
+                <input type="file" id="file2025" class="text-xs w-full">
+            </div>
+            <div class="p-5 bg-slate-50 border-2 border-dashed rounded-2xl">
+                <label class="block text-[10px] font-black mb-2 uppercase text-slate-400">5. Ventes 2026</label>
+                <input type="file" id="file2026" class="text-xs w-full">
+            </div>
         </div>
-        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl uppercase tracking-widest">🚀 Générer l'Analyse Master</button>
+        <button onclick="processFiles()" class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl uppercase shadow-xl hover:bg-blue-800 transition-colors">🚀 Générer les 12 pages d'analyse</button>
     </div>
 
     <div id="dashboard" class="hidden max-w-full mx-auto p-6 space-y-6">
@@ -76,79 +87,41 @@
         <div id="page-pat" class="tab-content hidden"><div class="card overflow-hidden"><table class="w-full text-left text-[11px]" id="patTableDOM"><tbody id="tablePat"></tbody></table></div></div>
         <div id="page-dispatch" class="tab-content hidden"><div class="card overflow-hidden"><table class="w-full text-left text-[11px]" id="dispatchTableDOM"><tbody id="tableDispatch"></tbody></table></div></div>
         <div id="page-menu" class="tab-content hidden"><div class="card overflow-hidden"><table class="w-full text-left text-[11px]" id="menuTableDOM"><tbody id="tableMenu"></tbody></table></div></div>
-        <div id="page-saisie" class="tab-content hidden"><div class="max-w-5xl mx-auto card p-10"><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div><label class="block text-[10px] font-bold">GLA 25</label><input type="number" id="b2_gla_25" class="input-base2"></div><div><label class="block text-[10px] font-bold">PAT 25</label><input type="number" id="b2_pat_25" class="input-base2"></div><div><label class="block text-[10px] font-bold">CHA 25</label><input type="number" id="b2_cha_25" class="input-base2"></div><div><label class="block text-[10px] font-bold">GLA 26</label><input type="number" id="b2_gla_26" class="input-base2"></div><div><label class="block text-[10px] font-bold">PAT 26</label><input type="number" id="b2_pat_26" class="input-base2"></div><div><label class="block text-[10px] font-bold">CHA 26</label><input type="number" id="b2_cha_26" class="input-base2"></div></div><button onclick="saveBase2()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Sauvegarder</button></div></div>
-        <div id="page-livraison" class="tab-content hidden"><div class="max-w-4xl mx-auto card p-10"><div class="grid grid-cols-2 gap-8"><div><span id="real_liv_25"></span><input type="number" id="saisie_libl_25" class="input-base2 mb-2"><input type="number" id="saisie_glo_25" class="input-base2"></div><div><span id="real_liv_26"></span><input type="number" id="saisie_libl_26" class="input-base2 mb-2"><input type="number" id="saisie_glo_26" class="input-base2"></div></div><button onclick="saveLivData()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Enregistrer</button></div></div>
+        <div id="page-saisie" class="tab-content hidden"><div class="max-w-5xl mx-auto card p-10"><div class="grid grid-cols-3 gap-6"><div><label class="block text-[10px] font-bold">GLACE 25</label><input type="number" id="b2_gla_25" class="input-base2"></div><div><label class="block text-[10px] font-bold">PAT 25</label><input type="number" id="b2_pat_25" class="input-base2"></div><div><label class="block text-[10px] font-bold">CHAR 25</label><input type="number" id="b2_cha_25" class="input-base2"></div><div><label class="block text-[10px] font-bold">GLACE 26</label><input type="number" id="b2_gla_26" class="input-base2"></div><div><label class="block text-[10px] font-bold">PAT 26</label><input type="number" id="b2_pat_26" class="input-base2"></div><div><label class="block text-[10px] font-bold">CHAR 26</label><input type="number" id="b2_cha_26" class="input-base2"></div></div><button onclick="saveBase2()" class="mt-8 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Enregistrer</button></div></div>
+        <div id="page-livraison" class="tab-content hidden"><div class="max-w-4xl mx-auto card p-10"><div class="grid grid-cols-2 gap-8"><div><p class="text-[10px] font-bold mb-4">Flux 2025 (Fichier: <span id="real_liv_25"></span>)</p><input type="number" id="saisie_libl_25" class="input-base2 mb-2" placeholder="Livraison BB"><input type="number" id="saisie_glo_25" class="input-base2" placeholder="Glovo"></div><div><p class="text-[10px] font-bold mb-4">Flux 2026 (Fichier: <span id="real_liv_26"></span>)</p><input type="number" id="saisie_libl_26" class="input-base2 mb-2" placeholder="Livraison BB"><input type="number" id="saisie_glo_26" class="input-base2" placeholder="Glovo"></div></div><button onclick="saveLivData()" class="mt-8 bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Enregistrer</button></div></div>
         <div id="page-recap" class="tab-content hidden"><div class="card overflow-hidden"><table class="w-full text-[10px]" id="recapTableDOM"><tbody id="tableRecap"></tbody></table></div></div>
-        <div id="page-consol" class="tab-content hidden"><div class="card overflow-hidden"><table class="w-full text-left text-[12px]" id="consolTableDOM"><tbody id="tableConsol"></tbody></table></div></div>
-        <div id="page-focus" class="tab-content hidden"><div class="card p-6"><div class="flex gap-2 mb-4"><select id="filterTrend" onchange="renderFocus()" class="text-xs border p-2"><option value="ALL">Tous</option><option value="NEG">Baisses</option></select><select id="filterSite" onchange="renderFocus()" class="text-xs border p-2"></select><select id="filterFam" onchange="renderFocus()" class="text-xs border p-2"></select></div><table class="w-full text-[11px]" id="focusTableDOM"><tbody id="tableFocus"></tbody></table></div></div>
-        <div id="page-kpi" class="tab-content hidden"><div id="kpi-growth"></div><div id="kpi-liv-weight"></div><div id="kpi-best-site"></div><div id="kpi-best-site-val"></div><div id="kpi-top-fam"></div><div id="kpi-top-fam-val"></div><table class="w-full text-[11px]"><tbody id="kpi-mix-body"></tbody></table><table class="w-full text-[11px]"><tbody id="kpi-pareto-body"></tbody></table></div>
+        <div id="page-consol" class="tab-content hidden"><div class="card overflow-hidden"><table class="w-full text-left text-[11px]" id="consolTableDOM"><tbody id="tableConsol"></tbody></table></div></div>
+
+        <div id="page-focus" class="tab-content hidden"><div class="card p-6"><div class="flex justify-between items-center mb-6"><h3 class="font-black">PERFORMANCE ARTICLES</h3><div class="flex gap-2"><select id="filterTrend" onchange="renderFocus()" class="text-xs border p-2 rounded"><option value="ALL">Tous</option><option value="NEG">Articles en baisse uniquement</option><option value="POS">Articles en hausse uniquement</option></select><select id="filterSite" onchange="renderFocus()" class="text-xs border p-2 rounded"></select></div></div><div class="overflow-x-auto"><table class="w-full text-[11px]" id="focusTableDOM"><thead class="bg-slate-50"><tr><th class="p-4">Code</th><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo%</th><th class="p-4 text-right">Diff.</th></tr></thead><tbody id="tableFocus"></tbody></table></div></div></div>
+
+        <div id="page-kpi" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div class="card p-6"><h3 class="font-black mb-4 border-b">Mix CA par Famille (2026)</h3><table class="w-full text-[11px]"><tbody id="kpi-mix-body"></tbody></table></div>
+                <div class="card p-6"><h3 class="font-black mb-4 border-b">Top Pareto (Articles à auditer - 80% CA)</h3><table class="w-full text-[11px]"><tbody id="kpi-pareto-body"></tbody></table></div>
+            </div>
+        </div>
 
         <div id="page-strat" class="tab-content hidden space-y-6">
-            <div class="card p-6 border-l-8 border-emerald-500">
-                <h3 class="text-sm font-black text-slate-800 uppercase mb-4 flex items-center gap-2">
-                    🌉 Bridge de Performance : Contribution Site au Delta Réseau
-                </h3>
-                <p class="text-[10px] text-slate-400 mb-6 italic">Objectif : Isoler quel site a généré la croissance nette $ \Delta $ du CA entre 2025 et 2026.</p>
-                <div id="strat-waterfall" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 card p-6">
-                    <h3 class="text-sm font-black text-slate-800 uppercase mb-4 border-b pb-2">🎯 Menu Engineering (Matrice BCG)</h3>
-                    <div class="grid grid-cols-2 gap-2 text-center text-[10px] font-bold mb-4">
-                        <div class="bcg-star p-3 rounded-lg">🌟 VEDETTES (Mix High / Croiss High)</div>
-                        <div class="bcg-cow p-3 rounded-lg">🐄 VACHES À LAIT (Mix High / Croiss Low)</div>
-                        <div class="bcg-puzzle p-3 rounded-lg">❓ DILEMMES (Mix Low / Croiss High)</div>
-                        <div class="bcg-dog p-3 rounded-lg">📉 POIDS MORTS (Mix Low / Croiss Low)</div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-[10px]">
-                            <thead class="bg-slate-50 uppercase">
-                                <tr><th class="p-2 text-left">Article</th><th class="p-2 text-center">Catégorie BCG</th><th class="p-2 text-right">CA 2026</th><th class="p-2 text-center">Action CDG</th></tr>
-                            </thead>
-                            <tbody id="strat-bcg-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card p-6 bg-slate-900 text-white">
-                    <h3 class="text-sm font-black uppercase mb-4 border-b border-slate-700 pb-2 text-emerald-400">🛡️ Audit de Risque (Concentration)</h3>
-                    <div class="space-y-8 mt-6">
-                        <div>
-                            <p class="text-[10px] uppercase text-slate-400 mb-2">Dépendance aux Best-Sellers</p>
-                            <div class="text-3xl font-black" id="risk-score">--</div>
-                            <p class="text-[9px] text-slate-500 mt-1 italic">Nombre d'articles générant 50% du CA total.</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] uppercase text-slate-400 mb-2">Indice de Santé (HHI)</p>
-                            <div id="risk-health" class="text-xs font-bold px-3 py-1 rounded-full inline-block">--</div>
-                        </div>
-                        <div class="p-4 bg-slate-800 rounded-xl">
-                            <p class="text-[10px] font-bold text-emerald-400 mb-2">💡 Conseil Stratégique :</p>
-                            <p id="risk-advice" class="text-[10px] leading-relaxed text-slate-300 italic">Analyse en cours...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="card p-6 border-l-8 border-emerald-500"><h3 class="font-black mb-4">Bridge de Croissance par Site</h3><div id="strat-bridge" class="flex gap-4 overflow-x-auto pb-4"></div></div>
+            <div class="card p-6"><h3 class="font-black mb-4 border-b">Menu Engineering (Matrice BCG)</h3><table class="w-full text-[10px]"><thead class="bg-slate-50"><tr><th class="p-2 text-left">Article</th><th class="p-2 text-center">Catégorie</th><th class="p-2 text-right">CA 2026</th><th class="p-2 text-center">Action Recommandée</th></tr></thead><tbody id="strat-bcg-body"></tbody></table></div>
         </div>
     </div>
 
     <script>
         let families = {}, dispatchMaps = { 2025: {}, 2026: {} }, globalData = [], productData = [];
         let cdgSums = { 2025: {}, 2026: {} }, orientSums = { 2025: {}, 2026: {} }, orientArticleSums = { 2025: {}, 2026: {} };
-        let brutMatrix = { 2025: {}, 2026: {} }, orientTotals = { 2025: {}, 2026: {} }; 
-        let chariotCA = { 2025: 0, 2026: 0 }, realLivTotal = { 2025: 0, 2026: 0 };
-        
+        let brutMatrix = { 2025: {}, 2026: {} }, orientTotals = { 2025: {}, 2026: {} }, chariotCA = { 2025: 0, 2026: 0 }, realLivTotal = { 2025: 0, 2026: 0 };
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
         const BLUEBERRY_RABAT_FAMILIES = ["PETIT DEJEUNER ET BRUNCH", "PATISSERIE", "CREPES", "GLACES ET SORBETS"];
         const ORIENT_CONFIG = { "446716": { name: "ORIENT 1", split: { "CUISINE ORIENTALE": 0.54, "SALADES": 0.46 } }, "446717": { name: "ORIENT 2", split: { "CUISINE ORIENTALE": 0.45, "SALADES": 0.55 } }, "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0.84, "FROZEN YOGURT": 0.16 } }, "449619": { name: "ORIENT 4", split: { "CUISINE ORIENTALE": 0.67, "SALADES": 0.33 } } };
 
         document.addEventListener('DOMContentLoaded', () => { loadBase2(); loadLivData(); });
 
-        function saveBase2() { localStorage.setItem('blueberry_b2_v77', JSON.stringify({ gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value], pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value], cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value] })); renderAll(); }
-        function loadBase2() { const s = JSON.parse(localStorage.getItem('blueberry_b2_v77') || 'null'); if(s) { ['gla','pat','cha'].forEach(k => { if(document.getElementById('b2_'+k+'_25')) document.getElementById('b2_'+k+'_25').value = s[k][0]; if(document.getElementById('b2_'+k+'_26')) document.getElementById('b2_'+k+'_26').value = s[k][1]; }); } }
-        function saveLivData() { localStorage.setItem('blueberry_liv_v77', JSON.stringify({ libl: [document.getElementById('saisie_libl_25').value, document.getElementById('saisie_libl_26').value], glo: [document.getElementById('saisie_glo_25').value, document.getElementById('saisie_glo_26').value] })); renderAll(); }
-        function loadLivData() { const s = JSON.parse(localStorage.getItem('blueberry_liv_v77') || 'null'); if(s) { ['libl','glo'].forEach(k => { if(document.getElementById('saisie_'+k+'_25')) document.getElementById('saisie_'+k+'_25').value = s[k][0]; if(document.getElementById('saisie_'+k+'_26')) document.getElementById('saisie_'+k+'_26').value = s[k][1]; }); } }
+        function saveBase2() { localStorage.setItem('blueberry_b2_v77', JSON.stringify({ gla: [document.getElementById('b2_gla_25').value, document.getElementById('b2_gla_26').value], pat: [document.getElementById('b2_pat_25').value, document.getElementById('b2_pat_26').value], cha: [document.getElementById('b2_cha_25').value, document.getElementById('b2_cha_26').value] })); renderAll(); alert("Enregistré"); }
+        function loadBase2() { const s = JSON.parse(localStorage.getItem('blueberry_b2_v77') || 'null'); if(s) { ['gla','pat','cha'].forEach(k => { if(document.getElementById('b2_'+k+'_25')) { document.getElementById('b2_'+k+'_25').value = s[k][0]; document.getElementById('b2_'+k+'_26').value = s[k][1]; } }); } }
+        function saveLivData() { localStorage.setItem('blueberry_liv_v77', JSON.stringify({ libl: [document.getElementById('saisie_libl_25').value, document.getElementById('saisie_libl_26').value], glo: [document.getElementById('saisie_glo_25').value, document.getElementById('saisie_glo_26').value] })); renderAll(); alert("Enregistré"); }
+        function loadLivData() { const s = JSON.parse(localStorage.getItem('blueberry_liv_v77') || 'null'); if(s) { ['libl','glo'].forEach(k => { if(document.getElementById('saisie_'+k+'_25')) { document.getElementById('saisie_'+k+'_25').value = s[k][0]; document.getElementById('saisie_'+k+'_26').value = s[k][1]; } }); } }
+        function resetBase2() { localStorage.removeItem('blueberry_b2_v77'); location.reload(); }
 
         async function processFiles() {
             const files = ['file2025', 'file2026', 'fileFamily', 'fileDisp25', 'fileDisp26'].map(id => document.getElementById(id).files[0]);
@@ -187,7 +160,9 @@
                 });
             };
             agg(d25, 2025); agg(d26, 2026);
+            document.getElementById('real_liv_25').innerText = f(realLivTotal[2025]); document.getElementById('real_liv_26').innerText = f(realLivTotal[2026]);
             renderAll();
+            initFocusFilters();
         }
 
         function pushData(site, famille, ca, year, type) { let found = globalData.find(d => d.site === site && d.famille === famille); if (!found) { found = { site, famille, ca25: 0, ca26: 0, type }; globalData.push(found); } if(year === 2025) found.ca25 += ca; else found.ca26 += ca; }
@@ -196,86 +171,92 @@
         function renderAll() { renderMain(); renderType(); renderPat(); renderDispatch(); renderOrient(); renderRecap(); renderConsol(); renderFocus(); renderKPI(); renderStrat(); }
         function f(n) { return (n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
-        // --- NOUVELLE LOGIQUE STRATÉGIE (PAGE 12) ---
-        function renderStrat() {
-            const waterfall = document.getElementById('strat-waterfall'); waterfall.innerHTML = '';
-            const bcgBody = document.getElementById('strat-bcg-body'); bcgBody.innerHTML = '';
-            
-            let total25 = 0, total26 = 0, siteContrib = {};
-            productData.forEach(p => { 
-                total25 += p.ca25; total26 += p.ca26; 
-                siteContrib[p.site] = (siteContrib[p.site] || 0) + (p.ca26 - p.ca25);
-            });
-
-            // 1. Waterfall Bridge
-            Object.entries(siteContrib).forEach(([site, delta]) => {
-                const color = delta >= 0 ? 'text-emerald-500' : 'text-red-500';
-                waterfall.innerHTML += `<div class="p-3 bg-white border rounded-xl text-center">
-                    <p class="text-[9px] font-bold uppercase text-slate-400 mb-1">${site}</p>
-                    <p class="text-xs font-black ${color}">${delta >= 0 ? '+' : ''}${f(delta)}</p>
-                </div>`;
-            });
-
-            // 2. BCG Matrix Logic
-            const avgGrowth = total25 ? ((total26 - total25) / total25) : 0;
-            const sortedByCA = [...productData].sort((a,b) => b.ca26 - a.ca26);
-            const top25Percentile = sortedByCA[Math.floor(sortedByCA.length * 0.25)].ca26;
-
-            sortedByCA.slice(0, 30).forEach(p => {
-                const growth = p.ca25 ? (p.ca26 - p.ca25) / p.ca25 : 0;
-                let cat = '', cls = '', action = '';
-                
-                if (p.ca26 >= top25Percentile && growth >= avgGrowth) { cat='STAR'; cls='bcg-star'; action='🚀 Maintenir Invest'; }
-                else if (p.ca26 >= top25Percentile && growth < avgGrowth) { cat='COW'; cls='bcg-cow'; action='💰 Récolter / Cash'; }
-                else if (p.ca26 < top25Percentile && growth >= avgGrowth) { cat='PUZZLE'; cls='bcg-puzzle'; action='🔬 Analyser Potentiel'; }
-                else { cat='DOG'; cls='bcg-dog'; action='✂️ Élaguer / Suppr'; }
-
-                bcgBody.innerHTML += `<tr class="border-b">
-                    <td class="p-2 font-bold uppercase text-slate-600">${p.name}</td>
-                    <td class="p-2 text-center"><span class="${cls} px-2 py-0.5 rounded text-[8px] font-black">${cat}</span></td>
-                    <td class="p-2 text-right font-black">${f(p.ca26)}</td>
-                    <td class="p-2 text-center italic text-slate-400">${action}</td>
-                </tr>`;
-            });
-
-            // 3. Risk Audit
-            let cumul = 0, count = 0;
-            const topArt = sortedByCA.sort((a,b) => b.ca26 - a.ca26);
-            topArt.some(p => { cumul += p.ca26; count++; return cumul >= (total26 * 0.5); });
-            
-            document.getElementById('risk-score').innerText = count + " Art.";
-            const health = document.getElementById('risk-health');
-            const advice = document.getElementById('risk-advice');
-
-            if (count < 10) {
-                health.innerText = "RISQUE ÉLEVÉ"; health.className = "text-xs font-bold px-3 py-1 rounded-full bg-red-500 text-white inline-block";
-                advice.innerText = "Attention : Ton CA est trop dépendant de quelques articles. Si un ingrédient manque ou si un prix monte sur ces "+count+" produits, ton CA chute de 50%. Il faut diversifier les ventes.";
-            } else {
-                health.innerText = "SANTÉ STABLE"; health.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-500 text-white inline-block";
-                advice.innerText = "Ton mix est bien réparti. La dépendance aux best-sellers est maîtrisée. Continue de surveiller le top 20.";
-            }
+        function initFocusFilters() {
+            const s = ["TOUS", ...new Set(productData.map(p => p.site))].sort();
+            document.getElementById('filterSite').innerHTML = s.map(x => `<option value="${x}">${x}</option>`).join('');
         }
 
-        // --- FONCTIONS EXISTANTES (IDENTIQUES) ---
-        function renderMain() { /* Idem V7.7 */ }
-        function renderType() { /* Idem V7.7 */ }
-        function renderPat() { /* Idem V7.7 */ }
-        function renderDispatch() { /* Idem V7.7 */ }
-        function renderOrient() { /* Idem V7.7 */ }
-        function renderRecap() { /* Idem V7.7 */ }
-        function renderConsol() { /* Idem V7.7 */ }
-        function renderFocus() { /* Idem V7.7 */ }
-        function renderKPI() { /* Idem V7.7 */ }
+        function renderFocus() {
+            const trend = document.getElementById('filterTrend').value;
+            const fs = document.getElementById('filterSite').value;
+            const tbody = document.getElementById('tableFocus'); tbody.innerHTML = '';
+            const filtered = productData.filter(p => {
+                const ms = fs === "TOUS" || p.site === fs;
+                if (trend === "NEG") return ms && p.ca26 < p.ca25;
+                if (trend === "POS") return ms && p.ca26 > p.ca25;
+                return ms;
+            }).sort((a,b) => (a.ca26 - a.ca25) - (b.ca26 - b.ca25));
+            filtered.forEach(p => {
+                const diff = p.ca26 - p.ca25;
+                const evo = p.ca25 ? (diff / p.ca25 * 100).toFixed(2) : '100';
+                tbody.innerHTML += `<tr class="border-b">
+                    <td class="p-4 text-slate-500 font-mono">${p.code}</td>
+                    <td class="p-4 font-bold uppercase text-slate-700">${p.name} <span class="text-[9px] block text-slate-400 italic">${p.site}</span></td>
+                    <td class="p-4 text-right">${f(p.ca25)}</td>
+                    <td class="p-4 text-right font-black">${f(p.ca26)}</td>
+                    <td class="p-4 text-center font-black ${diff < 0 ? 'text-red-500' : 'text-emerald-500'}">${evo.replace('.', ',')}%</td>
+                    <td class="p-4 text-right font-black ${diff < 0 ? 'text-red-600 bg-red-50' : 'text-emerald-600 bg-emerald-50'}">${f(diff)}</td>
+                </tr>`;
+            });
+        }
+
+        function renderKPI() {
+            let total26 = productData.reduce((a,b)=>a+b.ca26,0), famT = {};
+            productData.forEach(p => famT[p.famille] = (famT[p.famille] || 0) + p.ca26);
+            const mixBody = document.getElementById('kpi-mix-body'); mixBody.innerHTML = '';
+            Object.entries(famT).sort((a,b)=>b[1]-a[1]).forEach(([fa, ca]) => {
+                const m = (ca/total26*100).toFixed(1);
+                mixBody.innerHTML += `<tr class="border-b"><td class="p-3 font-bold">${fa}</td><td class="p-3 text-right">${f(ca)}</td><td class="p-3 text-right font-black text-indigo-600">${m.replace('.',',')}%</td></tr>`;
+            });
+            const parBody = document.getElementById('kpi-pareto-body'); parBody.innerHTML = '';
+            let cumul = 0;
+            [...productData].sort((a,b)=>b.ca26-a.ca26).slice(0, 15).forEach(p => {
+                cumul += p.ca26; const perc = (cumul/total26*100).toFixed(1);
+                parBody.innerHTML += `<tr class="border-b"><td class="p-3 text-[9px] font-bold">${p.name}</td><td class="p-3 text-right">${f(p.ca26)}</td><td class="p-3 text-right font-black ${perc>80?'text-orange-500':'text-emerald-500'}">${perc.replace('.',',')}%</td></tr>`;
+            });
+        }
+
+        function renderStrat() {
+            let total25 = 0, total26 = 0, siteD = {};
+            productData.forEach(p => { total25 += p.ca25; total26 += p.ca26; siteD[p.site] = (siteD[p.site] || 0) + (p.ca26 - p.ca25); });
+            const bridge = document.getElementById('strat-bridge'); bridge.innerHTML = '';
+            Object.entries(siteD).forEach(([s, d]) => {
+                bridge.innerHTML += `<div class="p-4 bg-white border rounded-xl min-w-[150px] text-center"><p class="text-[9px] font-black uppercase text-slate-400">${s}</p><p class="text-xs font-black ${d>=0?'text-emerald-500':'text-red-500'}">${d>=0?'+':''}${f(d)}</p></div>`;
+            });
+            const bcgBody = document.getElementById('strat-bcg-body'); bcgBody.innerHTML = '';
+            const avgG = total25 ? ((total26-total25)/total25) : 0;
+            const limitCA = [...productData].sort((a,b)=>b.ca26-a.ca26)[Math.floor(productData.length*0.2)].ca26;
+            [...productData].sort((a,b)=>b.ca26-a.ca26).slice(0, 30).forEach(p => {
+                const g = p.ca25 ? (p.ca26-p.ca25)/p.ca25 : 0;
+                let cat = '', cls = '', act = '';
+                if(p.ca26 >= limitCA && g >= avgG) { cat='VEDETTE'; cls='bg-emerald-100 text-emerald-700'; act='Maintenir Marketing'; }
+                else if(p.ca26 >= limitCA && g < avgG) { cat='VACHE À LAIT'; cls='bg-blue-100 text-blue-700'; act='Maximiser Marge'; }
+                else if(p.ca26 < limitCA && g >= avgG) { cat='DILEMME'; cls='bg-amber-100 text-amber-700'; act='Analyser Potentiel'; }
+                else { cat='POIDS MORT'; cls='bg-red-100 text-red-700'; act='Réduire / Supprimer'; }
+                bcgBody.innerHTML += `<tr class="border-b"><td class="p-2 font-bold uppercase">${p.name}</td><td class="p-2 text-center"><span class="${cls} px-2 py-0.5 rounded text-[8px] font-black">${cat}</span></td><td class="p-2 text-right font-black">${f(p.ca26)}</td><td class="p-2 text-center italic text-slate-400">${act}</td></tr>`;
+            });
+        }
+
+        // --- TES RENDERS ORIGINAUX 1-9 ---
+        function renderMain() { const tbody = document.getElementById('tableMain'); tbody.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">P</th></tr></thead>`; let tE25=0, tE26=0, tR25=0, tR26=0; SITES_LIST.forEach(s => { const d = globalData.filter(x => x.site === s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) { tbody.innerHTML += createRow(s, d.c25, d.c26); tE25+=d.c25; tE26+=d.c26; } }); globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.innerHTML += createRow(r.famille, r.ca25, r.ca26); tR25+=r.ca25; tR26+=r.ca26; }); const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); tbody.innerHTML += createRow("CHARIOT", ch.c25, ch.c26); }
+        function createRow(n,c1,c2) { const e = c1?((c2-c1)/c1*100).toFixed(2).replace('.', ','):'0'; return `<tr class="border-b"><td class="p-4 font-bold text-slate-700">${n}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right font-black bg-blue-50">${f(c2)}</td><td class="p-4 text-center font-bold ${c2>c1?'text-emerald-500':'text-red-500'}">${e}%</td><td class="p-4 text-center">${c2>c1?'✅':'❌'}</td></tr>`; }
+        function renderType() { const tbody = document.getElementById('tableType'); [...new Set(globalData.map(d=>d.site))].forEach(s => { ["RESTO","BAR"].forEach(t => { const d = globalData.filter(x=>x.site===s && x.type===t).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) tbody.innerHTML += `<tr class="border-b"><td class="p-4 text-center uppercase">${s}</td><td class="p-4 text-center font-black">${t}</td><td class="p-4 text-right">${f(d.c25)}</td><td class="p-4 text-right font-black">${f(d.c26)}</td><td class="p-4 text-center font-bold">${d.c25?((d.c26-d.c25)/d.c25*100).toFixed(2):0}%</td></tr>`; }); }); }
+        function renderPat() { const tbody = document.getElementById('tablePat'); const fo = ["PATISSERIE", "GLACES ET SORBETS", "BURGER"]; globalData.filter(d => fo.some(f => d.famille.includes(f))).forEach(d => { tbody.innerHTML += `<tr class="border-b"><td class="p-4 uppercase">${d.site}</td><td class="p-4 font-black text-blue-900">${d.famille}</td><td class="p-4 text-right">${f(d.ca25)}</td><td class="p-4 text-right font-black">${f(d.ca26)}</td><td class="p-4 text-center font-bold">${d.ca25?((d.ca26-d.ca25)/d.ca25*100).toFixed(2):0}%</td></tr>`; }); }
+        function renderDispatch() { const tbody = document.getElementById('tableDispatch'); const allC = [...new Set([...Object.keys(cdgSums[2025]), ...Object.keys(cdgSums[2026])])].sort(); allC.forEach(c => { const c25 = cdgSums[2025][c] || 0, c26 = cdgSums[2026][c] || 0; tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold text-slate-700">${c}</td><td class="p-4 text-right">${f(c25)}</td><td class="p-4 text-right font-black">${f(c26)}</td><td class="p-4 text-center font-bold">${c25?((c26-c25)/c25*100).toFixed(2):0}%</td></tr>`; }); }
+        function renderOrient() { const tbody = document.getElementById('tableMenu'); Object.keys(ORIENT_CONFIG).forEach(c => { const n = ORIENT_CONFIG[c].name; tbody.innerHTML += createRow(n, orientTotals[2025][n]||0, orientTotals[2026][n]||0); }); }
+        function renderRecap() { const tbody = document.getElementById('tableRecap'); tbody.innerHTML = `<thead class="bg-slate-100"><tr><th rowspan="2" class="p-3 sticky-col">Famille</th><th colspan="5" class="p-2 text-center">2025</th><th colspan="5" class="p-2 text-center">2026</th></tr><tr class="text-[8px] uppercase text-slate-500"><th>Brut</th><th>-Ori</th><th>+Ori</th><th>+CDG</th><th>Total</th><th>Brut</th><th>-Ori</th><th>+Ori</th><th>+CDG</th><th>Total</th></tr></thead>`; const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort(); const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v77') || '{}'); allFam.forEach(fam => { let rh = `<td class="p-2 font-bold sticky-col">${fam}</td>`; [2025, 2026].forEach(y => { const bM = brutMatrix[y][fam] || 0, oA = orientArticleSums[y][fam] || 0, oV = orientSums[y][fam] || 0, cS = cdgSums[y][fam] || 0; let b2v=0; if(fam==="PATISSERIE") b2v=parseFloat(b2.pat?b2.pat[y===2025?0:1]:0)||0; if(fam==="GLACES ET SORBETS") b2v=parseFloat(b2.gla?b2.gla[y===2025?0:1]:0)||0; const total = bM-oA+oV+cS+b2v; rh += `<td>${f(bM)}</td><td>${f(oA)}</td><td>${f(oV)}</td><td>${f(cS)}</td><td class="font-black bg-slate-50">${f(total)}</td>`; }); tbody.innerHTML += `<tr class="border-b hover:bg-yellow-50 text-[8px]">${rh}</tr>`; }); }
+        function renderConsol() { const tbody = document.getElementById('tableConsol'); tbody.innerHTML = ''; const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort(); const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v77') || '{}'), liv = JSON.parse(localStorage.getItem('blueberry_liv_v77') || '{}'); let s25=0, s26=0; allFam.forEach(fam => { let t25=0, t26=0; [2025, 2026].forEach(y => { const bM = brutMatrix[y][fam] || 0, oA = orientArticleSums[y][fam] || 0, oV = orientSums[y][fam] || 0, cS = cdgSums[y][fam] || 0; let b2v=0; if(fam==="PATISSERIE") b2v=parseFloat(b2.pat?b2.pat[y===2025?0:1]:0)||0; if(fam==="GLACES ET SORBETS") b2v=parseFloat(b2.gla?b2.gla[y===2025?0:1]:0)||0; if(y===2025) t25=bM-oA+oV+cS+b2v; else t26=bM-oA+oV+cS+b2v; }); tbody.innerHTML += createConsRow(fam, t25, t26, "Rassemblement"); s25+=t25; s26+=t26; }); const gl25 = (parseFloat(liv.glo?liv.glo[0]:0)||0), gl26 = (parseFloat(liv.glo?liv.glo[1]:0)||0); tbody.innerHTML += createConsRow("GLOVO", gl25, gl26, "Saisie"); s25+=gl25; s26+=gl26; }
+        function createConsRow(n,v1,v2,src,cls="") { const e = v1?((v2-v1)/v1*100).toFixed(2).replace('.', ','):'0'; return `<tr class="border-b ${cls}"><td class="p-4 font-bold uppercase text-[10px]">${n}</td><td class="p-4 text-right font-black">${f(v1)}</td><td class="p-4 text-right font-black">${f(v2)}</td><td class="p-4 text-center font-bold ${v2>v1?'text-emerald-600':'text-red-600'}">${e}%</td><td class="p-4 text-center text-[9px] opacity-40 italic">${src}</td></tr>`; }
 
         function switchTab(id) { 
             document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); 
             document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active')); 
             document.getElementById('page-'+id).classList.remove('hidden'); 
             document.getElementById('tab-'+id).classList.add('tab-active'); 
-            if(id === 'strat') renderStrat();
+            if(id === 'focus') renderFocus(); if(id === 'kpi') renderKPI(); if(id === 'strat') renderStrat();
         }
 
-        function exportReport() { /* Idem V7.7 */ }
+        function exportReport() { const wb = XLSX.utils.book_new(); function addS(id, n) { XLSX.utils.book_append_sheet(wb, XLSX.utils.table_to_sheet(document.getElementById(id), {raw:false}), n); } addS('mainTableDOM', "Matrice"); addS('consolTableDOM', "Consolidation"); XLSX.writeFile(wb, "Blueberry_Master_V7.7_Full.xlsx"); }
     </script>
 </body>
 </html>
