@@ -256,7 +256,21 @@
             } catch(e) { alert("Erreur : " + e.message); }
         }
 
-        function parseBaseFam(rows) { let map = {}; rows.forEach(r => { const c = r['Code article'] || r['Code'], f = (r['Famille'] || "").toUpperCase(); if(c) map[c] = { famille: f, type: f.includes("BAR") || f.includes("BOISSON") ? "BAR" : "RESTO" }; }); return map; }
+        // CORRECTION : On récupère aussi la désignation dans la base famille
+        function parseBaseFam(rows) { 
+            let map = {}; 
+            rows.forEach(r => { 
+                const c = r['Code article'] || r['Code'], f = (r['Famille'] || "").toUpperCase(); 
+                const d = r['Désignation'] || r['Article'] || r['Libellé'] || "";
+                if(c) map[c] = { 
+                    famille: f, 
+                    designation: d,
+                    type: f.includes("BAR") || f.includes("BOISSON") ? "BAR" : "RESTO" 
+                }; 
+            }); 
+            return map; 
+        }
+        
         function parseMatrix(rows) { let map = {}; rows.forEach(r => { const c = r['Code article'] || r['Code'] || r['CodeArt']; if(!c) return; const ratios = []; Object.keys(r).forEach(k => { if(k.includes('%')) { let v = parseFloat(r[k]); if(v > 0) ratios.push({ family: k.replace('%', '').trim().toUpperCase(), ratio: v > 1 ? v/100 : v }); } }); if(ratios.length > 0) map[c] = ratios; }); return map; }
         function readExcel(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => resolve(XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(e.target.result), {type: 'array'}).Sheets[XLSX.read(new Uint8Array(e.target.result), {type: 'array'}).SheetNames[0]])); reader.readAsArrayBuffer(file); }); }
 
@@ -266,12 +280,18 @@
                 const currentDisp = dispatchMaps[year];
                 data.forEach(row => {
                     const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = String(row['Code article'] || row['Code']);
-                    const name = row['Désignation'] || row['Article'] || "N/A";
+                    
+                    // CORRECTION : Détection multi-colonnes pour le nom et priorité Base Famille
+                    const info = families[code] || { famille: "AUTRES", type: "RESTO", designation: "" };
+                    const nameFromFile = row['Désignation'] || row['Article'] || row['Libellé'] || row['Libelle'] || "NOM INCONNU";
+                    const finalName = info.designation || nameFromFile;
+
                     if (siteFull.includes("LIVRAISON")) realLivTotal[year] += ca;
                     let site = SITES_LIST.find(s => siteFull.includes(s)) || (siteFull.includes("CHARIOT") ? "CHARIOT" : "RABAT SIÈGE");
-                    const info = families[code] || { famille: "AUTRES", type: "RESTO" };
+                    
                     pushData(site, info.famille, ca, year, info.type);
-                    pushProductData(site, info.famille, code, name, ca, year);
+                    pushProductData(site, info.famille, code, finalName, ca, year);
+                    
                     if (site === "CHARIOT") chariotCA[year] += ca;
                     if (site === "RABAT SIÈGE") {
                         brutMatrix[year][info.famille] = (brutMatrix[year][info.famille] || 0) + ca;
@@ -288,9 +308,17 @@
 
         function pushData(site, famille, ca, year, type) { let found = globalData.find(d => d.site === site && d.famille === famille); if (!found) { found = { site, famille, ca25: 0, ca26: 0, type }; globalData.push(found); } if(year === 2025) found.ca25 += ca; else found.ca26 += ca; }
         
+        // CORRECTION : Mise à jour du nom si on trouve une meilleure désignation
         function pushProductData(site, famille, code, name, ca, year) {
             let found = productData.find(d => d.site === site && d.famille === famille && d.code === code);
-            if (!found) { found = { site, famille, code, name, ca25: 0, ca26: 0 }; productData.push(found); }
+            if (!found) { 
+                found = { site, famille, code, name, ca25: 0, ca26: 0 }; 
+                productData.push(found); 
+            }
+            // Si le nom existant est générique et qu'on reçoit un vrai nom, on met à jour
+            if ((found.name === "NOM INCONNU" || found.name === "N/A" || !found.name) && name !== "NOM INCONNU") {
+                found.name = name;
+            }
             if(year === 2025) found.ca25 += ca; else found.ca26 += ca;
         }
 
@@ -301,7 +329,6 @@
             return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n).replace(/\u202f|\u00a0/g, ' ');
         }
 
-        // --- LOGIQUE PAGE 10 ---
         function initFocusFilters() {
             const sites = ["TOUS", ...new Set(productData.map(p => p.site))].sort();
             const fams = ["TOUTES", ...new Set(productData.map(p => p.famille))].sort();
@@ -336,7 +363,6 @@
             });
         }
 
-        // --- RESTE DES RENDERS (IDENTIQUES) ---
         function renderConsol() {
             const tbody = document.getElementById('tableConsol'); tbody.innerHTML = '';
             const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort();
