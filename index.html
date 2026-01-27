@@ -11,7 +11,6 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
         
-        /* Navigation améliorée - Écriture plus grande */
         .tab-btn { 
             font-size: 11px; 
             font-weight: 700; 
@@ -24,7 +23,7 @@
         .tab-btn:hover { opacity: 1; background-color: rgba(255,255,255,0.1); }
         .tab-active { 
             opacity: 1; 
-            border-bottom: 4px solid #facc15; /* Jaune vif pour l'onglet actif */
+            border-bottom: 4px solid #facc15; 
             color: #facc15;
             background-color: rgba(255,255,255,0.05);
         }
@@ -49,7 +48,6 @@
         .card { background: white; border-radius: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #e2e8f0; }
         .sticky-col { position: sticky; left: 0; background: white; z-index: 10; border-right: 2px solid #f1f5f9; }
         
-        /* Scrollbar élégante */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -262,50 +260,76 @@
         function pushData(site, famille, ca, year, type) { let found = globalData.find(d => d.site === site && d.famille === famille); if (!found) { found = { site, famille, ca25: 0, ca26: 0, type }; globalData.push(found); } if(year === 2025) found.ca25 += ca; else found.ca26 += ca; }
         function renderAll() { renderMain(); renderType(); renderPat(); renderDispatch(); renderOrient(); renderRecap(); renderConsol(); }
 
-        // --- FORMATAGE D'AFFICHAGE V7.7 ---
         function f(n) {
             if (n === undefined || n === null || isNaN(n)) return "0,00";
             return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n).replace(/\u202f|\u00a0/g, ' ');
         }
 
+        // --- PAGE 9 : CONSOLIDATION FINALE (ORDRE SPÉCIFIQUE) ---
         function renderConsol() {
             const tbody = document.getElementById('tableConsol'); tbody.innerHTML = '';
-            const allFam = [...new Set([...Object.keys(brutMatrix[2026]), ...Object.keys(cdgSums[2026]), ...Object.keys(orientSums[2026])])].sort();
             const b2 = JSON.parse(localStorage.getItem('blueberry_b2_v77') || '{}'), liv = JSON.parse(localStorage.getItem('blueberry_liv_v77') || '{}');
-            let s25=0, s26=0, bbR25=0, bbR26=0;
             
-            allFam.forEach(fam => {
-                let t25=0, t26=0; [2025, 2026].forEach(y => {
+            let sumRabatFam25 = 0, sumRabatFam26 = 0;
+            let bbR25 = 0, bbR26 = 0; // Pour le filtre spécifique PAT/GLA/CRE/BRU
+
+            // 1. FAMILLES RABAT (Filtrées)
+            BLUEBERRY_RABAT_FAMILIES.forEach(fam => {
+                let t25=0, t26=0;
+                [2025, 2026].forEach(y => {
                     const bM = brutMatrix[y][fam] || 0, oA = orientArticleSums[y][fam] || 0, oV = orientSums[y][fam] || 0, cS = cdgSums[y][fam] || 0;
                     let b2v=0; if(fam==="PATISSERIE") b2v=parseFloat(b2.pat?b2.pat[y===2025?0:1]:0)||0; if(fam==="GLACES ET SORBETS") b2v=parseFloat(b2.gla?b2.gla[y===2025?0:1]:0)||0;
-                    if(y===2025) t25=bM-oA+oV+cS+b2v; else t26=bM-oA+oV+cS+b2v;
+                    if(y===2025) t25 = bM - oA + oV + cS + b2v; else t26 = bM - oA + oV + cS + b2v;
                 });
                 tbody.innerHTML += createConsRow(fam, t25, t26, "Rassemblement");
-                s25+=t25; s26+=t26; if(BLUEBERRY_RABAT_FAMILIES.includes(fam)){ bbR25+=t25; bbR26+=t26; }
+                sumRabatFam25 += t25; sumRabatFam26 += t26;
+                bbR25 += t25; bbR26 += t26;
             });
-            
+
+            // 2. CHARIOT RABAT
+            const ch25 = chariotCA[2025] + (parseFloat(b2.cha?b2.cha[0]:0)||0), ch26 = chariotCA[2026] + (parseFloat(b2.cha?b2.cha[1]:0)||0);
+            tbody.innerHTML += createConsRow("CHARIOT RABAT", ch25, ch26, "Rassemblement", "bg-orange-50 font-bold");
+
+            // 3. TOTAL (FAMILLE RABAT + CHARIOT RABAT)
+            const totRabGlob25 = sumRabatFam25 + ch25;
+            const totRabGlob26 = sumRabatFam26 + ch26;
+            tbody.innerHTML += createConsRow("TOTAL (FAMILLES RABAT + CHARIOT)", totRabGlob25, totRabGlob26, "Sous-total", "bg-blue-100 font-black border-y-2 border-blue-200");
+
+            // 4. SITE LIVRAISON BLUEBERRY
+            const lb25 = parseFloat(liv.libl?liv.libl[0]:0)||0, lb26 = parseFloat(liv.libl?liv.libl[1]:0)||0;
+            tbody.innerHTML += createConsRow("SITE LIVRAISON BLUEBERRY", lb25, lb26, "Saisie");
+
+            // 5. SITE GLOVO
+            const gl25 = parseFloat(liv.glo?liv.glo[0]:0)||0, gl26 = parseFloat(liv.glo?liv.glo[1]:0)||0;
+            tbody.innerHTML += createConsRow("SITE GLOVO", gl25, gl26, "Saisie");
+
+            // 6. BLUEBERRY RABAT (PAT/GLA/CRE/BRU)
+            tbody.innerHTML += createConsRow("BLUEBERRY RABAT (PAT/GLA/CRE/BRU)", bbR25, bbR26, "Total BB", "bg-blue-900 text-white font-black");
+
+            // 7. SITES EXTERNES
+            let sumExt25 = 0, sumExt26 = 0;
+            SITES_LIST.forEach(s => {
+                const d = globalData.filter(x=>x.site===s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
+                if(d.c25||d.c26){ 
+                    tbody.innerHTML += createConsRow(s, d.c25, d.c26, "Matrice");
+                    sumExt25 += d.c25; sumExt26 += d.c26;
+                }
+            });
+            tbody.innerHTML += createConsRow("TOTAL SITES EXTERNES", sumExt25, sumExt26, "Sous-total", "bg-slate-100 font-bold");
+
+            // 8. CDG (TOTAL RÉPARTI) - On ne montre plus les lignes individuelles CDG non-Rabat
             let c25=0, c26=0; Object.values(cdgSums[2025]).forEach(v=>c25+=v); Object.values(cdgSums[2026]).forEach(v=>c26+=v);
             tbody.innerHTML += createConsRow("CDG (TOTAL RÉPARTI)", c25, c26, "CDG Rabat", "bg-indigo-50 font-bold");
 
-            SITES_LIST.forEach(s => {
-                const d = globalData.filter(x=>x.site===s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0});
-                if(d.c25||d.c26){ tbody.innerHTML += createConsRow(s, d.c25, d.c26, "Matrice"); s25+=d.c25; s26+=d.c26; }
-            });
-
-            const gl25 = parseFloat(liv.glo?liv.glo[0]:0)||0, gl26 = parseFloat(liv.glo?liv.glo[1]:0)||0;
-            const lb25 = parseFloat(liv.libl?liv.libl[0]:0)||0, lb26 = parseFloat(liv.libl?liv.libl[1]:0)||0;
-            tbody.innerHTML += createConsRow("SITE GLOVO", gl25, gl26, "Saisie");
-            tbody.innerHTML += createConsRow("SITE LIVRAISON BLUEBERRY", lb25, lb26, "Saisie");
-
-            const ch25 = chariotCA[2025] + (parseFloat(b2.cha?b2.cha[0]:0)||0), ch26 = chariotCA[2026] + (parseFloat(b2.cha?b2.cha[1]:0)||0);
-            tbody.innerHTML += createConsRow("CHARIOT RABAT", ch25, ch26, "Rassemblement", "bg-orange-50 font-bold"); s25+=ch25; s26+=ch26;
-            
-            tbody.innerHTML += createConsRow("BLUEBERRY RABAT (PAT/GLA/CRE/BRU)", bbR25, bbR26, "Total BB", "bg-blue-900 text-white font-black");
-            tbody.innerHTML += `<tr class="bg-emerald-600 text-white font-black"><td class="p-5 uppercase text-sm">TOTAL GÉNÉRAL RÉSEAU</td><td class="p-5 text-right">${f(s25)}</td><td class="p-5 text-right">${f(s26)}</td><td class="p-5 text-center">${(s25?((s26-s25)/s25*100):0).toFixed(2).replace('.', ',')}%</td><td class="p-5"></td></tr>`;
+            // 9. TOTAL GÉNÉRAL RÉSEAU = (famille Rabat + CHariot rabat) + Total des site externe
+            const finalTotal25 = totRabGlob25 + sumExt25;
+            const finalTotal26 = totRabGlob26 + sumExt26;
+            tbody.innerHTML += `<tr class="bg-emerald-600 text-white font-black"><td class="p-5 uppercase text-sm">TOTAL GÉNÉRAL RÉSEAU</td><td class="p-5 text-right">${f(finalTotal25)}</td><td class="p-5 text-right">${f(finalTotal26)}</td><td class="p-5 text-center">${(finalTotal25?((finalTotal26-finalTotal25)/finalTotal25*100):0).toFixed(2).replace('.', ',')}%</td><td class="p-5"></td></tr>`;
         }
 
         function createConsRow(n, v1, v2, src, cls="") { const e = v1?((v2-v1)/v1*100).toFixed(2).replace('.', ','):'0'; return `<tr class="border-b ${cls}"><td class="p-4 font-bold uppercase text-[10px]">${n}</td><td class="p-4 text-right font-black">${f(v1)}</td><td class="p-4 text-right font-black">${f(v2)}</td><td class="p-4 text-center font-bold ${v2>v1?'text-emerald-600':'text-red-600'}">${e}%</td><td class="p-4 text-center text-[9px] opacity-40 italic">${src}</td></tr>`; }
 
+        // --- AUTRES RENDUS (INCHANGÉS) ---
         function renderMain() { const tbody = document.getElementById('tableMain'); tbody.innerHTML = `<thead class="bg-slate-50 border-b text-slate-500 font-black uppercase text-[10px]"><tr><th class="p-4">Désignation</th><th class="p-4 text-right">CA 2025</th><th class="p-4 text-right">CA 2026</th><th class="p-4 text-center">Evo %</th><th class="p-4 text-center">Prime</th></tr></thead>`; let tE25=0, tE26=0, tR25=0, tR26=0, tC25=0, tC26=0; tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4 italic">Points de Vente Externes</td></tr>`; SITES_LIST.forEach(s => { const d = globalData.filter(x => x.site === s).reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); if(d.c25||d.c26) { tbody.innerHTML += createRow(s, d.c25, d.c26); tE25+=d.c25; tE26+=d.c26; } }); tbody.innerHTML += createTotalRow("TOTAL EXTERNES", tE25, tE26); tbody.innerHTML += `<tr class="row-site-header"><td colspan="5" class="p-2 px-4 italic">Rabat Siège (Incl. Livraison)</td></tr>`; globalData.filter(x => x.site === "RABAT SIÈGE").forEach(r => { tbody.innerHTML += createRow(r.famille, r.ca25, r.ca26); tR25+=r.ca25; tR26+=r.ca26; }); tbody.innerHTML += createTotalRow("TOTAL RABAT SIÈGE", tR25, tR26); const ch = globalData.filter(x => x.site === "CHARIOT").reduce((a,b)=>({c25:a.c25+b.ca25, c26:a.c26+b.ca26}),{c25:0,c26:0}); tbody.innerHTML += createRow("CHARIOT RABAT", ch.c25, ch.c26); tC25=ch.c25; tC26=ch.c26; tbody.innerHTML += createTotalRow("TOTAL RABAT GLOBAL", tR25+tC25, tR26+tC26, "bg-blue-100 font-bold"); tbody.innerHTML += createGrandTotalRow("TOTAL GÉNÉRAL RÉSEAU", tE25+tR25+tC25, tE26+tR26+tC26); }
         function createRow(n,c1,c2) { const e = c1?((c2-c1)/c1*100).toFixed(2).replace('.', ','):'0'; return `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold text-slate-700">${n}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right font-black bg-blue-50/50">${f(c2)}</td><td class="p-4 text-center font-bold ${c2>c1?'text-emerald-500':'text-red-500'}">${e}%</td><td class="p-4 text-center">${c2>c1?'✅':'❌'}</td></tr>`; }
         function createTotalRow(l,c1,c2,cls="row-total") { const e = c1?((c2-c1)/c1*100).toFixed(2).replace('.', ','):'0'; return `<tr class="${cls}"><td class="p-4 uppercase">${l}</td><td class="p-4 text-right">${f(c1)}</td><td class="p-4 text-right">${f(c2)}</td><td class="p-4 text-center font-black">${e}%</td><td class="p-4 text-center">${c2>c1?'🏆':''}</td></tr>`; }
