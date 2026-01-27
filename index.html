@@ -76,7 +76,7 @@
                 <button onclick="switchTab('livraison')" class="tab-btn" id="tab-livraison">7. LIVR/GLOVO</button>
                 <button onclick="switchTab('recap')" class="tab-btn" id="tab-recap">8. RASSEMBLEMENT</button>
                 <button onclick="switchTab('consol')" class="tab-btn text-yellow-400 font-black italic" id="tab-consol">9. CONSOLIDATION</button>
-                <button onclick="switchTab('focus')" class="tab-btn text-red-400 font-black" id="tab-focus">10. FOCUS NÉGATIF</button>
+                <button onclick="switchTab('focus')" class="tab-btn text-red-400 font-black" id="tab-focus">10. FOCUS PERFORMANCE</button>
             </nav>
 
             <button onclick="exportReport()" class="ml-6 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2">
@@ -196,24 +196,29 @@
         </div>
 
         <div id="page-focus" class="tab-content hidden">
-            <div class="card p-6 border-red-200">
+            <div class="card p-6 border-slate-200">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                    <h3 class="text-xl font-black text-red-700 uppercase tracking-tighter">📉 Focus Articles en Baisse (Analyse 2026 vs 2025)</h3>
-                    <div class="flex gap-4">
-                        <select id="filterSite" onchange="renderFocus()" class="bg-white border-2 border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-slate-700 uppercase outline-none focus:border-red-400"></select>
-                        <select id="filterFam" onchange="renderFocus()" class="bg-white border-2 border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-slate-700 uppercase outline-none focus:border-red-400"></select>
+                    <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter">📊 Analyse de Performance par Article (2026 vs 2025)</h3>
+                    <div class="flex gap-4 flex-wrap">
+                        <select id="filterTrend" onchange="renderFocus()" class="bg-white border-2 border-indigo-200 rounded-lg px-4 py-2 text-xs font-bold text-indigo-700 uppercase outline-none focus:ring-2 ring-indigo-300">
+                            <option value="ALL">🌟 Tous les articles</option>
+                            <option value="NEG">📉 Focus Baisse uniquement</option>
+                            <option value="POS">📈 Focus Hausse uniquement</option>
+                        </select>
+                        <select id="filterSite" onchange="renderFocus()" class="bg-white border-2 border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-slate-700 uppercase outline-none"></select>
+                        <select id="filterFam" onchange="renderFocus()" class="bg-white border-2 border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-slate-700 uppercase outline-none"></select>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-[11px]" id="focusTableDOM">
-                        <thead class="bg-red-50 text-red-900 uppercase font-black">
+                        <thead class="bg-slate-50 text-slate-900 uppercase font-black">
                             <tr>
                                 <th class="p-4">Code</th>
                                 <th class="p-4">Désignation Article</th>
                                 <th class="p-4 text-right">CA 2025</th>
                                 <th class="p-4 text-right">CA 2026</th>
                                 <th class="p-4 text-center">Évo %</th>
-                                <th class="p-4 text-right text-red-600">Perte Valeur</th>
+                                <th class="p-4 text-right">Différence Valeur</th>
                             </tr>
                         </thead>
                         <tbody id="tableFocus"></tbody>
@@ -232,7 +237,7 @@
         
         const SITES_LIST = ["KENITRA", "MOHAMMEDIA", "ARRIBAT", "MEGA MALL", "CASA"];
         const BLUEBERRY_RABAT_FAMILIES = ["PETIT DEJEUNER ET BRUNCH", "PATISSERIE", "CREPES", "GLACES ET SORBETS"];
-        const ORIENT_CONFIG = { "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0.84, "FROZEN YOGURT": 0.16 } }, "449619": { name: "ORIENT 4", split: { "CUISINE ORIENTALE": 0.67, "SALADES": 0.33 } }, "446716": { name: "ORIENT 1", split: { "CUISINE ORIENTALE": 0.54, "SALADES": 0.46 } }, "446717": { name: "ORIENT 2", split: { "CUISINE ORIENTALE": 0.45, "SALADES": 0.55 } } };
+        const ORIENT_CONFIG = { "446716": { name: "ORIENT 1", split: { "CUISINE ORIENTALE": 0.54, "SALADES": 0.46 } }, "446717": { name: "ORIENT 2", split: { "CUISINE ORIENTALE": 0.45, "SALADES": 0.55 } }, "446718": { name: "ORIENT 3", split: { "CUISINE ORIENTALE": 0.84, "FROZEN YOGURT": 0.16 } }, "449619": { name: "ORIENT 4", split: { "CUISINE ORIENTALE": 0.67, "SALADES": 0.33 } } };
 
         document.addEventListener('DOMContentLoaded', () => { loadBase2(); loadLivData(); });
 
@@ -266,8 +271,6 @@
                 const currentDisp = dispatchMaps[year];
                 data.forEach(row => {
                     const ca = parseFloat(row['CA HT'] || row['CA'] || 0), siteFull = (row['Nom Site'] || "").toUpperCase(), code = String(row['Code article'] || row['Code']);
-                    
-                    // MODIFICATION : Récupération du nom via Nom Code article
                     const name = row['Nom Code article'] || row['Désignation'] || row['Article'] || "N/A";
                     
                     if (siteFull.includes("LIVRAISON")) realLivTotal[year] += ca;
@@ -312,6 +315,7 @@
         }
 
         function renderFocus() {
+            const trend = document.getElementById('filterTrend').value;
             const fs = document.getElementById('filterSite').value;
             const ff = document.getElementById('filterFam').value;
             const tbody = document.getElementById('tableFocus');
@@ -320,20 +324,24 @@
             const filtered = productData.filter(p => {
                 const matchesSite = fs === "TOUS" || p.site === fs;
                 const matchesFam = ff === "TOUTES" || p.famille === ff;
-                const isNegative = p.ca26 < p.ca25;
-                return matchesSite && matchesFam && isNegative;
+                
+                if (trend === "NEG") return matchesSite && matchesFam && p.ca26 < p.ca25;
+                if (trend === "POS") return matchesSite && matchesFam && p.ca26 > p.ca25;
+                return matchesSite && matchesFam;
             }).sort((a,b) => (a.ca26 - a.ca25) - (b.ca26 - b.ca25));
 
             filtered.forEach(p => {
                 const diff = p.ca26 - p.ca25;
-                const evo = p.ca25 ? (diff / p.ca25 * 100).toFixed(2) : '-100';
-                tbody.innerHTML += `<tr class="border-b hover:bg-red-50">
+                const evo = p.ca25 ? (diff / p.ca25 * 100).toFixed(2) : '100';
+                const isNeg = diff < 0;
+
+                tbody.innerHTML += `<tr class="border-b hover:bg-slate-50">
                     <td class="p-3 text-slate-500 font-mono text-[10px]">${p.code}</td>
                     <td class="p-3 font-bold uppercase text-slate-700">${p.name} <span class="text-[9px] block text-slate-400 italic">${p.site} | ${p.famille}</span></td>
                     <td class="p-3 text-right">${f(p.ca25)}</td>
                     <td class="p-3 text-right font-black text-slate-900">${f(p.ca26)}</td>
-                    <td class="p-3 text-center font-black text-red-500">${evo.replace('.', ',')}%</td>
-                    <td class="p-3 text-right font-black text-red-600 bg-red-50/50">${f(diff)}</td>
+                    <td class="p-3 text-center font-black ${isNeg ? 'text-red-500' : 'text-emerald-500'}">${evo.replace('.', ',')}%</td>
+                    <td class="p-3 text-right font-black ${isNeg ? 'text-red-600 bg-red-50/50' : 'text-emerald-600 bg-emerald-50/50'}">${f(diff)}</td>
                 </tr>`;
             });
         }
@@ -397,8 +405,8 @@
             }
             addSheet('mainTableDOM', "Matrice");
             addSheet('consolTableDOM', "Consolidation");
-            addSheet('focusTableDOM', "Focus Négatif");
-            XLSX.writeFile(wb, "Blueberry_Master_V7.7_Focus.xlsx");
+            addSheet('focusTableDOM', "Focus Performance");
+            XLSX.writeFile(wb, "Blueberry_Master_V7.7_Perf.xlsx");
         }
     </script>
 </body>
